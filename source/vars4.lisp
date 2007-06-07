@@ -2,7 +2,17 @@
 
 (in-package "OCML")
 
+(defvar *ocml-version* "7.3")
 
+(defvar *library-pathname* "OCML:LIBRARY;")
+
+(defvar *lisp-suffix* "lisp")
+
+(defvar *binary-suffix*
+  #+(and :lispworks :win32) "fsl"
+  #+(and :lispworks :linux) "ufasl"
+  #+:allegro "fasl"
+  #+:mcl "pfsl")
 
 (defconstant *subclass-of-slot* 'subclass-of)
 (defconstant *instance-of-slot* 'instance-of)
