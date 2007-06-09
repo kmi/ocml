@@ -68,6 +68,7 @@
   (setofall '?x `(has-input-role ,task-name ?x)))
 
 (defun execute-primitive-task (name)
+ 
   (let ((body (the-slot-value name 'has-body)))
     (if (eq body :nothing)
          (if *in-irs*

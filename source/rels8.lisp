@@ -61,18 +61,19 @@
 
 
 
-#|ocml added by john domingue because a system method exists may 98
-(defmethod documentation ((obj documentation-mixin)&optional doc-type)
-  (declare (ignore doc-type))
-  (with-slots (documentation )obj
-    documentation))
+;;;ocml added by john domingue because a system method exists may 98
+;(defmethod documentation ((obj documentation-mixin)&optional doc-type)
+;  (declare (ignore doc-type))
+;  (with-slots (documentation )obj
+;    documentation))
 
-(defmethod (setf documentation) (new-value (obj documentation-mixin)&optional doc-type)
-  (declare (ignore doc-type))
-  (with-slots (documentation )obj
-    (setf documentation new-value)))
-|#
+;(defmethod (setf documentation) (new-value (obj documentation-mixin)&optional doc-type)
+;  (declare (ignore doc-type))
+;  (with-slots (documentation )obj
+ ;   (setf documentation new-value)))
 
+;;;Use this function to get the documentation of any type of OCML entity.
+;;;The function documentation is not guaranteed to work on all lisp platforms!!!!!
 (defmethod ocml-documentation ((obj documentation-mixin)&optional doc-type)
   (declare (ignore doc-type))
   (with-slots (documentation )obj
@@ -157,6 +158,8 @@
    (iff-def :initarg :iff-def :initform nil :accessor iff-def)
    (own-slot-of  :accessor own-slot-of :initform nil)
    (prove-by  :initarg :prove-by :initform nil :accessor prove-by)
+   (exclusive-prove-by  :initarg :exclusive-prove-by :initform nil 
+                        :accessor exclusive-prove-by)
    (no-proofs-by :initarg :no-proofs-by :initform nil :accessor no-proofs-by)
    (avoid-infinite-loop :initarg :avoid-infinite-loop :initform nil :accessor avoid-infinite-loop)
    (sufficient-for-type-checking :initarg :sufficient-for-type-checking  
@@ -446,7 +449,7 @@
 
 ;;;MAYBE-PROCESS-SUFFICIENT-&-IFF-DEF-ENTRIES --- modified by Mauro
 (defmethod  maybe-process-sufficient-&-iff-def-entries ((obj ocml-relation))
-  (with-slots (sufficient iff-def name schema prove-by no-proofs-by sufficient-for-type-checking) obj
+  (with-slots (sufficient iff-def name schema prove-by exclusive-prove-by no-proofs-by sufficient-for-type-checking) obj
     (when sufficient
       (unless (member :sufficient no-proofs-by)
         ;; (unless (find-bc-rule name)
@@ -471,7 +474,15 @@
               (make-bc-rule-clause (list (cons name schema)
                                          'if
 				         iff-def)
-                                   'iff-def-clause))))))
+                                   'iff-def-clause))))
+    (when exclusive-prove-by
+        (setf iff-def
+              (make-bc-rule-clause (list (cons name schema)
+                                         'if
+				         exclusive-prove-by)
+                                   'iff-def-clause)))
+    
+    ))
 
 ;(defun set-own-slots (rel-instance old new)
 ;  (with-slots (name own-slots) rel-instance

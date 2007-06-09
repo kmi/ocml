@@ -36,10 +36,10 @@
   ((:module :source
 	    :components
 	    ((:file "defpackage")
-	     (:file "vars4" :depends-on ("defpackage"))
+	     (:file "vars5" :depends-on ("defpackage"))
 	     (:file "io" :depends-on ("defpackage"))
 	     (:file "match3" :depends-on ("defpackage"))
-	     (:file "rels7" :depends-on ("defpackage"))
+	     (:file "rels8" :depends-on ("defpackage"))
 	     (:file "meta" :depends-on ("defpackage"))
 	     (:file "funs7" :depends-on ("defpackage"))
 	     (:file "basic21" :depends-on ("defpackage"))
@@ -64,7 +64,7 @@
 	     (:file "delete-things" :depends-on ("defpackage"))
 	     (:file "constrs2" :depends-on ("defpackage"))
 	     (:file "ocml-to-ontolingua2" :depends-on ("defpackage"))
-	     (:file "ocml-to-rdfs5" :depends-on ("defpackage"))
+	     (:file "ocml-to-rdfs7" :depends-on ("defpackage"))
 	     (:file "patches2" :depends-on ("defpackage"))))))
 
 ;;; Separate out control4 to enable redefinition of ocml-metaclass

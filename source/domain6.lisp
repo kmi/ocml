@@ -16,7 +16,6 @@
                              pairs))
 
 
-
 (defun define-domain-instance (name parent &optional documentation slots)
   (let ((class (get-domain-class parent)))
     (unless class
@@ -84,7 +83,7 @@
                                  new-local-slots)))
                (remove-direct-instance instance instance-name old-parent-name old-parent)
                (new-domain-instance-internal instance-name new-parent-name new-parent 
-                                             (documentation instance)
+                                             (ocml-documentation instance)
                                              spec))))
           (t
            (unless instance

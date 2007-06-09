@@ -301,16 +301,6 @@
                (member  (home-ontology sub)
                           *current-ontologies*))))
 
-;;;new function john d 18/3/05
-(defun current-relation-instances (relation)
-  (with-slots (relation-instances) relation
-    (when relation-instances    
-      (filter relation-instances
-           #'(lambda (relation-instance)
-               (member (home-ontology relation-instance)
-                       *current-ontologies*))))))
-
- 
 (defun current-subclasses (class)
    ;;returns all subclasses of class which 
   ;;are in a currently selected ontology
@@ -318,6 +308,22 @@
            #'(lambda (sub)
                (member  (home-ontology sub)
                           *current-ontologies*))))
+
+(defun superclass-of* (class classes)
+  (let ((subs (subclasses class)))
+    (when subs
+      (some  #'(lambda (class2)
+                 (member class2 subs))
+             classes))))
+            
+            
+         
+(defun subclass-of* (class classes)
+  (let ((supers (domain-superclasses class)))
+    (when supers
+      (some  #'(lambda (class2)
+                 (member class2 supers))
+             classes))))   
 
 
 
@@ -396,6 +402,14 @@
 ;;;  nil)
 
          
+(defun find-ocml-options-value (class slot option-to-find)
+  (let ((options (right-value slot
+                              (ocml-options class))))
+    (mapcan #'(lambda (option)
+                (when (eq (car option) option-to-find)
+                  (list (second option))))
+            options)))
+
 
 ;;;VALIDATE-SUPERCLASS --- This is a boring thing you have to do to ensure your metaclass
 ;;;definition is accepted
@@ -432,35 +446,28 @@
 
 
 ;;redefined 3-12-99 - enrico
-#|this one is buggy (says enrico)
+;(defun ensure-class-is-relation (name instance-var relation-spec &aux rel-instance)
+;  (setf rel-instance (get-relation name))
+ ; (cond ((not rel-instance)
+ ;        (make-ocml-relation-internal name (append 
+ ;                                           (list :schema (list instance-var)
+;                                                    :defined-from-class? t)
+;                                            relation-spec)))
+;        ((or relation-spec
+;             (defined-from-class? rel-instance))
+;         ;;we redefine the relation
+;         (make-ocml-relation-internal name (append 
+ ;                                             (list :schema (list instance-var)
+ ;                                                   :defined-from-class? t)
+;                                              relation-spec)
+;                                      nil nil (defined-by-rule rel-instance)))
+;        (t
+;         ;;we only need to clear the relation-instances
+;         (ocml-warn "Relation ~s being redefined as a class...deleting existing relation instances"
+;                    name)
+;         (setf (relation-instances rel-instance) nil))))
 
-(defun ensure-class-is-relation (name instance-var relation-spec &aux rel-instance)
-  (setf rel-instance (get-relation name))
-  (cond ((not rel-instance)
-         (make-ocml-relation-internal name (append 
-                                            (list :schema (list instance-var)
-                                                    :defined-from-class? t)
-                                            relation-spec)))
-        ((or relation-spec
-             (defined-from-class? rel-instance))
-         ;;we redefine the relation
-         (make-ocml-relation-internal name (append 
-                                              (list :schema (list instance-var)
-                                                    :defined-from-class? t)
-                                              relation-spec)
-                                      nil nil (defined-by-rule rel-instance)))
-        (t
-         ;;we only need to clear the relation-instances
-         (ocml-warn "Relation ~s being redefined as a class...deleting existing relation instances"
-                    name)
-         (setf (relation-instances rel-instance) nil))))
-              
-|#
-
-
-
-
-
+ ;;redefined 4-6-04 - enrico        
 (defun ensure-class-is-relation (name instance-var relation-spec &aux rel-instance)
   (setf rel-instance (get-relation name))
   (cond ((not rel-instance)
@@ -481,9 +488,6 @@
          (ocml-warn "Relation ~s being redefined as a class...deleting existing relation instances"
                     name)
          (setf (relation-instances rel-instance) nil))))
-
-         
-
 
 (defmethod get-min-cardinality ((class t) slot)
   (find-option-value (get-domain-class class) slot :min-cardinality))
@@ -521,9 +525,9 @@
             defaults))
       (error "~S is not a class" name))))
 
-  
 (defun all-class-slot-local-values (name slot)
-  "Same as all-class-slot-values but returns a value if the slot is local."
+  "Same as all-class-slot-values but returns a value if the slot is
+local."
   (let ((class (get-domain-class name)))
     (if class
         (when (find slot (local-slots class))
@@ -534,21 +538,8 @@
                 defaults)))
       (error "~S is not a class" name))))
 
-(defun get-local-slot-values-from-class-structure 
-       (class slot &optional no-defaults )
-  (values
-   (find-ocml-options-value class slot :value)
-   (unless no-defaults
-     (find-ocml-options-value  class slot :default-value))))
 
 
-(defun find-ocml-options-value (class slot option-to-find)
-  (let ((options (right-value slot
-                              (ocml-options class))))
-    (mapcan #'(lambda (option)
-                (when (eq (car option) option-to-find)
-                  (list (second option))))
-            options)))
 
 ;;;GET-SLOT-VALUES-FROM-CLASS-STRUCTURE
 ;;;This function returns two values:
@@ -563,6 +554,16 @@
      (find-option-value  class slot :default-value))))
 
        
+(defun get-local-slot-values-from-class-structure 
+       (class slot &optional no-defaults )
+  (values
+   (find-ocml-options-value class slot :value)
+   (unless no-defaults
+     (find-ocml-options-value  class slot :default-value))))
+
+
+
+
 
 ;;;GET-DEFAULT-SLOT-VALUES-FROM-CLASS
 (defun get-default-slot-values-from-class (class slot)
@@ -757,9 +758,17 @@
             (unless  (= (arity relation)2)
               (error "Cannot introduce class ~s with slot ~s. A relation named ~s, with arity different from 2 (~a) already exists"
                      name slot slot (arity relation)))))
-    (setf supers (mapcar #'get-domain-class superclasses))
+    (setf supers (mapcar #'get-ocml-class superclasses))
     (when (member nil supers)
       (error "Some class in ~S has not been defined..when parsing class ~S" superclasses name))
+    
+    ;;;now every class inherits from the *ocml-top-class*, unless this 
+    ;;;does not exists - e.g., because this user has opted out of the base ontology
+    (unless supers
+      (when (and (get-ocml-class *ocml-top-class*)
+                 (not (eq name *ocml-top-class*)))
+        (setf supers (list (get-ocml-class *ocml-top-class*)))))
+      
     (setf supers  (standardise-superclasses supers)
           superclasses (mapcar #'name supers))
     (Let* ((inherited-slots (set-difference (class-inherited-slots supers)
@@ -869,6 +878,7 @@ A different internal name will be generated..."
                                           (position y (class-precedence-list class))))))
       (multiple-value-bind (clos-specs slot-info-list ocml-options)
                            (finalize-class-spec  
+                            name
                             ordered-supers
                             local-slots-spec
                             inherited-slots
@@ -1149,7 +1159,7 @@ A different internal name will be generated..."
         
         (loop for slot in relevant-local-slots
               for slot-info = (calculate-slot-info 
-                               
+                               (name class)
                                ordered-supers
                                slot
                                (right-value* slot ocml-options)
@@ -1160,7 +1170,7 @@ A different internal name will be generated..."
         
         (loop for slot in other-relevant-slots
               for slot-info = (calculate-slot-info 
-                               
+                               (name class)
                                ordered-supers
                                slot
                                nil                   ;;;Of course there are no local ocml options
@@ -1239,7 +1249,7 @@ A different internal name will be generated..."
 ;;;either local or  inherited from superclasses
 ;;;3. It records all local ocml options associated with each slot
 ;;;
-(defun finalize-class-spec (ordered-supers local-slot-specs inherited-slots chains)
+(defun finalize-class-spec (class-name ordered-supers local-slot-specs inherited-slots chains)
   ;;inherited-slots is a list of non-local slots - e.g. (slot-1 slot-2)
   (loop with result = nil
         with slot-info-list = nil
@@ -1251,7 +1261,7 @@ A different internal name will be generated..."
 	    slot-spec
           (let ((slot-info 
                  (calculate-slot-info 
-	          
+	          class-name
 	          ordered-supers
 	          slot ocml-options
                   (find-renaming-chain-with-slot slot chains))))
@@ -1265,6 +1275,7 @@ A different internal name will be generated..."
         finally
         (Loop for slot in inherited-slots
              for slot-info = (calculate-slot-info 
+                              class-name
 	                      ordered-supers
 	                      slot nil
                               (find-renaming-chain-with-slot slot chains))
@@ -1310,11 +1321,11 @@ A different internal name will be generated..."
 ;                     :type type))))
      
 ;;;New version which takes into account renaming - enrico 17/3/99
-(defun calculate-slot-info (ordered-supers slot ocml-options chain)
+(defun calculate-slot-info (class-name ordered-supers slot ocml-options chain)
   (unless chain
     (setf chain (list slot)))
   (let* ((inheritance (decide-inheritance-type ordered-supers chain ocml-options))
-         (type (decide-type-option  ordered-supers  chain ocml-options ))
+         (type (decide-type-option class-name ordered-supers  chain ocml-options ))
          (values (decide-value-options ordered-supers chain ocml-options
                                        (or inheritance *default-inheritance* )))
          
@@ -1372,8 +1383,50 @@ A different internal name will be generated..."
 ;  (remove-duplicates (find-all-option-values*  superclasses chain :type ocml-options)
 ;                     :test #'equal))
 
-(defun decide-type-option (superclasses  chain ocml-options )
-  (find-all-non-overridden-option-values  superclasses chain :type ocml-options))
+;;;(defun decide-type-option (superclasses  chain ocml-options )
+;;;  (find-all-non-overridden-option-values  superclasses chain :type ocml-options))
+
+(defun decide-type-option (class-name superclasses  chain ocml-options &aux local-types )
+  (setf local-types  (remove-duplicates  (apply #'append 
+                                                (mapcar #'(lambda (option)
+                                                            (when (eq (car option) :type)
+                                                              (list(second option))))
+                                                        ocml-options))))
+  (when (member-if #'(lambda (type)
+                       (and (listp type)
+                            (eq (car type) 'or)))
+                   local-types)
+    (error "Slot ~a of class ~a has an invalid type specification: OR type specifications are not allowed"
+           (car chain) class-name ))
+  (let*((global-types 
+         (remove-duplicates
+          (apply #'append 
+                 (mapcar #'(lambda (super)
+                             (loop for slot in chain
+                                   for result2 = (find-option-value super slot :type)
+                                   until result2
+                                   finally (return result2)))
+                         superclasses)))) ;;;;;)
+        (all-types   
+         (remove-duplicates
+          (append local-types global-types)))
+        (undefined-types ;;;;;(print
+         (filter all-types #'(lambda (type)
+                               (and (member type      ;;;changed enrico&john may2007
+                                            all-types) ;;;old code assumes only local types can be undefined
+                                    ;;;(member type local-types) ;;;which is incorrect.  Also global types
+                                    (not (get-ocml-class type)))))))  ;;;can be undefined!!!!!!!
+    
+    (when (and undefined-types *warn-about-undefined-types*)
+      (ocml-warn "When parsing definition of class ~s: some types in ~s for slot ~s have not been defined" 
+                 class-name ocml-options (car chain) ))
+    ;;;;;;(print "all known types are coming")
+    (append undefined-types
+            (mapcar #'name  (remove-subsumed-classes ;;can remove more generic classes if more specific ones are given
+                             (mapcar #'get-ocml-class
+                                     ;;;;(PRINT 
+                                     (set-difference all-types undefined-types)))))))
+
 
 (defun find-all-non-overridden-option-values (ordered-supers chain option ocml-options)
   ;;;each option ((option value) .... (option value))
@@ -1397,6 +1450,32 @@ A different internal name will be generated..."
              (append result1 (find-all-non-overridden-option-values-aux ordered-supers chain option)))))))
   
                      
+;;;REMOVE-SUBSUMED-CLASSES - Removes all classes, say C, from a list, if the list contains
+;;;a subclass of C.
+(defun remove-subsumed-classes (classes)
+  (remove-subsumed-classes-aux (cdr classes)  (car classes) (cdr classes)))
+
+(defun remove-subsumed-classes-aux (all-other-classes current-class classes-to-test)
+  (if current-class
+  (if (superclass-of* current-class all-other-classes)
+    (remove-subsumed-classes-aux (remove (car classes-to-test) all-other-classes) (car classes-to-test) (cdr classes-to-test))
+    (remove-subsumed-classes-aux (cons current-class (remove (car classes-to-test) all-other-classes))
+                                 (car classes-to-test) (cdr classes-to-test)))
+  all-other-classes))
+
+                      
+;;;REMOVE-SUBSUMING-CLASSES - Removes all classes, say C, from a list, if the list contains
+;;;a superclass of C.
+(defun remove-subsuming-classes (classes)
+  (remove-subsuming-classes-aux (cdr classes)  (car classes) (cdr classes)))
+
+(defun remove-subsuming-classes-aux (all-other-classes current-class classes-to-test)
+  (if current-class
+    (if (subclass-of* current-class all-other-classes)
+      (remove-subsuming-classes-aux (remove (car classes-to-test) all-other-classes) (car classes-to-test) (cdr classes-to-test))
+      (remove-subsuming-classes-aux (cons current-class (remove (car classes-to-test) all-other-classes))
+                                    (car classes-to-test) (cdr classes-to-test)))
+    all-other-classes))
                       
 
 ;(defun decide-min-cardinality (superclasses  chain ocml-options)

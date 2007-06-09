@@ -5,7 +5,8 @@
 (in-package "OCML")
 
 
-;;;  STILL TO DO:   <:OWN-SLOTS>, forward chaining rules, relation instances (def-relation-instance and tell)
+;;;  STILL TO DO:   <:OWN-SLOTS>, forward chaining rules, 
+;;;relation instances (def-relation-instance and tell)
 
 (defvar *list-constructor* 'list-of)
 
@@ -19,9 +20,25 @@
 ;;;Reminder: This is the syntax accepted by MacLisp
 ;;;"OCML:library;domains;test-onto;test.lisp"
 
+(defun TRANSLATE-OCML-ONTOLOGY-AND-ANCESTORS-TO-ONTOLINGUA (&optional 
+                                                            (ontology *current-ontology*)
+                                                           )
+  (loop for onto in (cons ontology (sub-ontologies ontology))
+        do
+        (translate-ocml-ontology-to-ontolingua2  onto)))
+
 (defun translate-ocml-ontology-to-ontolingua (ontology-name)
   (let ((ontology (get-ontology ontology-name)))
     (cond (ontology
+           (translate-ocml-ontology-to-ontolingua2 ontology))
+          
+          (t
+           (error "~s is not a known ontology" ontology-name)))))
+
+
+
+(defun translate-ocml-ontology-to-ontolingua2 (ontology)
+  (let ((ontology-name (name ontology)))
            (translate-ontology-files-to-ontolingua 
             ;;;extra argument added by john domingue
             ;;2/6/03
@@ -39,10 +56,7 @@
                          (ontology-pathname ontology)
                          (make-pathname :name file
                                         :type *lisp-suffix*)))
-                    (ontology-files ontology))))
-          
-          (t
-           (error "~s is not a known ontology" ontology-name)))))
+             (ontology-files ontology)))))
 
 
 

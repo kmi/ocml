@@ -1,1 +1,31 @@
-New for version 7.0- Fully implemented constraint checker.  This versifies that  all type and cardinality restrictions are satisfied by a  KB.  In addition it also checks constraint expressions specified  using either :constraint or :iff-def keywords.  These expressions  can be associated with classes, slots or standard relations.  Functions ENABLE-CONSTRAINT-CHECKING and DISABLE-CONSTRAINT-CHECKING  switch constraint checking on and off. By default the mechanism is off.  see file OCML:EXPERIMENTAL;CONSTR_CHECK_EX.LISP for an example  of using the constraint checker. - Changes to the forward chainer which allows rules   to fire in 'watcher mode', as soon as assertions trigger them,   as well as  by explicit program call (i.e., explicit invocations of   function run). set *fc-in-watcher-mode* to T to enable 'watcher mode'- Export mechanism from OCML to Ontolingua.  Use function   TRANSLATE-OCML-ONTOLOGY-TO-ONTOLINGUA to generate an Ontolingua  spec from an OCML ontology 
+
+New for version 7.0
+
+
+- Fully implemented constraint checker.  This versifies that
+  all type and cardinality restrictions are satisfied by a
+  KB.  In addition it also checks constraint expressions specified
+  using either :constraint or :iff-def keywords.  These expressions
+  can be associated with classes, slots or standard relations.
+
+  Functions ENABLE-CONSTRAINT-CHECKING and DISABLE-CONSTRAINT-CHECKING
+  switch constraint checking on and off. By default the mechanism is off.
+
+  see file OCML:EXPERIMENTAL;CONSTR_CHECK_EX.LISP for an example
+  of using the constraint checker. 
+
+
+
+- Changes to the forward chainer which allows rules 
+  to fire in 'watcher mode', as soon as assertions trigger them, 
+  as well as  by explicit program call (i.e., explicit invocations of 
+  function run).
+
+ set *fc-in-watcher-mode* to T to enable 'watcher mode'
+
+
+
+- Export mechanism from OCML to Ontolingua.  Use function 
+  TRANSLATE-OCML-ONTOLOGY-TO-ONTOLINGUA to generate an Ontolingua
+  spec from an OCML ontology 
+

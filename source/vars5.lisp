@@ -2,6 +2,18 @@
 
 (in-package "OCML")
 
+(defvar *ocml-version* "7.4")
+
+(defvar *library-pathname* "OCML:LIBRARY;")
+
+(defvar *lisp-suffix* "lisp")
+
+(defvar *binary-suffix*
+  #+(and :lispworks :win32) "fsl"
+  #+(and :lispworks :linux) "ufasl"
+  #+:allegro "fasl"
+  #+:mcl "pfsl")
+
 (defvar *ocml-top-class* 'ocml-thing)
 
 (defconstant *subclass-of-slot* 'subclass-of)
@@ -21,7 +33,7 @@
 (defconstant *class-spec-slot-related-options* '( :own-slots :slot-renaming))
 
 (defconstant *relation-spec-keywords*
-  '( :sufficient :iff-def :prove-by :constraint 
+  '( :sufficient :iff-def :prove-by :exclusive-prove-by :constraint 
      :no-proofs-by 
      :sufficient-for-type-checking 
      :lisp-fun))
@@ -135,8 +147,10 @@
   "The OCML functions whose definition is 'hardwired'")
 
 (defparameter *hardwired-procedures*
-    '(do repeat call procedure-eval return if cond in-environment loop tell ;;;ftell
-                 unassert in-ontology) ;;; funassert)
+    '(do repeat call procedure-eval 
+      return if cond in-environment 
+      loop tell ;;;ftell
+      unassert in-ontology) ;;; funassert)
   "The OCML procedures whose definition is 'hardwired'")
 
 

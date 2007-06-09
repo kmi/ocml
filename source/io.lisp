@@ -10,34 +10,17 @@
 (defun ocml-output (string &rest format-args)
   (apply #'format t  string format-args))
 
-(defvar *do-not-record-p* nil)
-
-(defmacro with-no-source-file-recording (&rest body)
-  `(let ((*do-not-record-p* t))
-    (declare (special *do-not-record-p*))
-    ,@body))
-
-#+:lispworks 
-(editor::setup-indent 'with-no-source-file-recording 0 2)
-    
-(defun get-source-pathname (dspec)
-  #+(or lispworks4.3 lispworks4.4) 
-  (cadar (dspec:find-dspec-locations dspec)))
-
 (defun ocml-record-source-file (name type &optional ontology)
   (when (and (null ontology)
              *ocml-initialized*)
     (setf ontology (name *current-ontology*)))
   #+:mcl (CCL:RECORD-SOURCE-FILE name type)
-  #+(and :lispworks (not (or :lispworks4.3 :lispworks4.4)))
+  #+(and :lispworks (not :lispworks4.3))
   (eval `(lw::top-level-form (,type ,name ,ontology) nil))
-  #+(or :lispworks4.3 :lispworks4.4) 
-  (let ((dspec (list type name ontology)))
-    (lispworks:record-definition dspec
-                                 (if *do-not-record-p*
-                                     (get-source-pathname dspec)
-                                   (lispworks::current-pathname))
-                                 :check-redefinition-p nil))
+  #+:lispworks4.3 (lispworks:record-definition (list type name ontology)
+                                               (lispworks::current-pathname)
+                                               :check-redefinition-p nil)
+  
   #+:allegro(cl-user::record-source-file name :type type))
 
 (defun ocml-record-instance-source-file (name parent type &optional ontology)
@@ -46,15 +29,11 @@
              *ocml-initialized*)
     (setf ontology (name *current-ontology*)))
   #+:mcl (CCL:RECORD-SOURCE-FILE name type)
-  #+(and :lispworks (not (or :lispworks4.3 :lispworks4.4)))
+  #+(and :lispworks (not :lispworks4.3))
   (eval `(lw::top-level-form (,type ,name ,parent ,ontology) nil))
-  #+(or :lispworks4.3 :lispworks4.4)
-  (let ((dspec (list type name parent ontology)))
-    (lispworks:record-definition dspec
-                                 (if *do-not-record-p*
-                                     (get-source-pathname dspec)
-                                   (lispworks::current-pathname))
-                                 :check-redefinition-p nil))
+  #+:lispworks4.3 (lispworks:record-definition (list type name parent ontology)
+                                               (lispworks::current-pathname)
+                                               :check-redefinition-p nil)
   #+:allegro(cl-user::record-source-file name :type type))
 
 
@@ -63,7 +42,7 @@
                ;;;;;;;;;;(editor::setup-indent 'def-role 1 4 4)
                (editor::setup-indent 'def-rule 1 4 4))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-class nil "OCML Def-class"
   :pretty-name "Def-class"
   :canonicalize #'(lambda (dspec)
@@ -72,7 +51,7 @@
                       `(def-class ,name ,ontology)))
   :definedp #'(lambda (name) (get-domain-class name)))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-ontology nil "OCML Def-ontology"
   :pretty-name "Def-ontology"
   :canonicalize #'(lambda (dspec)
@@ -81,7 +60,7 @@
                       `(def-ontology ,name ,ontology)))
   :definedp #'(lambda (name) (get-ontology name)))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-instance nil "OCML Def-instance"
   :pretty-name "Def-instance"
   :canonicalize #'(lambda (dspec)
@@ -91,7 +70,7 @@
                       `(def-instance ,name ,parent ,ontology)))
   :definedp #'(lambda (name) (find-current-instance name)))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-relation nil "OCML Def-relation"
   :pretty-name "Def-relation"
   :canonicalize #'(lambda (dspec)
@@ -100,7 +79,7 @@
                       `(def-relation ,name ,ontology)))
   :definedp #'(lambda (name) (get-relation name)))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-function nil "OCML Def-function"
   :pretty-name "Def-function"
   :canonicalize #'(lambda (dspec)
@@ -109,7 +88,7 @@
                       `(def-function ,name ,ontology)))
   :definedp #'(lambda (name) (get-function name)))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-procedure nil "OCML Def-procedure"
   :pretty-name "Def-procedure"
   :canonicalize #'(lambda (dspec)
@@ -118,7 +97,7 @@
                       `(def-procedure ,name ,ontology)))
   :definedp #'(lambda (name) (get-function name)))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-axiom nil "OCML Def-axiom"
   :pretty-name "Def-axiom"
   :canonicalize #'(lambda (dspec)
@@ -127,7 +106,7 @@
                       `(def-axiom ,name ,ontology)))
   :definedp #'(lambda (name) (get-axiom name)))
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-rule nil "OCML Def-rule"
   :pretty-name "Def-Rule"
   :canonicalize #'(lambda (dspec)
@@ -137,7 +116,7 @@
   :definedp #'(lambda (name) (get-rule name)))
 
 
-#+(or :lispworks4.3 :lispworks4.4)
+#+:lispworks4.3
 (dspec:define-dspec-class def-relation-instances nil "OCML def-relation-instances"
   :pretty-name "Def-Relation-Instances"
   :canonicalize #'(lambda (dspec)

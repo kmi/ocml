@@ -904,9 +904,8 @@
 
 (defun make-child-state (self new-goals environment &optional subclass-state) ;;; &optional ignore-instances)
   
-  (let* ((goal (if (consp (first new-goals))
-                 (maybe-canonicalise-frame-expression (first new-goals))
-                 (first new-goals)) )
+  (let* (
+          (goal (maybe-canonicalise-frame-expression(first new-goals)))
           (current-goal (make-node goal environment))
           (son
            (make-state
@@ -922,15 +921,13 @@
     son))
 
 (defun maybe-canonicalise-frame-expression (exp)
-  (if (eq exp 'cut)
-    exp
   (let ((rel (car exp)))
     (if (and (get-domain-class rel)
                (cddr exp))
       `(and ,(list rel (second exp))
             ,@(loop for i from 2 upto (- (length exp)2) by 2
                     collect (list (elt exp i)(second exp)(elt exp (1+ i)))))
-        exp))))
+        exp)))
 
 
 ;;;PROVE-CONTINUATION

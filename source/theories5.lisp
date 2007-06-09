@@ -63,9 +63,9 @@
    (pathname :accessor ontology-pathname :initarg :pathname :initform nil)
    (ontology-files :accessor ontology-files :initarg :files :initform nil)
    (version :accessor ontology-version-number :initarg :version :initform 1.0)
-   (rdf-namespace-label :accessor ontology-rdf-namespace-label
-                        :initform nil
-                        :initarg :rdf-namespace-label)
+   ;;(rdf-namespace-label :accessor ontology-rdf-namespace-label
+   ;;                     :initform nil
+   ;;                     :initarg :rdf-namespace-label)
    (rdf-namespace-url :accessor ontology-rdf-namespace-url
                       :initform nil
                       :initarg :rdf-namespace-url)))
@@ -246,7 +246,7 @@ changed by john domingue 6/2/03
                                     author allowed-editors
                                     (files (default-ontology-files name))
                                     (select-this-ontology? t)
-                                    rdf-namespace-label 
+                                   ;;; rdf-namespace-label 
                                     rdf-namespace-url)
 
   (let ((ontology (get-ontology name)))
@@ -260,14 +260,14 @@ changed by john domingue 6/2/03
                               version pathname 
                               author allowed-editors
                               files select-this-ontology?
-                              rdf-namespace-label 
+                             ;;; rdf-namespace-label 
                               rdf-namespace-url))
           (t
            (new-ontology name documentation 
                          includes  
                          type version pathname author allowed-editors
                          files select-this-ontology?
-                         rdf-namespace-label 
+                        ;;; rdf-namespace-label 
                          rdf-namespace-url)))))
 
 
@@ -277,7 +277,7 @@ changed by john domingue 6/2/03
 (defun new-ontology (name  documentation includes  type version
                            pathname author allowed-editors
                            files select-this-ontology?
-                           rdf-namespace-label 
+                          ;;; rdf-namespace-label 
                            rdf-namespace-url)
   
   (let* ((ontology (make-instance 'ocml-ontology
@@ -287,7 +287,7 @@ changed by john domingue 6/2/03
                      :author author
                      :allowed-editors allowed-editors
                      :files files
-                     :rdf-namespace-label rdf-namespace-label 
+                    ;;; :rdf-namespace-label rdf-namespace-label 
                      :rdf-namespace-url rdf-namespace-url
                      :version version
                      :pathname pathname
@@ -326,13 +326,13 @@ changed by john domingue 6/2/03
 (defun redefine-ontology (name ontology  new-documentation new-includes  new-type new-version
                                new-pathname new-author new-allowed-editors
                                new-files select-this-ontology?
-                               new-rdf-namespace-label 
+                              ;;; new-rdf-namespace-label 
                                new-rdf-namespace-url)
   (with-slots (includes documentation version
                         included-by ontology-type author allowed-editors pathname 
                         ontology-files
                         directory
-                        rdf-namespace-label 
+                       ;;; rdf-namespace-label 
                         rdf-namespace-url)
               ontology
     (mapc #'(lambda (o)                      
@@ -348,7 +348,7 @@ changed by john domingue 6/2/03
           allowed-editors new-allowed-editors
           ontology-files new-files
           directory (make-ontology-directory)
-          rdf-namespace-label new-rdf-namespace-label
+        ;;;  rdf-namespace-label new-rdf-namespace-label
           rdf-namespace-url new-rdf-namespace-url)
     (finalize-ontology name ontology  new-includes new-files new-pathname 
                        select-this-ontology? nil)
@@ -392,17 +392,17 @@ changed by john domingue 6/2/03
   (when new?
     (add-ontology name ontology))
   (load-ontology-files-new  ontology files pathname select-this-ontology?)
-  (maybe-set-rdf-related-information name ontology)
+  ;;;;;;(maybe-set-rdf-related-information name ontology)
   ontology)
 
 
-(defun maybe-set-rdf-related-information (name ontology)
-  (let ((rdf-namespace-label (ontology-rdf-namespace-label ontology)))
-    (unless rdf-namespace-label
-      (setf (ontology-rdf-namespace-label ontology)
-            (string-downcase 
-             (subseq (symbol-name name) 
-                     0 (min 3 (length (symbol-name name)))))))))
+;(defun maybe-set-rdf-related-information (name ontology)
+;  (let ((rdf-namespace-label (ontology-rdf-namespace-label ontology)))
+;    (unless rdf-namespace-label
+;      (setf (ontology-rdf-namespace-label ontology)
+;            (string-downcase 
+;             (subseq (symbol-name name) 
+;                     0 (min 3 (length (symbol-name name)))))))))
 
 
 (defun copy-ontology (from-ontology to-ontology)
