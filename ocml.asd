@@ -24,7 +24,7 @@
   :description "OCML before loading WebOnto."
   :depends-on (:enrico-utilities)
   :components
-  ((:module :source
+  ((:module :src
 	    :components
 	    ((:file "defpackage")
 	     (:file "vars5" :depends-on ("defpackage"))
@@ -62,5 +62,5 @@
 ;;; john domingue may 21 98
 (defsystem :ocml-post-webonto
     :depends-on (:ocml-pre-webonto)
-    :components ((:module :source :components
+    :components ((:module :src :components
 			  ((:file "control4")))))
