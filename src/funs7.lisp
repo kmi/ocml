@@ -111,10 +111,6 @@
        (multiple-value-setq (schema body)
          (rename-args-and-body schema body)))))
 
-
-(defvar *defined-functions* (make-hash-table) "All defined functions")
-
-
 (defun add-to-functions-directory (name instance)
   (setf (gethash name *defined-functions*) instance))
 

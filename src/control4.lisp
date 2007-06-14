@@ -2,7 +2,6 @@
 
 (in-package "OCML")
 
-
 ;;;Need to define these ocml classes here, to be able to define the
 ;;;execute-task-instance method
 
@@ -16,11 +15,6 @@
   (unless (find-class 'problem-solving-method nil)
     (def-class problem-solving-method (executable-task)
       :lisp-class-name problem-solving-method)))
-
- 
-(defvar *trace-depth-counter* 0)
-
-(defvar *traced-tasks* nil)
 
 (defun reset-trace-counter ()
   (setf *trace-depth-counter* 0))

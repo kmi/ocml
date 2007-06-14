@@ -2,8 +2,6 @@
 
 (in-package ocml)
 
-(defvar *inside-or-query* nil)
-
 (defun and-expression? (exp)
   (and (listp exp)
        (eq (car exp )'and)))

@@ -606,8 +606,6 @@ local."
 
 ;;;*************************************************************************************
 
-(defvar *domain-classes* (make-hash-table))
-
 (defun all-ocml-classes (&optional fetch-structures?)
   (if fetch-structures?
     (map-over-hash-table #'(lambda (name structure)

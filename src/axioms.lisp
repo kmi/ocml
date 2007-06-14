@@ -17,9 +17,6 @@
   (new-axiom name documentation axiom)
   )
 
-
-(defvar *axioms* (make-hash-table))
-
 (defun new-axiom (name documentation  axiom)
   (let ((instance (make-instance 'axiom
                     :name name

@@ -2,10 +2,6 @@
 
 (in-package "OCML")
 
-(defvar *depth* 0)
-
-(defvar *spied-predicates* nil)
-
 (defun spying? (pred)
   (or (eq  *spied-predicates* :all)
       (member pred *spied-predicates*)))

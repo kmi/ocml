@@ -222,3 +222,23 @@
 
 
 (defvar *nocompile* nil)      ;;;When T do not compile lisp code
+
+(defvar *trace-depth-counter* 0)
+
+(defvar *traced-tasks* nil)
+
+(defvar *defined-functions* (make-hash-table) "All defined functions")
+
+(defvar *inside-or-query* nil)
+
+(defvar *depth* 0)
+
+(defvar *spied-predicates* nil)
+
+(defvar *domain-classes* (make-hash-table))
+
+(defvar *axioms* (make-hash-table))
+
+(defvar *defined-relations* (make-hash-table) "All defined relation types")
+
+(defvar *bc-rules* (make-hash-table))

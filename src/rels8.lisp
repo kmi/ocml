@@ -108,9 +108,6 @@
   
 ;;;;;*********************************************************************
 
-(defvar *defined-relations* (make-hash-table) "All defined relation types")
-
-
 (defun add-to-relations-directory (name instance)
   (setf (gethash name *defined-relations*) instance))
 

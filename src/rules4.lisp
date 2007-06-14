@@ -156,8 +156,6 @@
 
 
 ;;;*BC-RULES*
-(defvar *bc-rules* (make-hash-table))
-
 (defun add-bc-rule (name rule)
   (setf (gethash name *bc-rules*)
         rule))
