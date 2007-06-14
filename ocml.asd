@@ -20,15 +20,6 @@
 	`(("LIBRARY;**;*" ,(translate-logical-pathname "food:lisp;ocml;library;**;*")))))
 |#
 
-
-(defsystem :enrico-utilities
-  :description "Enrico Motta's Common Lisp utility-belt."
-  :components ((:module :enrico-utilities
-			:components
-			((:file "defpackage")
-			 (:file "cl-util" :depends-on ("defpackage"))))))
-
-
 (defsystem :ocml-pre-webonto
   :description "OCML before loading WebOnto."
   :depends-on (:enrico-utilities)
