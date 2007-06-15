@@ -64,3 +64,10 @@
     :depends-on (:ocml-pre-webonto)
     :components ((:module :src :components
 			  ((:file "control4")))))
+
+(eval-when (:execute :load-toplevel)
+  (setf (logical-pathname-translations "ocml")
+      `(("ocml:library;basic;**;*"
+	 ,(format nil "~A/library/basic/"
+		  (asdf:component-pathname (asdf:find-system :ocml)))))))
+
