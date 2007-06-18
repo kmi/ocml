@@ -444,9 +444,9 @@
        ranges)))
 
 
-(defun translate-all-classes (ontology ofile ns-label-alist  fancy-name-conversion? )
-  (let ((classes)
-        )
+(defun translate-all-classes (ontology ofile ns-label-alist  fancy-name-conversion?)
+  (format t "XXX hi there!")
+  (let (classes)
     (maphash #'(lambda (name structure)
                  name
                  (when (eq (home-ontology structure)
@@ -455,10 +455,9 @@
              *domain-classes*)
     (setf classes (sort classes #'(lambda (x y)
                                     (member y (class-precedence-list x)))))
-    
     (loop for class in classes
-          do
-          (translate-class class  (documentation class) ofile ontology  ns-label-alist  fancy-name-conversion?))))
+       do (translate-class class (documentation class 'standard-class)
+			   ofile ontology ns-label-alist fancy-name-conversion?))))
 
 (defun translate-class (class  doc ofile ontology  ns-label-alist  fancy-name-conversion? )
  ;; (when (eq class 'INFORMATION-TRANSFER-EVENT)

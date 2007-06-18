@@ -329,7 +329,7 @@ changed by john domingue 6/2/03
                               ;;; new-rdf-namespace-label 
                                new-rdf-namespace-url)
   (with-slots (includes documentation version
-                        included-by ontology-type author allowed-editors pathname 
+                        ontology-type author allowed-editors pathname 
                         ontology-files
                         directory
                        ;;; rdf-namespace-label 

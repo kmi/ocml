@@ -368,7 +368,7 @@
                                       own-slots
                                       name 
                                       instance-var1)
-  (with-slots (lisp-class-name ocml-name domain-slots local-slots instance-var ;;;;onto-spec
+  (with-slots (ocml-name domain-slots local-slots instance-var ;;;;onto-spec
                                ocml-options slot-info-alist)
               class
     (setf

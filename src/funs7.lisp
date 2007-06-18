@@ -479,7 +479,6 @@
          arg)))
 
 (defun new-evaluate-args (args env &optional (fun #'ocml-eval-fun))
-  (declare (special *depth*))
   (let ((*depth* (1+ *depth*)))
     *depth*
   (mapcar #'(lambda (arg)

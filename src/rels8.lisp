@@ -446,7 +446,8 @@
 
 ;;;MAYBE-PROCESS-SUFFICIENT-&-IFF-DEF-ENTRIES --- modified by Mauro
 (defmethod  maybe-process-sufficient-&-iff-def-entries ((obj ocml-relation))
-  (with-slots (sufficient iff-def name schema prove-by exclusive-prove-by no-proofs-by sufficient-for-type-checking) obj
+  (with-slots (sufficient iff-def name schema prove-by
+			  exclusive-prove-by no-proofs-by) obj
     (when sufficient
       (unless (member :sufficient no-proofs-by)
         ;; (unless (find-bc-rule name)
@@ -811,7 +812,7 @@
 
 (defmethod  maybe-delete-slot-assertion ((relation ocml-relation) args original-form) ;;;no-checks)
   (declare (ignore original-form))
-  (with-slots (name slot-of local-slot-of) relation
+  (with-slots (name local-slot-of) relation
     (destructuring-bind (instancen value) args
       (cond ((variable? instancen)
              (if (variable? value)

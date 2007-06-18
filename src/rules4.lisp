@@ -246,7 +246,7 @@
 
 ;;;REMOVE-RULE FORWARD-RULE--- Top level method for removing a rule
 (defmethod remove-rule ((rule forward-rule))
-  (with-slots (alpha-nodes priority packet) rule
+  (with-slots (priority packet) rule
     (clear-alpha-nodes rule)
     (remove-fc-rule-from-packet packet rule priority)))
 
