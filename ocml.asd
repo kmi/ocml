@@ -64,9 +64,18 @@
     :components ((:module :src :components
 			  ((:file "control4")))))
 
+(defsystem ocml-tests
+  :depends-on (:ocml :fiveam)
+  :components
+  ((:module :tests :components
+	    ((:file "defpackage")
+	     (:file "setup" :depends-on ("defpackage"))
+	     (:file "apples-suite" :depends-on ("defpackage" "setup"))
+	     (:file "owl-suite" :depends-on ("defpackage" "setup"))))))
+
 (eval-when (:execute :load-toplevel)
   (setf (logical-pathname-translations "ocml")
-      `(("ocml:library;basic;**;*"
-	 ,(format nil "~A/library/basic/"
-		  (asdf:component-pathname (asdf:find-system :ocml)))))))
+	`(("ocml:library;basic;**;*"
+	   ,(format nil "~Alibrary/basic/"
+		    (asdf:component-pathname (asdf:find-system :ocml)))))))
 
