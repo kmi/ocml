@@ -45,18 +45,17 @@
 	     (:file "wm2" :depends-on ("defpackage"))
 	     (:file "fc-call3" :depends-on ("defpackage"))
 	     (:file "theories5" :depends-on ("defpackage" "vars5"))
-	     ;; XXX (:file "compiler18" :depends-on ("defpackage"))
 	     (:file "axioms" :depends-on ("defpackage"))
 	     (:file "mapping4" :depends-on ("defpackage"))
 	     ;; XXX (:file "backcmp2" :depends-on ("defpackage"))
 	     (:file "describe" :depends-on ("defpackage"))
 	     (:file "slot-renaming3" :depends-on ("defpackage"))
-	     ;; (:file "control4" :depends-on ("defpackage)
 	     (:file "delete-things" :depends-on ("defpackage"))
 	     (:file "constrs2" :depends-on ("defpackage"))
 	     (:file "ocml-to-ontolingua2" :depends-on ("defpackage" "vars5"))
 	     (:file "ocml-to-rdfs7" :depends-on ("defpackage" "vars5"))
-	     (:file "patches2" :depends-on ("defpackage" "vars5"))))))
+	     (:file "patches2" :depends-on ("defpackage" "vars5"))
+	     (:file "owl" :depends-on ("defpackage"))))))
 
 ;;; Separate out control4 to enable redefinition of ocml-metaclass
 ;;; john domingue may 21 98
