@@ -77,8 +77,10 @@
 	     (:file "owl-suite" :depends-on ("defpackage" "setup"))))))
 
 (eval-when (:execute :load-toplevel)
-  (setf (logical-pathname-translations "ocml")
-	`(("ocml:library;basic;**;*"
-	   ,(format nil "~Alibrary/basic/"
-		    (asdf:component-pathname (asdf:find-system :ocml)))))))
+  (handler-case (logical-pathname-translations "ocml")
+    (simple-error (e)
+      (setf (logical-pathname-translations "ocml")
+	    `(("ocml:library;basic;**;*"
+	       ,(format nil "~Alibrary/basic/"
+			(asdf:component-pathname (asdf:find-system :ocml)))))))))
 
