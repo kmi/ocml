@@ -483,7 +483,7 @@
     ))
 
 ;(defun set-own-slots (rel-instance old new)
-;  (with-slots (name own-slots) rel-instance
+*;  (with-slots (name own-slots) rel-instance
 ;    (loop for exp in old
 ;          do
 ;          (unassert1 `(,(car exp) ,name ,(second exp))))

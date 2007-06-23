@@ -242,3 +242,6 @@
 (defvar *defined-relations* (make-hash-table) "All defined relation types")
 
 (defvar *bc-rules* (make-hash-table))
+
+(defvar *namespace-prefixes* '()
+  "Active namespace prefixes for reading OCML namespace sensitive symbols.")

@@ -10,6 +10,7 @@
 (in-suite apples-suite)
 
 (test classification-test
+  ((ocml::select-ontology 'ocml::apple-heuristic-classify-redux))
   (is (eq 'ocml::chinese-granny
 	  (ocml::apple-single-sol-classification
 	   '((ocml::area ocml::china)

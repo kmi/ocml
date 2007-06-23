@@ -66,6 +66,11 @@
    (pathname :accessor ontology-pathname :initarg :pathname :initform nil)
    (ontology-files :accessor ontology-files :initarg :files :initform nil)
    (version :accessor ontology-version-number :initarg :version :initform 1.0)
+   ;; The namespace URI is used with the #_ reader macro to place
+   ;; symbols in a particular namespace.  It need not point at
+   ;; anything real, or even look like a URI :-) It should be unique.
+   (namespace-uri :accessor namespace-uri-of :type string
+		  :initarg :namespace-uri :initform nil)
    ;;(rdf-namespace-label :accessor ontology-rdf-namespace-label
    ;;                     :initform nil
    ;;                     :initarg :rdf-namespace-label)
@@ -241,38 +246,36 @@ changed by john domingue 6/2/03
 ;    (new-ontology name documentation includes  type pathname author allowed-editors
 ;                  files select-this-ontology?)))
 
-(defun def-ontology-internal2 (name documentation 
-                                    &key includes 
-                                    (type :domain)
-                                    (version 1.0)
-                                    (do-not-include-base-ontology? nil)
-                                    (pathname (default-ontology-pathname name type))
-                                    author allowed-editors
-                                    (files (default-ontology-files name))
-                                    (select-this-ontology? t)
-                                   ;;; rdf-namespace-label 
-                                    rdf-namespace-url)
-
+(defun def-ontology-internal2 (name documentation &key
+			       includes 
+			       (type :domain)
+			       (version 1.0)
+			       (do-not-include-base-ontology? nil)
+			       (pathname (default-ontology-pathname name type))
+			       author allowed-editors
+			       (files (default-ontology-files name))
+			       (select-this-ontology? t)
+			       ;; rdf-namespace-label 
+			       rdf-namespace-url
+			       namespace-uri)
   (let ((ontology (get-ontology name)))
-   (when (and (eq includes nil)
-              (eq do-not-include-base-ontology?  nil))
-     (setf includes (List *base-ontology-name* )))
+    (when (and (eq includes nil)
+	       (eq do-not-include-base-ontology?  nil))
+      (setf includes (List *base-ontology-name* )))
     (setf includes (remove-subsumed-ontologies 
-                          (mapcar #'get-ontology includes)))
-    (cond (ontology
-           (redefine-ontology name ontology documentation includes  type 
-                              version pathname 
-                              author allowed-editors
-                              files select-this-ontology?
-                             ;;; rdf-namespace-label 
-                              rdf-namespace-url))
-          (t
-           (new-ontology name documentation 
-                         includes  
-                         type version pathname author allowed-editors
-                         files select-this-ontology?
-                        ;;; rdf-namespace-label 
-                         rdf-namespace-url)))))
+		    (mapcar #'get-ontology includes)))
+    (if ontology
+	(redefine-ontology name ontology documentation includes  type 
+			   version pathname 
+			   author allowed-editors
+			   files select-this-ontology?
+			   ;; rdf-namespace-label 
+			   rdf-namespace-url
+			   :namespace-uri namespace-uri)
+	(new-ontology name documentation includes type version pathname
+		      author allowed-editors files select-this-ontology?
+		      ;; rdf-namespace-label 
+		      rdf-namespace-url :namespace-uri namespace-uri))))
 
 
 
@@ -282,7 +285,8 @@ changed by john domingue 6/2/03
                            pathname author allowed-editors
                            files select-this-ontology?
                           ;;; rdf-namespace-label 
-                           rdf-namespace-url)
+                           rdf-namespace-url
+		     &key namespace-uri)
   
   (let* ((ontology (make-instance 'ocml-ontology
                      :name name
@@ -295,7 +299,8 @@ changed by john domingue 6/2/03
                      :rdf-namespace-url rdf-namespace-url
                      :version version
                      :pathname pathname
-                     :type type)))
+                     :type type
+		     :namespace-uri namespace-uri)))
     (finalize-ontology name ontology includes files pathname select-this-ontology? t)))
 
 ;(defun redefine-ontology (name ontology  new-documentation new-includes  new-type
@@ -327,18 +332,23 @@ changed by john domingue 6/2/03
 ;                 do
 ;                 (reload-this-ontology-and-its-dependents dep-onto))))))
                 
-(defun redefine-ontology (name ontology  new-documentation new-includes  new-type new-version
-                               new-pathname new-author new-allowed-editors
-                               new-files select-this-ontology?
-                              ;;; new-rdf-namespace-label 
-                               new-rdf-namespace-url)
+(defun redefine-ontology (name ontology  new-documentation new-includes
+			  new-type new-version
+			  new-pathname new-author new-allowed-editors
+			  new-files select-this-ontology?
+			  ;; new-rdf-namespace-label 
+			  new-rdf-namespace-url
+			  &key
+			  namespace-uri)
   (with-slots (includes documentation version
                         ontology-type author allowed-editors pathname 
                         ontology-files
                         directory
-                       ;;; rdf-namespace-label 
-                        rdf-namespace-url)
-              ontology
+			;; rdf-namespace-label 
+                        rdf-namespace-url) ontology
+    (when (not (string= (namespace-uri-of ontology) namespace-uri))
+      (warn "Refusing to change the namespace URI from ~A to ~A."
+	    (namespace-uri-of ontology) namespace-uri))
     (mapc #'(lambda (o)                      
               (setf (ontology-included-by o)
                     (remove ontology (ontology-included-by o))))
@@ -352,7 +362,7 @@ changed by john domingue 6/2/03
           allowed-editors new-allowed-editors
           ontology-files new-files
           directory (make-ontology-directory)
-        ;;;  rdf-namespace-label new-rdf-namespace-label
+;;;  rdf-namespace-label new-rdf-namespace-label
           rdf-namespace-url new-rdf-namespace-url)
     (finalize-ontology name ontology  new-includes new-files new-pathname 
                        select-this-ontology? nil)
@@ -873,5 +883,3 @@ CLOSURE."
                                         (ontology-directory sub-onto)))
                   value)
             (return value)))))
-
-

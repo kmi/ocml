@@ -43,6 +43,7 @@
 	     (:file "mapping4" :depends-on ("defpackage"))
 	     (:file "match3" :depends-on ("defpackage"))
 	     (:file "meta" :depends-on ("defpackage"))
+	     (:file "namespaces" :depends-on ("defpackage" "vars5"))
 	     (:file "ocml-to-ontolingua2" :depends-on ("defpackage" "vars5"))
 	     (:file "ocml-to-rdfs7" :depends-on ("defpackage" "vars5"))
 	     (:file "owl" :depends-on ("defpackage"))
@@ -74,6 +75,7 @@
 	    ((:file "defpackage")
 	     (:file "setup" :depends-on ("defpackage"))
 	     (:file "apples-suite" :depends-on ("defpackage" "setup"))
+	     (:file "namespaces" :depends-on ("defpackage" "setup"))
 	     (:file "owl-suite" :depends-on ("defpackage" "setup"))))))
 
 (eval-when (:execute :load-toplevel)

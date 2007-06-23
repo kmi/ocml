@@ -6,5 +6,6 @@
 (in-package :ocml.tests)
 
 (defun run-all-tests ()
+  (run! 'namespaces-suite)
   (run! 'apples-suite)
   (run! 'owl-suite))
