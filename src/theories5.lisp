@@ -47,10 +47,13 @@
   ;;;;(roles (make-hash-table))
   (classes (make-hash-table)))
         
+;;;; OCML-ONTOLOGY
 
-
-;;;OCML-ONTOLOGY
-(defclass ocml-ontology (name-mixin documentation-mixin)
+;;; WebOnto wants other slots in the ocml-ontology class, so allow it
+;;; to safely redefine the class OCML-ONTOLOGY by putting the good
+;;; bits in ALMOST-OCML-ONTOLOGY, and making OCML-ONTOLOGY a facade
+;;; that backs straight onto ALMOST-OCML-ONTOLOGY
+(defclass almost-ocml-ontology (name-mixin documentation-mixin)
   ((includes :initarg :includes :accessor ontology-includes)
    (included-by  :initform nil :accessor ontology-included-by)
    (directory :accessor ontology-directory :initform (make-ontology-directory))
@@ -70,7 +73,8 @@
                       :initform nil
                       :initarg :rdf-namespace-url)))
 
-
+(defclass ocml-ontology (almost-ocml-ontology)
+  ())
 
 (defun ontology? (thing)
   (typep thing 'ocml-ontology))
