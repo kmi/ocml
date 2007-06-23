@@ -528,6 +528,42 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
 ;   ;;;; (setf (ontology-fc-rule-packets dir) *rule-packets*)
 ;     (setf (ontology-classes dir) *domain-classes*)))
 
+(defmacro with-ocml-thread-safety (&body body)
+  "Syntactic sugar for CALL-WITH-OCML-THREAD-SAFETY."
+  `(call-with-ocml-thread-safety (lambda () ,@body)))
+
+(defun call-with-ocml-thread-safety (closure)
+  "Ensure OCML specials are treated indepentently in different
+threads."
+  (let ((*current-ontology* *current-ontology*)
+	(*current-ontologies* *current-ontologies*)
+	(*defined-relations* *defined-relations*)
+	(*axioms* *axioms*)
+	(*defined-functions* *defined-functions*)
+	(*bc-rules* *bc-rules*)
+	(*domain-classes* *domain-classes*))
+    (funcall closure)))
+
+(defmacro with-ontology (ontology &body body)
+  "Syntactic sugar for CALL-WITH-ONTOLOGY."
+  `(call-with-ontology ,ontology (lambda () ,@body)))
+
+(defun call-with-ontology (ontology closure)
+  "Select ONTOLOGY as active OCML ontology for execution of CLOSURE.
+ONTOLOGY may be an ontology value, or the name of one.  If
+ONTOLOGY is NIL, then restore current ontology on completion of
+CLOSURE."
+  (with-ocml-thread-safety
+      (let ((original-ontology (ocml::name ocml::*current-ontology*)))
+	(unwind-protect
+	     (progn
+	       (when ontology
+		 (ocml::select-ontology (if (symbolp ontology)
+					    ontology
+					    (ocml::name ontology))))
+	       (funcall closure))
+	  (ocml::select-ontology original-ontology)))))
+
 #-franz-inc
 (defun ocml-load (file &key (verbose t) if-does-not-exist)
   (Let ((current-ontology *current-ontology*))
