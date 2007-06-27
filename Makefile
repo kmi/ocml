@@ -3,3 +3,4 @@ default:
 
 clean:
 	find . -name "*.fasl" -o -name "*.fsl" -o -name "*.pfsl" -o -name "*.ufasl" -o -name "*.wfasl" | xargs rm -f
+	$(MAKE) -C doc clean
