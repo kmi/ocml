@@ -1,41 +1,34 @@
-infofiles=ocml.info
+source = ocml.xml
+fo-stylesheet = /usr/share/xml/docbook/stylesheet/nwalsh/fo/docbook.xsl
 
-TEXI = ocml.texi
+html-stylesheet = /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl 
 
-all: ocml.ps ocml.info ocml.html ocml.pdf
+docbook-flags = --stringparam  chapter.autolabel 1 \
+		 --stringparam  section.autolabel 1 \
+		 --stringparam  section.autolabel.max.depth 3 \
+		 --stringparam  appendix.autolabel 1 \
+		 --stringparam  section.label.includes.component.label 1
 
-ocml.dvi: $(TEXI)
-	texi2dvi ocml.texi
+fo-docbook-flags = --stringparam paper.type A4 \
+			$(docbook-flags)
 
-ocml.ps: ocml.dvi
-	dvips -o $@ $<
+html-docbook-flags =  \
+			$(docbook-flags)
 
-ocml.info: $(TEXI)
-	makeinfo $<
 
-ocml.html: $(TEXI)
-	texi2html --split=section $<
 
-ocml.pdf: $(TEXI)
-	texi2pdf $<
+all: ocml.pdf ocml.html
+
+ocml.pdf: ocml.fo
+	fop ocml.fo ocml.pdf
+
+ocml.fo: ocml.xml
+	xsltproc $(fo-docbook-flags) $(fo-stylesheet)  ocml.xml  > ocml.fo
+
+ocml.html: ocml.xml
+	xsltproc $(html-docbook-flags) $(html-stylesheet)  ocml.xml  > ocml.html
 
 clean:
-	rm -f ocml.aux
-	rm -f ocml.cp
-	rm -f ocml.cps
-	rm -f ocml.dvi
-	rm -f ocml.fn
-	rm -f ocml.fns
-	rm -f ocml.ky
-	rm -f ocml.log
-	rm -f ocml.pg
-	rm -f ocml.tmp
-	rm -f ocml.toc
-	rm -f ocml.tp
-	rm -f ocml.vr
-
-really-clean: clean
-	rm -f ocml.info
+	rm -f ocml.fo
+	rm -f ocml.html
 	rm -f ocml.pdf
-	rm -f ocml.ps
-	rm -rf ocml
