@@ -1,0 +1,107 @@
+* with-ontology
+
+Use (with-ontology (ont) foo ...)
+
+* call-with-ocml-thread-safety
+
+Make sure we get all the important variables!  vars5.lisp is a lot
+longer than this function...  We can also introduce a
+special, *with-thread-safety*, which would indicate the prior
+invocation of call-with-ocml-thread-safety and warn about it.
+
+* ocml-load
+
+generalize the muffled warnings for all ocml loads.  new variable:
+(defvar *ontology-warnings* nil).  Might want to check (by looking at
+the message string) what kind of warnings to ignore.
+http://www.lisp.org/HyperSpec/Body/res_muffle-warning.html
+
+* 
+
+the def-ontology form does not evaluate the :namespace-uri initarg.
+this is problematic.  we should fix this, and any other cases for
+which it makes sense.
+
+* with-namespaces
+
+This mutates current lookups.  A putative WITH-NAMESPACES form would
+push and pop them.  But WITH-NAMESPACES has limited use, because the
+reader does its thing before the form gets evaluated.  It could be
+used around (load)s, or when printing using a modified symbol printer.
+
+* printing
+
+might want to override the symbol printing method for namespaced ocml
+symbols...
+
+require should check out asdf packages first, then fall back to the
+default behaviour.
+
+* in theories5
+
+when redefining an ontology, we do a lot of setf'ing.  Shouldn't we
+use a shared-initialize instead?  That'd save typing, and make sure
+other things happen right (if they need to happen at all).
+
+* asktell
+
+OCML> (ask (and (person ?x) (prone-to-cancer ?x))) =>
+
+Solution:
+
+ ((PERSON
+ |http://example.open.ac.uk/ontologies/dave#parallel-universe-dave|)
+ (PRONE-TO-CANCER
+ |http://example.open.ac.uk/ontologies/dave#parallel-universe-dave|))
+
+Shouldn't the VARIABLES be mentioned?
+
+* Package hygiene
+
+Less ::, more (export foo)  On the other hand, if we do that, symbols
+may not end up in the ocml package, where they belong.
+
+* IRS integration
+
+If the former, how do we manage the IRS side, where we use 7.4 via
+ASDF if available?
+
+* Package organization
+
+I think we need a three-layer org.  The OCML engine (ocml), the
+general purpose OCML library (ocml-library), and the applications
+(irs, kmi-impact) etc.  webonto should be a seperate project, too.
+
+** Basic
+
+Add the basic stuff from the library?  Or keep it separate?  I think
+we should add the basic elements, although if we go to the three-layer
+model above, the basic stuff should move to the library, too.  That
+makes test cases a bit tricky, perhaps...
+
+** Multiple libraries
+
+Wouldn't it be nice if OCML could find its libraries in multiple
+places?  So, the basic library would come from the OCML src directory,
+core IRS libraries would be somewhere else, and IRS applications would
+be application specific!  
+
+* Namespaces
+
+Do we want to have prefixes independant of ontologies?  I.e., would we
+want to talk about symbols that aren't in a loaded ontology?!
+Probably not, because one couldn't reason about them...  What about
+circular deps?  That would be ok, as long as the referenced ontology
+is declared before being referenced.
+
+Variables: how do swrl etc deal with it?  What about variables?  Do we
+need to bother about these?  I'm ignoring them at the moment...
+They *should* just work, as long as I don't stomp on the #\? naming
+convetion...  Where *does* the #\? go???
+
+The home ontology can be added to the symbol's plist.
+
+
+Local variables:
+mode: outline
+End:

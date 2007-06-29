@@ -4,6 +4,15 @@
 ;;;
 ;;; Authored by Dave Lambert
 
+;;; We use symbol munging to implement namespaces, not package
+;;; manipulation.  Although the Lisp symbol "foo:bar" looks like the
+;;; XML element "<foo:bar>", they're fundamentally different.  In XML,
+;;; the namespaces mapped to from the various prefixes can, and do,
+;;; change, even within the same document.  In Lisp, the package name
+;;; is forever, and we can't have that: if two sources were to use the
+;;; same prefix, they must use it for the *same ontology*, and that
+;;; simply isn't what we need.
+
 (in-package :ocml)
 
 (defconstant +token-chars+
