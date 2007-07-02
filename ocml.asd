@@ -9,17 +9,6 @@
     :author "John Domingue <j.b.domingue@open.ac.uk> and Enrico Motta <e.motta@open.ac.uk>"
     :depends-on (:ocml-pre-webonto :ocml-post-webonto))
 
-;;; Unless you are using allegro, you have to modify this form to set
-;;; the mapping between logical and physical pathnames in your site
-#|
-(eval-when (eval compile load)
-  (setf (logical-pathname-translations "OCML") 
-	#+:mcl
-	`(("LIBRARY;**;*" "Enrico's Stuff:Enrico:code:ocml:library:v5.0:**:*"))
-	#+:lispworks
-	`(("LIBRARY;**;*" ,(translate-logical-pathname "food:lisp;ocml;library;**;*")))))
-|#
-
 (defsystem :ocml-pre-webonto
   :description "OCML before loading WebOnto."
   :depends-on (:enrico-utilities)

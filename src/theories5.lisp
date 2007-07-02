@@ -558,7 +558,7 @@ threads."
 	(*domain-classes* *domain-classes*))
     (funcall closure)))
 
-(defmacro with-ontology (ontology &body body)
+(defmacro with-ontology ((ontology) &body body)
   "Syntactic sugar for CALL-WITH-ONTOLOGY."
   `(call-with-ontology ,ontology (lambda () ,@body)))
 
