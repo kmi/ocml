@@ -3,6 +3,7 @@
   (:export call-with-ocml-thread-safety
 	   call-with-ontology
 	   register-namespace
+	   translate
 	   with-ocml-thread-safety
 	   with-ontology))
 

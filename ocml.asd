@@ -57,6 +57,16 @@
     :components ((:module :src :components
 			  ((:file "control4")))))
 
+;;; XXX The XML/XSD translators depends on the XML parser in the IRS.
+;;; For the moment, we'll pretend that the IRS ASDF package is
+;;; identical with that having been loaded.
+(defsystem :ocml-xml
+    :depends-on (:ocml :irs)
+    :components ((:module :src :components
+			  ((:file "xml-to-ocml")
+			   ;; (:file "xsd-to-ocml")
+			   ))))
+
 (defsystem ocml-tests
   :depends-on (:ocml :fiveam)
   :components
@@ -66,6 +76,14 @@
 	     (:file "apples-suite" :depends-on ("defpackage" "setup"))
 	     (:file "namespaces" :depends-on ("defpackage" "setup"))
 	     (:file "owl-suite" :depends-on ("defpackage" "setup"))))))
+
+(defsystem :ocml-xml-tests
+    :depends-on (:ocml-xml :ocml-tests)
+    :components
+    ((:module :tests :components
+	      ((:file "xml-to-ocml")
+	       ;; (:file "xsd-to-ocml")
+	       ))))
 
 (eval-when (:execute :load-toplevel)
   (handler-case (logical-pathname-translations "ocml")

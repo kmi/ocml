@@ -1,25 +1,51 @@
-(in-package :ocml)
+(in-package :ocml.tests)
 
-(defparameter *ex1*
- "<note>
-  <date>2002-08-01</date>
-  <to>Tove</to>
-  <from>Jani</from>
-  <heading>Reminder</heading>
-  </note>") ;it works
+(def-suite xml-to-ocml-suite)
 
-(process-xml *ex1*)
+(defun repackage (tree package)
+  (labels ((repackage-thing (thing package)
+	     (if (and (symbolp thing) (not (keywordp thing)))
+		 (intern (symbol-name thing) package)
+		 thing))
+	   (tree-map (fn tree)
+	     (if (consp tree)
+		 (cons (tree-map fn (car tree))
+		       (tree-map fn (cdr tree)))
+		 (funcall fn tree))))
+   (tree-map #'(lambda (x)
+		 (repackage-thing x package))
+	     tree)))
 
+(defun ocml-equal? (ocml xml)
+  (equal (repackage ocml :ocml)
+	 (let ((*package* (find-package :ocml)))
+	   (ocml:translate :xml :ocml xml))))
 
+(test xml-to-ocml-test
+  (is (ocml-equal? '((DEF-INSTANCE NOTE0 NOTE ((DATE :VALUE "2002-08-01") (TO :VALUE "Tove") (FROM :VALUE "Jani") (HEADING :VALUE "Reminder"))))
+		   "<note><date>2002-08-01</date><to>Tove</to><from>Jani</from><heading>Reminder</heading></note>"))
 
-(defparameter *ex2*
-  "<person name=\"Jane\" age=\"29\"/>")  ; it works
+  (is (ocml-equal? '((DEF-INSTANCE OCML::PERSON0 OCML::PERSON ((OCML::NAME :VALUE "Jane") (OCML::AGE :VALUE "29"))))
+		   "<person name=\"Jane\" age=\"29\"/>"))
 
-(process-xml *ex2*)
-
-
-(defparameter *listing*
-  "<Listing>
+  (is (ocml-equal? '((DEF-INSTANCE OCML::LISTING0 OCML::LISTING
+		      ((OCML::STREETNUMBER :VALUE "7")
+		       (OCML::STREETNAME :VALUE "WOODLEY HEADLAND")
+		       (OCML::TOWN :VALUE "PEARTREE BRIDGE MILTON KEYNES")
+		       (OCML::POSTCODE :VALUE "MK6 3PA")
+		       (OCML::COUNTRY :VALUE "UNITED KINGDOM")
+		       (OCML::COUNTRYSPECIFICLOCALITYLINE :VALUE " MILTON KEYNES")
+		       (OCML::DELIVERYADDRESSLINE :VALUE " 7 WOODLEY HEADLAND")
+		       (OCML::FORMATTEDADDRESS :VALUE "7 WOODLEY HEADLAND PEARTREE BRIDGE MILTON KEYNES MK6 3PA UNITED KINGDOM")
+		       (OCML::VERIFICATIONSTATUS :VALUE "C")
+		       (OCML::VERIFICATIONSTATUSTEXT :VALUE "Data corrected")
+		       (OCML::RESULTPRECENTAGE :VALUE "99.75")
+		       (OCML::ELEMENTMATCHSTATUS :VALUE "43034000")
+		       (OCML::ELEMENTMATCHSTATUSTEXTS :VALUE "Postal code: matched without errors, City: matched with errors, Province: empty, Street: matched with errors, Building number: matched without errors, PO Box: empty, Building: empty, Organization: empty")
+		       (OCML::ELEMENTRESULTSTATUS :VALUE "63036000")
+		       (OCML::ELEMENTRESULTSTATUSTEXTS :VALUE "Postal code: validated and unchanged, City: checked and corrected (changed or inserted), Province: empty, Street: checked and corrected (changed or inserted), Building number: validated and unchanged, PO Box: empty, Building: empty, Organization: empty ")
+		       )))
+		   "<Listing>
           <StreetNumber>7</StreetNumber>
           <StreetName>WOODLEY HEADLAND</StreetName>
           <Town>PEARTREE BRIDGE MILTON KEYNES</Town>
@@ -35,13 +61,14 @@
           <ElementMatchStatusTexts>Postal code: matched without errors, City: matched with errors, Province: empty, Street: matched with errors, Building number: matched without errors, PO Box: empty, Building: empty, Organization: empty</ElementMatchStatusTexts>
           <ElementResultStatus>63036000</ElementResultStatus>
           <ElementResultStatusTexts>Postal code: validated and unchanged, City: checked and corrected (changed or inserted), Province: empty, Street: checked and corrected (changed or inserted), Building number: validated and unchanged, PO Box: empty, Building: empty, Organization: empty </ElementResultStatusTexts>
-  </Listing>")  ;it works
-
-(process-xml *listing*)
-
-
-(defparameter *cooking* 
-  "<breakfast_menu>
+  </Listing>"))
+  (is (ocml-equal? '((OCML::DEF-INSTANCE OCML::FOOD0 OCML::FOOD ((OCML::NAME :VALUE "Belgian Waffles") (OCML::PRICE :VALUE "$5.95") (OCML::DESCRIPTION :VALUE "two of our famous Belgian Waffles with plenty of real maple syrup") (OCML::CALORIES :VALUE "650")))
+		     (OCML::DEF-INSTANCE OCML::FOOD1 OCML::FOOD ((OCML::NAME :VALUE "Strawberry Belgian Waffles") (OCML::PRICE :VALUE "$7.95") (OCML::DESCRIPTION :VALUE "light Belgian waffles covered with strawberries and whipped cream") (OCML::CALORIES :VALUE "900")))
+		     (OCML::DEF-INSTANCE OCML::FOOD2 OCML::FOOD ((OCML::NAME :VALUE "Berry-Berry Belgian Waffles") (OCML::PRICE :VALUE "$8.95") (OCML::DESCRIPTION :VALUE "light Belgian waffles covered with an assortment of fresh berries and whipped cream") (OCML::CALORIES :VALUE "900")))
+		     (OCML::DEF-INSTANCE OCML::FOOD3 OCML::FOOD ((OCML::NAME :VALUE "French Toast") (OCML::PRICE :VALUE "$4.50") (OCML::DESCRIPTION :VALUE "thick slices made from our homemade sourdough bread") (OCML::CALORIES :VALUE "600")))
+		     (OCML::DEF-INSTANCE OCML::FOOD4 OCML::FOOD ((OCML::NAME :VALUE "Homestyle Breakfast") (OCML::PRICE :VALUE "$6.95") (OCML::DESCRIPTION :VALUE "two eggs, bacon or sausage, toast, and our ever-popular hash browns") (OCML::CALORIES :VALUE "950")))
+		     (OCML::DEF-INSTANCE OCML::BREAKFAST_MENU0 OCML::BREAKFAST_MENU ((OCML::FOOD :VALUE FOOD4) (OCML::FOOD :VALUE FOOD3) (OCML::FOOD :VALUE FOOD2) (OCML::FOOD :VALUE FOOD1) (OCML::FOOD :VALUE FOOD0))))
+		   "<breakfast_menu>
 	<food>
 		<name>Belgian Waffles</name>
 		<price>$5.95</price>
@@ -73,60 +100,34 @@
 		<description>two eggs, bacon or sausage, toast, and our ever-popular hash browns</description>
 		<calories>950</calories>
 	</food>
-</breakfast_menu>") 
+</breakfast_menu>"))
 
+  (is (ocml-equal? '((ocml::def-instance ocml::a0 ocml::a ((ocml::b :value b0))) (ocml::def-instance ocml::b0 ocml::b ((ocml::c :value c1) (ocml::c :value c0))) (ocml::def-instance ocml::c0 ocml::c ((ocml::d :value d0) (ocml::d :value d1))) (ocml::def-instance ocml::c1 ocml::c ((ocml::d :value d2))) (ocml::def-instance ocml::d0 ocml::d ((ocml::d1 :value "v1"))) (ocml::def-instance ocml::d1 ocml::d ((ocml::d1 :value "v2"))) (ocml::def-instance ocml::d2 ocml::d ((ocml::d1 :value "v3"))))
+		   "<a> <b> <c> <d d1=\"v1\"/> <d d1=\"v2\"/> </c> <c> <d d1=\"v3\"/> </c> </b> </a>"))
 
-(process-xml *cooking*)
+  (is (ocml-equal? '((ocml::def-instance ocml::c0 ocml::c ((ocml::d :value d0) (ocml::d :value d1)))
+		     (ocml::def-instance ocml::d0 ocml::d ((ocml::a1 :value "v11") (ocml::a2 :value "v12")))
+		     (ocml::def-instance ocml::d1 ocml::d ((ocml::a1 :value "v21") (ocml::a2 :value "v22"))))
+		   "<c> <d a1=\"v11\" a2=\"v12\"/> <d a1=\"v21\" a2=\"v22\"/> </c>"))
 
+  (is (ocml-equal? '((ocml::def-instance ocml::a0 ocml::a ((ocml::b :value b0) (ocml::b :value b1)))
+		     (ocml::def-instance ocml::b0 ocml::b nil) (ocml::def-instance ocml::b1 ocml::b nil))
+		   "<a> <b/> <b/> </a>"))
 
-
-(defparameter *ex10*
- "<a>
-     <b>
-       <c>
-         <d d1=\"v1\"/>
-         <d d1=\"v2\"/>
-       </c>
-       <c>
-         <d d1=\"v3\"/>
-       </c>
-     </b>
-  </a>")
-
-(process-xml *ex10*)
-
-
-(defparameter *ex3* 
-  "<d a1=\"v1\" a2=\"v2\"/>")   ;; *ht*: (d (0 ((a1 v1) (a2 v2))))               ; IT WORKS!
-
-(process-xml *ex3*)
-
-
-(defparameter *ex4*
-  "<c>
-    <d a1=\"v11\" a2=\"v12\"/>
-    <d a1=\"v21\" a2=\"v22\"/>
-   </c>")                       ;; *ht*: (c (0 ((d 0) (d 1))))
-                                ;;       (d (0 ((a1 v1) (a2 v2))) (1 ((a1 v1) (a2 v2))))
-(process-xml *ex4*)
-
-
-(defparameter *ex7*
-  "<a>
-     <b/>
-     <b/>
-   </a>") 
-
-
-(process-xml *ex7*)
-
-
-(defparameter *ex5*
-  "<d a1=\"v1\"\"v2\"/>")    ;; *ht*: (d (1 ((a1 v1) ("value" v2))))          -> not addressed yet, even in the xsd2ocml!
-
-
-
-(defparameter *ex6*
+  (is (ocml-equal? '((OCML::DEF-INSTANCE OCML::A0 OCML::A ((OCML::B :VALUE B1) (OCML::B :VALUE B0)))
+		     (OCML::DEF-INSTANCE OCML::B0 OCML::B ((OCML::C :VALUE C1) (OCML::C :VALUE C0)))
+		     (OCML::DEF-INSTANCE OCML::B1 OCML::B ((OCML::C :VALUE C3) (OCML::C :VALUE C2)))
+		     (OCML::DEF-INSTANCE OCML::C0 OCML::C ((OCML::D :VALUE D0)))
+		     (OCML::DEF-INSTANCE OCML::C1 OCML::C ((OCML::D :VALUE D1) (OCML::D :VALUE D2)))
+		     (OCML::DEF-INSTANCE OCML::C2 OCML::C ((OCML::D :VALUE D3)))
+		     (OCML::DEF-INSTANCE OCML::C3 OCML::C ((OCML::D :VALUE D4)))
+		     (OCML::DEF-INSTANCE OCML::C4 OCML::C ((OCML::D :VALUE D5)))
+		     (OCML::DEF-INSTANCE OCML::D0 OCML::D ((OCML::D1 :VALUE "v1")))
+		     (OCML::DEF-INSTANCE OCML::D1 OCML::D ((OCML::D1 :VALUE "v2")))
+		     (OCML::DEF-INSTANCE OCML::D2 OCML::D ((OCML::D2 :VALUE "v3")))
+		     (OCML::DEF-INSTANCE OCML::D3 OCML::D ((OCML::D1 :VALUE "v4")))
+		     (OCML::DEF-INSTANCE OCML::D4 OCML::D ((OCML::D1 :VALUE "v5")))
+		     (OCML::DEF-INSTANCE OCML::D5 OCML::D ((OCML::D2 :VALUE "v6"))))
   "<a>
      <b>
        <c>
@@ -146,9 +147,4 @@
           <d d2=\"v6\"/>
         </c>
       </b>
-    </a>")                      ;; *ht*: (a (0 ((b 0) (b 1))))
-                                ;;       (b (0 ((c 0) (c 1))) (1 ((c 2) (c 3))))
-                                ;;       (c (0 ((d 0))) (1 ((d 1) (d 2))) (2 ((d 3))) (3 ((d 4) (d 5))))
-                                ;;       (d (0 ((d0 v1))) (1 ((d1 v2))) (2 ((d2 v3))) (3 ((d1 v4))) (4 ((d1 v5))) (5 ((d2 v6)))) 
-       
-(process-xml *ex6*)
+    </a>")))

@@ -245,3 +245,8 @@
 
 (defvar *namespace-prefixes* '()
   "Active namespace prefixes for reading OCML namespace sensitive symbols.")
+
+;;;; Interface to OCML.
+
+(defgeneric translate (src dst thing &optional (stream t) &rest rest)
+  (:documentation "Translate THING from language SRC to DST."))
