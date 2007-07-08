@@ -661,8 +661,10 @@
       (dolist (subclass (current-subclasses  class))
         (remove-alpha-node (get-relation subclass)alpha-node)))))
 
-(defmethod remove-alpha-node ((relation (eql nil))alpha-node &optional recur?)
-  (declare (ignore relation alpha-node recur?)))
+(defmethod remove-alpha-node ((relation (eql nil)) alpha-node &optional recur?)
+  ;; Allegro (reasonably) believes that RELATION *is* used, in the
+  ;; specialiser.
+  (declare (ignore #-:allegro relation alpha-node recur?)))
 
 (defmethod remove-indirect-alpha-node ((relation ocml-relation)alpha-node)
   (with-slots (indirect-fc-nodes) relation

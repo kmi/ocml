@@ -4,7 +4,7 @@
 
 (defvar *ocml-version* "7.4")
 
-(defvar *library-pathname* "OCML:LIBRARY;")
+(defvar *library-pathname* "ocml:library;")
 
 (defvar *lisp-suffix* "lisp")
 
@@ -115,19 +115,6 @@
 (defvar *task-level* 0)
 
 (defvar *default-mapping-relation* 'maps-to)
-;
-;#-:franz-inc 
-;(defparameter *basic-rels-file* (string-append *examples-pathname*
-;                                         "BASIC;baserels3." *lisp-suffix*))
-;#-:franz-inc 
-;(defparameter *basic-funs-file* (string-append *examples-pathname*
-;                                         "BASIC;basefuns2."*lisp-suffix*))
-;#-:franz-inc 
-;(defparameter *basic-ops-file* (string-append *examples-pathname*
-;                                         "BASIC;baseops2." *lisp-suffix*))
-;#-:franz-inc 
-;(defparameter *basic-classes-file* (string-append *examples-pathname*
-;                                         "BASIC;baseclas2."  *lisp-suffix*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -182,37 +169,22 @@
 
 (defvar *base-ontology*)
 
-(defparameter *base-ontology-name* 'base-ontology)
+(defvar *base-ontology-name* 'base-ontology)
+
+(defvar *base-ontology-directory* 
+  (logical-pathname (string-append *library-pathname* "basic;")))
+
+(defvar *base-ontology-load-file* "load")
 
 (defvar *all-ontologies* nil "All currently defined ontologies")
+
 (defvar *current-ontology* nil 
   "The currently selected ontology")
 
 (defvar *current-ontologies* nil 
   "All currently selected ontologies")
 
-(defparameter *base-ontology-directory* 
-  (string-append *library-pathname* "BASIC;"))
-
-(defparameter *base-ontology-load-file* "load")
-
-;(defparameter *base-ontology-files*
-;    '("INFER"
-;      "ENV"
-;      "LIST2"
-;      "FUNS"
-;      "SETS"
-;      "META"
-;      "FRAMES2"
-;      "NUMS"
-;      "OPS2"
-;      "RELS"
-;      "STRINGS"
-;      "TASK"))
-
-
 ;;;;;;;;;;;variables related to Mauro's compiler
-
 
 (defvar *compile-trace* nil)   ;;; Show the code of compiled functions during compilation.
 (defvar *compiled* nil)        ;;; Whe this variable is set to t the compiled code is executed.

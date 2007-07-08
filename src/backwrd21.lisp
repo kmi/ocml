@@ -1195,11 +1195,11 @@
 
 
 
-(defmethod  trace-success ((goal cut-node) env  depth)
-  (declare (ignore goal env  ))
+(defmethod trace-success ((goal cut-node) env depth)
+  (declare (ignore #-:allegro goal env))
   (when (spying? 'cut)
-  (print-with-spaces (+ depth *depth*)
-	            "~s- Proved CUT" depth )))
+    (print-with-spaces (+ depth *depth*)
+		       "~s- Proved CUT" depth )))
 
 (defmethod  trace-success ((goal not-node) env  depth)
   (with-slots (body) goal

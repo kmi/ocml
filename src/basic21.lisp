@@ -847,10 +847,7 @@ A different internal name will be generated..."
                    *current-ontology*)))
       (setf class (create-initial-class-definition 
                    internal-name superclasses local-slots lisp-slots)) 
-      #+:FRANZ-INC 
-      (setf (slot-value class 'clos:class-precedence-list)          ;;allegro needs a little kick......
-            (clos:compute-class-precedence-list class))
-      
+      #+:allegro (clos:finalize-inheritance class)
       ;;the next lines have to do with slot renaming in classes --16/2/99
       
       (setf 

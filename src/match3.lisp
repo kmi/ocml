@@ -3,8 +3,8 @@
 (in-package ocml)
 
 
-(proclaim '(inline bind binding-of))
-
+(eval-when (:compile-toplevel :load-toplevel)
+  (proclaim '(inline bind binding-of)))
 
 ;;;BIND ---
 (defun bind (var thing &optional env)

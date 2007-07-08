@@ -1,4 +1,4 @@
-;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
+;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
 
 (in-package "OCML")
 
@@ -199,11 +199,10 @@ changed by john domingue 6/2/03
 |#
 
 (defun default-ontology-pathname (name type)
-  (if (eq type :basic)
-      (string-append *library-pathname*
-                     (format nil "~A;" type))
-    (string-append *library-pathname*
-                   (format nil "~AS;~A;" type name))))
+  (string-append *library-pathname*
+		 (if (eq type :basic)
+		     (format nil "~A;" type)
+		     (format nil "~AS;~A;" type name))))
 
 (defun default-ontology-files (name )
   (list (format nil "~A" name)
@@ -260,10 +259,9 @@ changed by john domingue 6/2/03
 			       namespace-uri)
   (let ((ontology (get-ontology name)))
     (when (and (eq includes nil)
-	       (eq do-not-include-base-ontology?  nil))
-      (setf includes (List *base-ontology-name* )))
-    (setf includes (remove-subsumed-ontologies 
-		    (mapcar #'get-ontology includes)))
+	       (eq do-not-include-base-ontology? nil))
+      (setf includes (List *base-ontology-name*)))
+    (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
     (if ontology
 	(redefine-ontology name ontology documentation includes  type 
 			   version pathname 
@@ -578,73 +576,38 @@ CLOSURE."
 	       (funcall closure))
 	  (ocml::select-ontology original-ontology)))))
 
-#-franz-inc
 (defun ocml-load (file &key (verbose t) if-does-not-exist)
-  (Let ((current-ontology *current-ontology*))
+  ;; Allegro is case-sensitive when translating logical pathnames, so
+  ;; we downcase things here.
+  #+:allegro
+  (let* ((f (format nil "~A" file))
+	 (g (string-downcase f)))
+    (when (not (string= f g))
+      (warn "Don't like case of filename ~a!~%" f)
+      (setf file g)))
+  (let ((current-ontology *current-ontology*))
     (unwind-protect 
-      (Let ((loaded (Load  file 
-                           :verbose verbose 
-                           :if-does-not-exist if-does-not-exist)))
-        (unless loaded
-          (warn "Cannot load file ~a, which does not exist" file)))
+	 (let ((loaded (load  file 
+			      :verbose verbose 
+			      :if-does-not-exist if-does-not-exist)))
+	   (unless loaded
+	     (warn "Cannot load file ~a, which does not exist" file)))
       (when current-ontology
         (unless (eq current-ontology *current-ontology*)
           (switch-to-ontology current-ontology))))))
-
-
-#+franz-inc
-(defun ocml-load (file &key (verbose t) if-does-not-exist)
-  (Let ((current-ontology *current-ontology*))
-    (unwind-protect 
-      (Let ((loaded (franz-Load  file 
-                           :verbose verbose 
-                           :if-does-not-exist if-does-not-exist)))
-        (unless loaded
-          (warn "Cannot load file ~a, which does not exist" file)))
-      (when current-ontology
-        (unless (eq current-ontology *current-ontology*)
-          (switch-to-ontology current-ontology))))))
-
-#+franz-inc
-(defun franz-load (file &key (verbose t)if-does-not-exist)
-  (if (and (not (typep file 'pathname)) (find #\; file))
-      (let* ((file-name-position (position #\; file :from-end t))
-	     (directory (subseq file 0 (1+ file-name-position)))
-	     (file-name (subseq file (1+ file-name-position))))
-	(load (merge-pathnames (translate-logical-pathname directory)
-			       file-name)
-	      :verbose verbose :if-does-not-exist if-does-not-exist))
-    (Load  file :verbose verbose :if-does-not-exist if-does-not-exist)))
-
 
 (defun load-base-ontology ()
-  #-franz-inc
-  (load  (string-append *base-ontology-directory*
-                       *base-ontology-load-file*)
-         :verbose nil)
-  #+franz-inc
   (load (merge-pathnames
 	 (translate-logical-pathname *base-ontology-directory*)
 	 *base-ontology-load-file*)
         :verbose nil))
 
 (defun load-base-ontology-file (file &key verbose)
-  #-franz-inc
-  (ocml-load (string-append *base-ontology-directory*
-                            file)
-             :verbose verbose)
-  #+franz-inc
   (ocml-load 
    (merge-pathnames
     (translate-logical-pathname *base-ontology-directory*)
     (string-downcase file))
-    :verbose verbose))
-  
-
-;  (loop for file in *base-ontology-files*
- ;       with directory = *base-ontology-directory*
-  ;      do
-   ;     (load (string-append directory file))))
+   :verbose verbose))
 
 (defun make-ontology-pathname (name type)
   (translate-logical-pathname (string-append
@@ -695,11 +658,10 @@ CLOSURE."
     (switch-to-ontology ontology)
     (let ((*pending-constraints*))
       (unwind-protect 
-        (Loop 
-	  for file in files
-	  do
-	  (ocml-load (translate-logical-pathname 
-                      (string-append pathname file "." *lisp-suffix*)))
+        (Loop for file in files
+	   do (ocml-load
+	       (merge-pathnames pathname (string-append
+					  file "." *lisp-suffix*)))
           finally
           (loop for c in *pending-constraints*
                 do

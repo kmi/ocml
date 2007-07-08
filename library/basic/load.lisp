@@ -12,32 +12,11 @@
  ;; :includes nil
   :do-not-include-base-ontology? t
   :type :basic
-  :pathname "OCML:LIBRARY;BASIC;"
+  :pathname "ocml:library;basic;"
   :author "enrico"
-  :files ( "FOUNDATION"
-                       "META7" 
-                       "SETS2" 
-                       "RELS2"  
-                       "STRINGS"
-                       "NUMS"
-                       "LIST2"
-                         
-                       "INFER"
-                          "ENV"
-                          
-                          "FUNS2"
-                          
-                         
-                          
-                          
-                          
-                          
-                          ;;;;;"OPS2"
-                          
-                          "FRAMES4"
-                         
-                          "TASK6"
-                          "MAPPING"
-                          "ACQUIRE"))
+  :files ("foundation" "meta7" "sets2" "rels2" "strings" "nums"
+                       "list2" "infer" "env" "funs2"
+		       ;; "ops2"
+		       "frames4" "task6" "mapping" "acquire"))
 
 

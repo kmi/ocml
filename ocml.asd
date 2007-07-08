@@ -86,9 +86,14 @@
 
 (eval-when (:execute :load-toplevel)
   (handler-case (logical-pathname-translations "ocml")
-    (simple-error (e)
+    ;; ANSI says simple-type-error, but some folks can't seem to read
+    ;; :-|
+    ( #-(or :allegro :lispworks) simple-type-error
+      #+:allegro type-error
+      #+:lispworks simple-error (e)
+      (declare (ignore e))
       (setf (logical-pathname-translations "ocml")
-	    `(("ocml:library;**;*"
-	       ,(format nil "~Alibrary/**/*"
+	    `(("ocml:library;**;*.*"
+	       ,(format nil "~Alibrary/**/*.*"
 			(asdf:component-pathname (asdf:find-system :ocml)))))))))
 
