@@ -89,7 +89,7 @@
   (handler-case (logical-pathname-translations "ocml")
     (simple-error (e)
       (setf (logical-pathname-translations "ocml")
-	    `(("ocml:library;basic;**;*"
-	       ,(format nil "~Alibrary/basic/"
+	    `(("ocml:library;**;*"
+	       ,(format nil "~Alibrary/**/*"
 			(asdf:component-pathname (asdf:find-system :ocml)))))))))
 
