@@ -49,10 +49,10 @@
 				      (asdf:find-system :ocml))))))
   (is (equal
        '(ocml::|http://example.open.ac.uk/ontologies/dave#parallel-universe-dave|)
-       (with-ontology 'ocml::dave-in-another-dimension
+       (with-ontology ('ocml::dave-in-another-dimension)
 	 (ocml::ocml-eval-gen
 	  '(ocml::setofall ocml::?x (ocml::prone-to-cancer ocml::?x))))))
   (is (equal '("crab")
-	     (with-ontology 'ocml::dave-in-another-dimension
+	     (with-ontology ('ocml::dave-in-another-dimension)
 	       (ocml::ocml-eval-gen
 		'(ocml::findall ?x (ocml::symbols-of-sickness ?x)))))))
