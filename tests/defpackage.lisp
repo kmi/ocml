@@ -6,7 +6,8 @@
 (in-package :ocml.tests)
 
 (defun run-all-tests (&optional (break nil))
-  (let ((5am:*debug-on-failure* break))
+  (let ((5am:*debug-on-error* break)
+	(5am:*debug-on-failure* break))
     (run! 'namespaces-suite)
     (run! 'apples-suite)
     (run! 'owl-suite)))

@@ -37,7 +37,6 @@
 	     (:file "ocml-to-rdfs7" :depends-on ("defpackage" "globals"))
 	     (:file "owl" :depends-on ("defpackage"))
 	     (:file "parser5" :depends-on ("defpackage"))
-	     (:file "patches2" :depends-on ("defpackage" "globals"))
 	     (:file "rels8" :depends-on ("defpackage" "rules4" "globals"))
 	     (:file "rete4" :depends-on ("defpackage"))
 	     (:file "rules4" :depends-on ("defpackage"))
