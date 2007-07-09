@@ -164,17 +164,17 @@
 
 
 (defun legal-slot-option? (option)
-  (or (member option *legal-ocml-slot-options*)
+  (or (member option +legal-ocml-slot-options+*)
       (member option *legal-clos-slot-options*)))
 
 (defun ocml-option? (option)
-  (member option *legal-ocml-slot-options*))
+  (member option +legal-ocml-slot-options+*))
 
 (defun clos-option? (option)
   (member option *legal-clos-slot-options*))
 
 (defun value-option? (option)
-  (member option *value-options*))
+  (member option +value-options+*))
 
 
 ;;;new from enrico 27/11/98

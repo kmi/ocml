@@ -1,6 +1,6 @@
-* with-ontology
+* webonto goodies
 
-Use (with-ontology (ont) foo ...)
+Steal any general purpose OCML utilities from WebOnto.
 
 * call-with-ocml-thread-safety
 
@@ -22,21 +22,6 @@ the def-ontology form does not evaluate the :namespace-uri initarg.
 this is problematic.  we should fix this, and any other cases for
 which it makes sense.
 
-* with-namespaces
-
-This mutates current lookups.  A putative WITH-NAMESPACES form would
-push and pop them.  But WITH-NAMESPACES has limited use, because the
-reader does its thing before the form gets evaluated.  It could be
-used around (load)s, or when printing using a modified symbol printer.
-
-* printing
-
-might want to override the symbol printing method for namespaced ocml
-symbols...
-
-require should check out asdf packages first, then fall back to the
-default behaviour.
-
 * in theories5
 
 when redefining an ontology, we do a lot of setf'ing.  Shouldn't we
@@ -54,17 +39,12 @@ Solution:
  (PRONE-TO-CANCER
  |http://example.open.ac.uk/ontologies/dave#parallel-universe-dave|))
 
-Shouldn't the VARIABLES be mentioned?
+Shouldn't the *variables* be mentioned?
 
 * Package hygiene
 
 Less ::, more (export foo)  On the other hand, if we do that, symbols
 may not end up in the ocml package, where they belong.
-
-* IRS integration
-
-If the former, how do we manage the IRS side, where we use 7.4 via
-ASDF if available?
 
 * Package organization
 
@@ -100,6 +80,21 @@ They *should* just work, as long as I don't stomp on the #\? naming
 convetion...  Where *does* the #\? go???
 
 The home ontology can be added to the symbol's plist.
+
+** with-namespaces
+
+This mutates current lookups.  A putative WITH-NAMESPACES form would
+push and pop them.  But WITH-NAMESPACES has limited use, because the
+reader does its thing before the form gets evaluated.  It could be
+used around (load)s, or when printing using a modified symbol printer.
+
+** printing
+
+might want to override the symbol printing method for namespaced ocml
+symbols...
+
+require should check out asdf packages first, then fall back to the
+default behaviour.
 
 
 Local variables:

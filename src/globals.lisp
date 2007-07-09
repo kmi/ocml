@@ -16,48 +16,49 @@
 
 (defvar *ocml-top-class* 'ocml-thing)
 
-(defconstant *subclass-of-slot* 'subclass-of)
-(defconstant *instance-of-slot* 'instance-of)
-
-(defconstant *legal-ocml-slot-options*
+(defconstant +legal-ocml-slot-options+*
   '(:default-value :value :type  :inheritance :min-cardinality 
   :max-cardinality :cardinality :documentation))
 
-(defconstant *slot-info-options*
-  '(:default-value :value :type  :inheritance :min-cardinality 
-  :max-cardinality ))
+(defconstant +slot-info-options+
+  '(:default-value :value :type :inheritance :min-cardinality 
+    :max-cardinality))
 
-(defconstant *class-spec-lisp-options*
+(defconstant +class-spec-lisp-options+
   '(:lisp-slots :lisp-class-name))
 
-(defconstant *class-spec-slot-related-options* '( :own-slots :slot-renaming))
+(defconstant +class-spec-slot-related-options+
+  '(:own-slots :slot-renaming))
 
-(defconstant *relation-spec-keywords*
-  '( :sufficient :iff-def :prove-by :exclusive-prove-by :constraint 
-     :no-proofs-by 
-     :sufficient-for-type-checking 
-     :lisp-fun))
+(defconstant +relation-spec-keywords+
+  '(:constraint 
+    :exclusive-prove-by
+    :iff-def
+    :lisp-fun
+    :no-proofs-by 
+    :prove-by
+    :sufficient-for-type-checking 
+    :sufficient))
 
-(defconstant *ALL-CLASS-DEFINITION-LEGAL-OPTIONS*
-  (append *class-spec-slot-related-options* *class-spec-lisp-options*
-          *relation-spec-keywords*
+(defconstant +all-class-definition-legal-options+
+  (append +class-spec-slot-related-options+
+	  +class-spec-lisp-options+
+          +relation-spec-keywords+
           '(:avoid-infinite-loop)))
-          
 
-(defconstant *value-options*
+(defconstant +value-options+*
   '(:default-value :value))
 
-(defconstant *non-value-options*
+(defconstant +non-value-options+
   '( :type :min-cardinality
     :max-cardinality))
 
 
-
 (defvar *default-inheritance* :supersede)
 
-(defconstant *inheritance-options* '(:merge :supersede))
+(defconstant +inheritance-options+ '(:merge :supersede))
 
-(defconstant *legal-clos-slot-options*
+(defconstant +legal-clos-slot-options+
   '(:reader :writer :accessor :allocation :initarg :initform ;;;:type
     ;;;;:documentation
     ))

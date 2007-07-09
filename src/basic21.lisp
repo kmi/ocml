@@ -708,7 +708,8 @@ local."
                                        class-slots relation-spec)
   (multiple-value-bind (instance-var1  documentation1 class-slots1 relation-spec1)
       (parse-class-form instance-var  documentation class-slots relation-spec)
-    (check-no-duplicates-in-rel-options name relation-spec1  *all-class-definition-legal-options* 'class)
+    (check-no-duplicates-in-rel-options
+     name relation-spec1 +all-class-definition-legal-options+ 'class)
     (do-class-definition name superclasses instance-var1  documentation1
                          class-slots1 relation-spec1)))
     

@@ -225,7 +225,8 @@
       ;;#+(or allegro lispworks)(record-source-file name 'def-relation)
       #+(or allegro lispworks)(ocml-record-source-file name 'def-relation))))
 
-(defun check-no-duplicates-in-rel-options (name spec &optional (option-list *relation-spec-keywords*) (type 'relation))
+(defun check-no-duplicates-in-rel-options
+    (name spec &optional (option-list +relation-spec-keywords+) (type 'relation))
   (loop with duplicates
         for keyword in option-list
         for n = (count keyword spec)
