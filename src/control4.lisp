@@ -5,11 +5,11 @@
 ;;;Need to define these ocml classes here, to be able to define the
 ;;;execute-task-instance method
 
-(eval-when (eval load)
-  (unless  (find-class  'task nil)
+(eval-when (:execute :load-toplevel :compile-toplevel)
+  (unless  (find-class 'task nil)
     (def-class TASK ()
       :lisp-class-name task))
-  (unless (find-class  'executable-task nil)
+  (unless (find-class 'executable-task nil)
     (def-class EXECUTABLE-TASK (task)
       :lisp-class-name executable-task))
   (unless (find-class 'problem-solving-method nil)

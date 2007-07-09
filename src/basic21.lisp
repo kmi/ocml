@@ -241,23 +241,18 @@
 
                
 
-;;;VALIDATE-SUPERCLASS --- This is a boring thing you have to do to ensure your metaclass
-;;;definition is accepted
-#+:lispworks
-(eval-when (compile eval load)
-  (defmethod clos::validate-superclass ((class instances-meta )(superclass standard-class))
-    class superclass
-    t))
-
-;#-:lispworks
-;(eval-when (compile eval load)
-;  (defmethod validate-superclass ((class instances-meta )(superclass standard-class))
- ;   class superclass
-  ;  t))
+;; This is a boring thing you have to do to ensure your metaclass
+;; definition is accepted.
+(defmethod
+    #+:allegro mop:validate-superclass
+    #+:lispworks clos::validate-superclass
+    #+:sbcl sb-mop:validate-superclass
+    ((class instances-meta) (superclass standard-class))
+  (declare (ignore class superclass))
+  t)
 
 ;;;OCML-METACLASS 
-(defclass ocml-metaclass (instances-meta
-                          basic-ocml-object)
+(defclass ocml-metaclass (instances-meta basic-ocml-object)
   ((instance-var :initarg :instance-var)
    (ocml-name  :accessor name)
    ;;;;;(methods :initform nil :accessor methods)
@@ -848,6 +843,7 @@ A different internal name will be generated..."
       (setf class (create-initial-class-definition 
                    internal-name superclasses local-slots lisp-slots)) 
       #+:allegro (clos:finalize-inheritance class)
+      #+:sbcl (sb-mop:finalize-inheritance class)
       ;;the next lines have to do with slot renaming in classes --16/2/99
       
       (setf 

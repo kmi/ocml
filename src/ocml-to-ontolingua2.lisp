@@ -151,12 +151,10 @@ maclisp and lispworks - now pass the directory
                                (cdr form)
              (translate-def-rule-form name documentation clauses)))
           (t (Progn 
-               (warn "Cannot recognize form ~s"
-                     form)
-               *skip-form-flag* )))
+               (warn "Cannot recognize form ~s" form)
+               *skip-form-flag*)))
     (Progn 
-      (warn "Cannot recognize form ~s"
-            form)
+      (warn "Cannot recognize form ~s" form)
       *skip-form-flag* )))
 
 
@@ -314,7 +312,8 @@ maclisp and lispworks - now pass the directory
            (translate-def-rule-form name documentation (cddr clauses))
            (if (member 'then clauses)
              (Progn 
-               (Warn "Cannot translate forward chaining rule ~s...it will be ignored..")
+               (Warn "Cannot translate forward chaining rule ~s.  Ignoring it."
+		     name)
                *skip-form-flag*)
              (translate-bc-rule-form name documentation clauses))))
         ((keywordp documentation)
@@ -322,7 +321,8 @@ maclisp and lispworks - now pass the directory
         (t
          (if (member 'then (cons documentation clauses))
            (Progn 
-             (Warn "Cannot translate forward chaining rule ~s...it will be ignored..")
+             (Warn "Cannot translate forward chaining rule ~s.  Ignoring it."
+		   name)
              *skip-form-flag*)
            (translate-bc-rule-form name nil (cons documentation clauses))))))
 

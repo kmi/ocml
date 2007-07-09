@@ -93,7 +93,7 @@
       #+:lispworks simple-error (e)
       (declare (ignore e))
       (setf (logical-pathname-translations "ocml")
-	    `(("ocml:library;**;*.*"
+	    `(("ocml:library;**;*.*.*"
 	       ,(format nil "~Alibrary/**/*.*"
 			(asdf:component-pathname (asdf:find-system :ocml)))))))))
 

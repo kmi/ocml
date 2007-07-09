@@ -19,7 +19,7 @@
                           (cons pred args) env))
                   ((consp pred2)
                    (error "A list is not a legal relation name..when asserting ~S in ~S"
-                          (cons pred2 args)))
+                          (cons pred2 args) env))
                   (t
                    (setf pred pred2)))))
 	(values
