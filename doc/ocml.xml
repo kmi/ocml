@@ -727,8 +727,8 @@ Next, we tell OCML which prefixes we intend to use:
 </programlisting>
 
 <para>We can then use these prefixes in ontologies, using a Lisp
-reader macro.  Classes, instances, and relations can all be named
-using <literal>#_</literal>.  Viz:</para>
+reader macro, <literal>#_</literal>.  Classes, instances, and
+relations can all be named in this way.  Viz:</para>
 
 <programlisting>
 (in-ontology colours)
@@ -745,43 +745,51 @@ using <literal>#_</literal>.  Viz:</para>
 
 (def-class #_fruit ())
 
-(def-class #_orange (#_:fruit)
+(def-class #_orange (#_fruit)
  (#_colors:has-colour #_colours:orange))
 </programlisting>
 
-<para>Here, <literal>#_colour:orange</literal>
+<para>Here, <literal>#_colours:orange</literal>
 and <literal>#_fruit:orange</literal> are different symbols, from
 different namespaces and ontologies, used together in one
 ontology.</para>
 
-<para>Namespaced symbols are case sensitive.  This is important to
-remember that the <literal>#_</literal> syntax is merely a shorthand
-for the long, quoted Lisp symbols.  If you so wish, you can enter the
-long form directly, as a normal Lisp symbol.  Given this, namespaced
-variables interoperate fully with non-namespaced ones.  The prefixes
-are meaningless after they have been used to read the
-symbols.</para>
+<para>When Lisp reads a namespaced symbol, it converts it to a symbol
+by concatenating the value of the referenced
+ontology's <literal>namespace-uri</literal> slot with the symbol.
+Thus, <literal>#_fruit:orange</literal>
+becomes <literal>OCML::|http://www.kmi.open.ac.uk/fruits#orange|</literal>.
+It is important to remember that the <literal>#_</literal> syntax is
+merely a shorthand for the long, quoted Lisp symbol.  If you so wish,
+you can enter the long form directly, as a normal Lisp symbol.  Given
+this, namespaced variables interoperate fully with non-namespaced
+ones.  The prefixes themselves are discarded after they have been read
+in by the Lisp reader.  Namespaced symbols are case
+sensitive: <literal>#_foo</literal> is distinct
+from <literal>#_Foo</literal>.</para>
 
-<para>Further examples:</para>
+<para>Further examples from a Lisp listener session:</para>
 
 <screen>
-OCML&gt; (in-ontology 'fruits)
+OCML&gt; (in-ontology fruits)
 #&lt;OCML-ONTOLOGY FRUITS&gt;
-OCML&gt; #_colour:orange
+OCML&gt; '#_colours:orange
 OCML::|http://www.kmi.open.ac.uk/fruits#orange|
-OCML&gt; #_orange
+OCML&gt; '#_orange
 OCML::|http://www.kmi.open.ac.uk/fruits#orange|
-OCML&gt; (register-namespace "color" 'colours)
+OCML&gt; (register-namespace "colors" 'colours)
 #&lt;OCML-ONTOLOGY COLOURS&gt;
-OCML&gt; (in-ontology 'colours)
+OCML&gt; (in-ontology colours)
 #&lt;OCML-ONTOLOGY COLOURS&gt;
-OCML&gt; #_orange
+OCML&gt; '#_orange
 OCML::|http://www.kmi.open.ac.uk/colours#orange|
-OCML&gt; (eq #_colour:orange #_colour:orange)
+OCML&gt; (eq '#_colours:orange '#_colours:orange)
 T
-OCML&gt; (eq #_colour:orange #_color:orange)
+OCML&gt; (eq '#_colors:orange '#_colours:orange)
 T
-OCML&gt; (eq #_colour:orange #_colour:Orange)
+OCML&gt; (eq '#_colors:orange 'ocml::|http://www.kmi.open.ac.uk/colours#orange|)
+T
+OCML&gt; (eq '#_colours:orange '#_colours:Orange)
 NIL
 </screen>
 
