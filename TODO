@@ -1,3 +1,8 @@
+ensure-vanilla-class/2 can be merged
+
+check with-thread-variables handles namespace-prefixes properly.
+general fix here, anyway.
+
 * webonto goodies
 
 Steal any general purpose OCML utilities from WebOnto.
