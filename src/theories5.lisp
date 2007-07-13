@@ -553,7 +553,8 @@ threads."
 	(*axioms* *axioms*)
 	(*defined-functions* *defined-functions*)
 	(*bc-rules* *bc-rules*)
-	(*domain-classes* *domain-classes*))
+	(*domain-classes* *domain-classes*)
+	(*namespace-prefixes* *namespace-prefixes*))
     (funcall closure)))
 
 (defmacro with-ontology ((ontology) &body body)
