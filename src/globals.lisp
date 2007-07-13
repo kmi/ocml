@@ -2,17 +2,11 @@
 
 (in-package "OCML")
 
-(defvar *ocml-version* "7.4")
+(defconstant +ocml-version+ "7.4")
 
 (defvar *library-pathname* "ocml:library;")
 
 (defvar *lisp-suffix* "lisp")
-
-(defvar *binary-suffix*
-  #+(and :lispworks :win32) "fsl"
-  #+(and :lispworks :linux) "ufasl"
-  #+:allegro "fasl"
-  #+:mcl "pfsl")
 
 (defvar *ocml-top-class* 'ocml-thing)
 
@@ -52,7 +46,6 @@
 (defconstant +non-value-options+
   '( :type :min-cardinality
     :max-cardinality))
-
 
 (defvar *default-inheritance* :supersede)
 

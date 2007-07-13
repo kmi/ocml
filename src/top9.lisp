@@ -3,14 +3,14 @@
 (in-package "OCML")
 
 (defun initialize-ocml (&optional (load-base-ontology? t))
-  (ocml-output "~%Initializing OCML..." *ocml-version*)
+  (ocml-output "~%Initializing OCML " +ocml-version+)
   (setf *all-ontologies* nil)
   (setf *ocml-initialized* t)
   (when load-base-ontology?
     (load-base-ontology)))
 
 (defun welcome ()
-  (ocml-output "~2%Welcome to OCML version ~A.~%" *ocml-version*)
+  (ocml-output "~2%Welcome to OCML version ~A.~%" +ocml-version+)
   (values))
 
 (defmacro def-class (name &optional (superclasses)  instance-var  documentation
