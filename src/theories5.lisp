@@ -554,7 +554,7 @@ threads."
 	(*defined-functions* *defined-functions*)
 	(*bc-rules* *bc-rules*)
 	(*domain-classes* *domain-classes*)
-	(*namespace-prefixes* *namespace-prefixes*))
+	(*namespace-prefixes* (copy-alist *namespace-prefixes*)))
     (funcall closure)))
 
 (defmacro with-ontology ((ontology) &body body)
