@@ -8,21 +8,10 @@ clean:
 tests: acl-tests lw-tests sbcl-tests
 
 sbcl-tests:
-	sbcl --eval "(require :ocml)" \
-	    --eval "(without-package-locks (require :ocml-tests))" \
-	    --eval "(ocml.tests:run-all-tests)" \
-	    --eval "(cl-user::quit)"
+	cat tests/run-tests.lisp | sbcl
 
 lw-tests:
-	echo "(asdf:operate 'asdf:load-op :ocml) \
-		 (asdf:operate 'asdf:load-op :ocml-tests) \
-		 (ocml.tests:run-all-tests)" \
-	 | lw-console
+	cat tests/run-tests.lisp | lw-console
 
 acl-tests:
-	echo "(asdf:operate 'asdf:load-op :ocml) \
-		 (asdf:operate 'asdf:load-op :ocml-tests) \
-		 (ocml.tests:run-all-tests)" \
-	 | alisp
-
-
+	cat tests/run-tests.lisp | alisp
