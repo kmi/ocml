@@ -11,6 +11,7 @@
   (apply #'format t  string format-args))
 
 (defun ocml-record-source-file (name type &optional ontology)
+  #+:sbcl (declare (ignore name type))
   (when (and (null ontology)
              *ocml-initialized*)
     (setf ontology (name *current-ontology*)))
@@ -24,7 +25,7 @@
   #+:allegro(cl-user::record-source-file name :type type))
 
 (defun ocml-record-instance-source-file (name parent type &optional ontology)
-  parent ;;ignore
+  #+:sbcl (declare (ignore name parent type))
   (when (and (null ontology)
              *ocml-initialized*)
     (setf ontology (name *current-ontology*)))

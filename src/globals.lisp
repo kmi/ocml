@@ -10,7 +10,7 @@
 
 (defvar *ocml-top-class* 'ocml-thing)
 
-(defconstant +legal-ocml-slot-options+*
+(defconstant +legal-ocml-slot-options+
   '(:default-value :value :type  :inheritance :min-cardinality 
   :max-cardinality :cardinality :documentation))
 
@@ -40,7 +40,7 @@
           +relation-spec-keywords+
           '(:avoid-infinite-loop)))
 
-(defconstant +value-options+*
+(defconstant +value-options+
   '(:default-value :value))
 
 (defconstant +non-value-options+

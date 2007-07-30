@@ -9,8 +9,8 @@
 (defun domain-instance? (thing)
   (typep thing 'basic-domain-class))
 
-;;; NEW-INSTANCE¬- returns a new instance of a class with the given attributes
-;;;returns an instance structure
+;;; NEW-INSTANCE- returns a new instance of a class with the given
+;;; attributes returns an instance structure
 (defun new-instance (type &optional pairs)
     (define-domain-instance (GENTEMP "INSTANCE") type ""
                              pairs))
