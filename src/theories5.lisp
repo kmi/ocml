@@ -1,9 +1,12 @@
-;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
+(in-package :ocml)
 
-(in-package "OCML")
-
-(defun get-ontology (name)
-  (right-value name  *all-ontologies*))
+(defun get-ontology (name &key (error-if-not-found nil))
+  "Find ontology structure for symbol NAME.  If ERROR-IF-NOT-FOUND is true,
+signal an error if NAME does not designate an ontology."
+  (let ((ontology (right-value name  *all-ontologies*)))
+    (if (and (not ontology) error-if-not-found)
+	(error "No such ontology: ~A." name)
+	ontology)))
 
 (defun get-or-create-ontology (name &optional includes)
   (or (get-ontology name)
