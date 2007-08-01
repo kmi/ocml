@@ -1,0 +1,22 @@
+* New grounding to XML-RPC 
+
+* Web pages showing available goals and services
+
+On an IRS server, http://localhost:3000/ontologies now lists goals and
+services, with hyperlinks to the OCML definitions.
+
+* Configuration
+
+** IRS no longer comes with OCML.
+
+The OCML package must be obtained separately.
+
+** IRS code location is now arbitrary.
+
+IRS now calculates where it lives when you load the scripts/irs.lisp
+file.
+
+
+Local Variables:
+mode: outline
+End:
