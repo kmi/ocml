@@ -6,12 +6,37 @@
 
 (defvar *rdfs-suffix* "rdfs")
 
-
 (defvar *default-rdfs-sub-directory* "RDFS;")
 
 (defvar *rdf-namespace* "http://www.w3.org/1999/02/22-rdf-syntax-ns")
 
 (defvar *rdf-Property-id* "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property")
+
+(defmethod translate ((src (eql :ocml)) (dst (eql :rdfs)) 
+		      (ontology-name symbol) (where stream)
+		      &key namespaces fancy-name-conversion?
+		      &allow-other-keys)
+  (let ((ontology (get-ontology ontology-name :error-if-not-found t)))
+    (unless namespaces
+      (setf namespaces (generate-ns-label-alist ontology)))
+    (generate-rdfs-header ontology-name namespaces where)
+    (translate-all-defs-into-rdfs ontology where namespaces fancy-name-conversion?)
+    (format where "~%</rdf:RDF>")))
+
+;;; Enrico's entry point to invoke the ocml->rdfs translator.
+(defun translate-ocml-ontology-to-rdfs (&key fancy-name-conversion?
+					(ontology-name (name *current-ontology*))
+					output-file ns-label-alist)
+  ;; If no output file a subdirectory called "RDFS" will be created in
+  ;; the directory where the ontology has been defined.
+  (let* ((ontology (get-ontology ontology-name :error-if-not-found t))
+	 (filename (or output-file
+		       (generate-default-output-file ontology-name ontology))))
+    (with-open-file (stream filename :if-exists :supersede :direction :output
+			    :if-does-not-exist :create)
+      (translate :ocml :rdfs ontology-name stream :namespaces ns-label-alist
+		 :fancy-name-conversion? fancy-name-conversion?))
+    filename))
 
 (defun ontology-namespace-declaration (ontology-name ns-label)
   (format nil "xmlns:~(~a~)=\"http://www.aktors.org/ontologies/~(~a~)#\""
@@ -111,36 +136,6 @@
                                                        (symbol-name (name onto))
                                                        ".rdfs"))
                                          :ns-label-alist ns-label-alist)))
-                                         
-;;;
-;;;TRANSLATE-OCML-ONTOLOGY-TO-RDFS - Top level entry point to invoke the ocml->rdfs translator
-;;;
-(defun translate-ocml-ontology-to-rdfs (&key (fancy-name-conversion?)
-                                             (ontology-name (name *current-ontology*))
-                                             output-file
-                                             ns-label-alist)
-  ;;if no output file a subdirectory called "RDFS" will be created in the directory where
-  ;;the ontology has been defined
-  (let (
-        (ontology (get-ontology ontology-name))
-        )
-    (cond (ontology
-           (unless ns-label-alist
-             (setf ns-label-alist (generate-ns-label-alist ontology)))
-           (unless output-file
-             (setf output-file (generate-default-output-file ontology-name ontology)))
-           (with-open-file (ofile output-file
-                                    :if-does-not-exist :create
-                                    :if-exists :supersede
-                                    :direction :output)
-               (generate-rdfs-header ontology-name ns-label-alist ofile)
-               (translate-all-defs-into-rdfs ontology ofile ns-label-alist  fancy-name-conversion? )
-               (format ofile "~%</rdf:RDF>")
-               )
-             output-file)
-          (t
-           (error "~s is not a known ontology" ontology-name)))))
-
 
 (defun translate-all-defs-into-rdfs (ontology ofile ns-label-alist  fancy-name-conversion? )
   

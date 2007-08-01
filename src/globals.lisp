@@ -214,5 +214,5 @@
 
 ;;;; Interface to OCML.
 
-(defgeneric translate (src dst thing &optional stream &rest rest)
+(defgeneric translate (src dst thing where &key &allow-other-keys)
   (:documentation "Translate THING from language SRC to DST."))
