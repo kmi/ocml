@@ -8,7 +8,7 @@
 
 (defsystem :ocml
     :description "Operational Concept Modelling Language."
-    :version "7.3.epsilon"
+    :version "7.5"
     :author "John Domingue <j.b.domingue@open.ac.uk> and Enrico Motta <e.motta@open.ac.uk>"
     :depends-on (:ocml-pre-webonto :ocml-post-webonto))
 
