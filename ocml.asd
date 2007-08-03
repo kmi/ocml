@@ -3,6 +3,9 @@
 
 (in-package :ocml-system)
 
+;; Enable source location recording in Lispworks 5.
+#+:lispworks5  (pushnew :lispworks-dspec *features*)
+
 (defsystem :ocml
     :description "Operational Concept Modelling Language."
     :version "7.3.epsilon"
