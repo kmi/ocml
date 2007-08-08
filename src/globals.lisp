@@ -59,9 +59,11 @@
 (defvar *current-environment*)
 
 (defvar *ignore-undefined-relations* :warn
-  "When this variable is NIL, if we try to prove a goal (rel t1,...,tn) and
-   rel has not been defined, an error is signalled.  If the value is :WARN, then
-   a warning is issued.  If the value is T, then the undefined relation is ignored")
+  "When this variable is :ERROR, if we try to prove a goal (rel
+   t1,...,tn) and rel has not been defined, an error is
+   signalled.  If the value is :WARN, then a warning is issued.
+   If the value is :IGNORE, then the undefined relation is
+   ignored")
 
 (defvar *warn-about-undefined-types* nil)
 

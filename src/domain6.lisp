@@ -626,8 +626,8 @@
                             &optional (force-checking? nil))
   (let* ((*ignore-undefined-relations*  (if (and (boundp '*pending-constraints*)
                                                  (not force-checking?))
-                                          t
-                                          *ignore-undefined-relations*  ))
+                                          :ignore
+                                          *ignore-undefined-relations*))
          (name (name instance))
          (class (parent-class instance))
          (types (get-slot-type class slot)))

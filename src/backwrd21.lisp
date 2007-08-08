@@ -395,19 +395,15 @@
 		        (candidate-instances state)instances
 		        (candidate-classes state)classes
 		        (candidate-clauses  state)nil))
-               (unless *ignore-undefined-relations*
-                 (if (eq *ignore-undefined-relations* :warn)
-                   (ocml-warn "Relation ~s is undefined...when trying to prove goal ~s"
-                              rel body)
-                   (error "Relation ~s is undefined...when trying to prove goal ~s"
-                          rel body)))))
-	    (t
-             (if (eq *ignore-undefined-relations* :warn)
-               (ocml-warn "Relation ~s is undefined...when trying to prove goal ~s"
-                          rel body)
-               (unless *ignore-undefined-relations*
-                   (error "Relation ~s is undefined...when trying to prove goal ~s"
-                          rel body))))))))
+	       (undefined-relation rel body)))
+	    (t (undefined-relation rel body))))))
+
+(defun undefined-relation (rel exp)
+  (format *error-output* "undefined-relation: ~S ~S~%" rel exp)
+  (ecase *ignore-undefined-relations*
+    ((:error) (error "Relation ~s undefined in goal ~s." rel exp))
+    ((:ignore) nil)
+    ((:warn) (ocml-warn "Relation ~s undefined in goal ~s." rel exp))))
 
 (defmethod set-candidates ((node cut-node)state)
   state ;;;ignore 

@@ -92,11 +92,10 @@
           (list '=> (cons slot schema) body))))  
 
 (defun check-constraint (constraint args &optional suppress-warning?)
-  (if suppress-warning?
-    (let ((*ignore-undefined-relations* t))
-      (apply #'holds? (cons constraint args)))
+  (let ((*ignore-undefined-relations* (if suppress-warning?
+					  :ignore
+					  :warn)))
     (apply #'holds? (cons constraint args))))
-    
 
 (defun fetch-applicable-constraints (class)
   (let ((supers (domain-superclasses class)))
