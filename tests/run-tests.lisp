@@ -14,3 +14,4 @@
 (ocml.tests:run-all-tests)
 
 #+:lispworks (quit)
+#+:allegro (exit)

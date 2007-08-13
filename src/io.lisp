@@ -16,7 +16,7 @@
              *ocml-initialized*)
     (setf ontology (name *current-ontology*)))
   #+:mcl (CCL:RECORD-SOURCE-FILE name type)
-  #+(not :lispworks-dspec)
+  #+(and :lispworks (not :lispworks-dspec))
   (eval `(lw::top-level-form (,type ,name ,ontology) nil))
   #+:lispworks-dspec
   (lispworks:record-definition (list type name ontology)
@@ -30,7 +30,7 @@
              *ocml-initialized*)
     (setf ontology (name *current-ontology*)))
   #+:mcl (CCL:RECORD-SOURCE-FILE name type)
-  #+(not :lispworks-dspec)
+  #+(and :lispworks (not :lispworks-dspec))
   (eval `(lw::top-level-form (,type ,name ,parent ,ontology) nil))
   #+:lispworks-dspec
   (lispworks:record-definition (list type name parent ontology)
