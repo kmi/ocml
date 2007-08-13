@@ -58,6 +58,10 @@
 
 (defvar *current-environment*)
 
+(defvar *muffle-warnings* t
+  "Muffle warnings when defining ontologies.  Particularly aimed
+  at redefinition warnings.")
+
 (defvar *ignore-undefined-relations* :warn
   "When this variable is :ERROR, if we try to prove a goal (rel
    t1,...,tn) and rel has not been defined, an error is

@@ -1,11 +1,7 @@
-;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
-
-(in-package ocml)
+(in-package #:ocml)
 
 (defun ocml-warn (string &rest format-args)
-  (format t "~2%Warning: ~s~%"
-          (apply #'format nil (cons string format-args))))
-;;  (apply #'warn (cons string format-args)))
+  (apply #'warn string format-args))
 
 (defun ocml-output (string &rest format-args)
   (apply #'format t  string format-args))

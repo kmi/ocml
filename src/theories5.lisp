@@ -1,4 +1,63 @@
-(in-package :ocml)
+(in-package #:ocml)
+
+(defmacro with-ocml-thread-safety (&body body)
+  "Syntactic sugar for CALL-WITH-OCML-THREAD-SAFETY."
+  `(call-with-ocml-thread-safety (lambda () ,@body)))
+
+(defun call-with-ocml-thread-safety (closure)
+  "Ensure OCML specials are treated indepentently in different
+threads."
+  (let ((*current-ontology* *current-ontology*)
+	(*current-ontologies* *current-ontologies*)
+	(*defined-relations* *defined-relations*)
+	(*axioms* *axioms*)
+	(*defined-functions* *defined-functions*)
+	(*bc-rules* *bc-rules*)
+	(*domain-classes* *domain-classes*)
+	(*namespace-prefixes* (copy-alist *namespace-prefixes*))
+	(*muffle-warnings-on-load* *muffle-warnings-on-load*))
+    (funcall closure)))
+
+(defmacro with-ontology ((ontology) &body body)
+  "Syntactic sugar for CALL-WITH-ONTOLOGY."
+  `(call-with-ontology ,ontology (lambda () ,@body)))
+
+(defun call-with-ontology (ontology closure)
+  "Select ONTOLOGY as active OCML ontology for execution of CLOSURE.
+ONTOLOGY may be an ontology value, or the name of one.  If
+ONTOLOGY is NIL, then restore current ontology on completion of
+CLOSURE."
+  (with-ocml-thread-safety
+      (let ((original-ontology (ocml::name ocml::*current-ontology*)))
+	(unwind-protect
+	     (progn
+	       (when ontology
+		 (ocml::select-ontology (if (symbolp ontology)
+					    ontology
+					    (ocml::name ontology))))
+	       (funcall closure))
+	  (ocml::select-ontology original-ontology)))))
+
+;;; LOADing OCML ontologies generates reams of warnings about
+;;; redefining classes and such.  Almost all of these are harmless,
+;;; and no-one ever checks them anyway.  They're hiding lots more
+;;; warnings in the code that really should be dealt with.
+(defmacro with-muffled-warnings ((&optional (muffle? :unbound)) &body body)
+  `(call-with-muffled-warnings ,(if (eq :unbound muffle?)
+				    '*muffle-warnings*
+				    muffle?)
+			       (lambda () ,@body)))
+
+(defun call-with-muffled-warnings (muffle? closure)
+  (let ((*muffle-warnings* muffle?))
+    (handler-bind
+	((warning #'(lambda (c)
+		      (when *muffle-warnings*
+			(muffle-warning c)))))
+      (funcall closure))))
+
+(defmacro in-ontology (name)
+  `(select-ontology ',name))
 
 (defun get-ontology (name &key (error-if-not-found nil))
   "Find ontology structure for symbol NAME.  If ERROR-IF-NOT-FOUND is true,
@@ -32,10 +91,6 @@ signal an error if NAME does not designate an ontology."
 (defun remove-ontology-internal (name ontology)
   (clean-up-deleted-ontology-links ontology)
   (setf *all-ontologies* (remove (cons name ontology) *all-ontologies* :test #'equal)))
-
-;(eval-when (eval load)
-;  (unless *rule-packets*
- ;   (initialize-rule-packets)))
 
 (defstruct (ontology-directory (:conc-name "ONTOLOGY-"))
   (relations (make-hash-table))
@@ -265,18 +320,19 @@ changed by john domingue 6/2/03
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))
     (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
-    (if ontology
-	(redefine-ontology name ontology documentation includes  type 
-			   version pathname 
-			   author allowed-editors
-			   files select-this-ontology?
-			   ;; rdf-namespace-label 
-			   rdf-namespace-url
-			   :namespace-uri namespace-uri)
-	(new-ontology name documentation includes type version pathname
-		      author allowed-editors files select-this-ontology?
-		      ;; rdf-namespace-label 
-		      rdf-namespace-url :namespace-uri namespace-uri))))
+    (with-muffled-warnings ()
+      (if ontology
+	  (redefine-ontology name ontology documentation includes  type 
+			     version pathname 
+			     author allowed-editors
+			     files select-this-ontology?
+			     ;; rdf-namespace-label 
+			     rdf-namespace-url
+			     :namespace-uri namespace-uri)
+	  (new-ontology name documentation includes type version pathname
+			author allowed-editors files select-this-ontology?
+			;; rdf-namespace-label 
+			rdf-namespace-url :namespace-uri namespace-uri)))))
 
 
 
@@ -508,9 +564,6 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
 	   (setf (gethash key to-table)
 	         value)))))
            
-(defmacro in-ontology (name)
-  `(select-ontology ',name))
-
 (defun select-ontology (name)
   (Let ((ontology (get-ontology name)))
     (unless ontology
@@ -533,53 +586,6 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
           *domain-classes* (ontology-classes dir))
     ontology))
 
-;(defun save-current-ontology ()
-;  (Let ((dir (ontology-directory *current-ontology*)))
-;    (setf (ontology-relations dir) *defined-relations*)
-;    (setf (ontology-axioms dir) *axioms*)
-;    (setf (ontology-functions dir) *defined-functions*)
-;    ;;;(setf (ontology-operators dir) *operators*)
-;    (setf (ontology-bc-rules dir) *bc-rules*)
-;   ;;;; (setf (ontology-fc-rule-packets dir) *rule-packets*)
-;     (setf (ontology-classes dir) *domain-classes*)))
-
-(defmacro with-ocml-thread-safety (&body body)
-  "Syntactic sugar for CALL-WITH-OCML-THREAD-SAFETY."
-  `(call-with-ocml-thread-safety (lambda () ,@body)))
-
-(defun call-with-ocml-thread-safety (closure)
-  "Ensure OCML specials are treated indepentently in different
-threads."
-  (let ((*current-ontology* *current-ontology*)
-	(*current-ontologies* *current-ontologies*)
-	(*defined-relations* *defined-relations*)
-	(*axioms* *axioms*)
-	(*defined-functions* *defined-functions*)
-	(*bc-rules* *bc-rules*)
-	(*domain-classes* *domain-classes*)
-	(*namespace-prefixes* (copy-alist *namespace-prefixes*)))
-    (funcall closure)))
-
-(defmacro with-ontology ((ontology) &body body)
-  "Syntactic sugar for CALL-WITH-ONTOLOGY."
-  `(call-with-ontology ,ontology (lambda () ,@body)))
-
-(defun call-with-ontology (ontology closure)
-  "Select ONTOLOGY as active OCML ontology for execution of CLOSURE.
-ONTOLOGY may be an ontology value, or the name of one.  If
-ONTOLOGY is NIL, then restore current ontology on completion of
-CLOSURE."
-  (with-ocml-thread-safety
-      (let ((original-ontology (ocml::name ocml::*current-ontology*)))
-	(unwind-protect
-	     (progn
-	       (when ontology
-		 (ocml::select-ontology (if (symbolp ontology)
-					    ontology
-					    (ocml::name ontology))))
-	       (funcall closure))
-	  (ocml::select-ontology original-ontology)))))
-
 (defun ocml-load (file &key (verbose t) if-does-not-exist)
   ;; Allegro is case-sensitive when translating logical pathnames, so
   ;; we downcase things here.
@@ -591,9 +597,9 @@ CLOSURE."
       (setf file g)))
   (let ((current-ontology *current-ontology*))
     (unwind-protect 
-	 (let ((loaded (load  file 
-			      :verbose verbose 
-			      :if-does-not-exist if-does-not-exist)))
+	 (let ((loaded (with-muffled-warnings ()
+			 (load file :verbose verbose 
+			       :if-does-not-exist if-does-not-exist))))
 	   (unless loaded
 	     (warn "Cannot load file ~a, which does not exist" file)))
       (when current-ontology
@@ -601,10 +607,10 @@ CLOSURE."
           (switch-to-ontology current-ontology))))))
 
 (defun load-base-ontology ()
-  (load (merge-pathnames
-	 (translate-logical-pathname *base-ontology-directory*)
-	 *base-ontology-load-file*)
-        :verbose nil))
+  (with-muffled-warnings ()
+    (load (merge-pathnames (translate-logical-pathname *base-ontology-directory*)
+			   *base-ontology-load-file*)
+	  :verbose nil)))
 
 (defun load-base-ontology-file (file &key verbose)
   (ocml-load 
