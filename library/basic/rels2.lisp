@@ -29,7 +29,9 @@
 
 ;;; FAIL ---Always fails
 (def-relation fail ()
-   :lisp-fun #'(lambda (env) :fail))
+   :lisp-fun #'(lambda (env)
+		 (declare (ignore env))
+		 :fail))
 
 
 ;;;TRUE ---Always succeeds
