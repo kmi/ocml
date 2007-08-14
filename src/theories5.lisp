@@ -262,9 +262,8 @@ changed by john domingue 6/2/03
 		     (format nil "~A;" type)
 		     (format nil "~AS;~A;" type name))))
 
-(defun default-ontology-files (name )
-  (list (format nil "~A" name)
-        "new"))
+(defun default-ontology-files (name)
+  (list (format nil "~(~A~)" name) "new"))
 
 (defun default-ontology-load-file (name type)
   (string-append (default-ontology-pathname name type)
@@ -344,7 +343,6 @@ changed by john domingue 6/2/03
                           ;;; rdf-namespace-label 
                            rdf-namespace-url
 		     &key namespace-uri)
-  
   (let* ((ontology (make-instance 'ocml-ontology
                      :name name
                      :documentation documentation
