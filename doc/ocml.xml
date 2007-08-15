@@ -823,6 +823,25 @@ terms of tell and unassert).</para>
 </programlisting>
 </section>
 
+<section><title>Translation between representation languages</title>
+
+<para>While OCML is an excellent language for knowledge modelling,
+ poor taste is widespread and we must often translate to and from
+ other representations.  For this, we use
+ the <function>translate</function> generic
+ function.  <function>translate</function> takes 4 required arguments:
+ keywords indicating source and destination lanuages, an object in the
+ source language, and a stream to write the output to.</para>
+
+<programlisting>
+(translate :ocml :rdf 'colours *standard-output*)
+</programlisting>
+
+<para>XXX At present, not all translations are available through this
+ interface, and the methods of returning the result are
+ idiosyncratic.</para>
+</section>
+
 <section><title>The ask-tell interface</title>
 
 <para>In particular, in the case of OCML, this generic idea of
