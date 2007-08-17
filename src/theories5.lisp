@@ -15,7 +15,7 @@ threads."
 	(*bc-rules* *bc-rules*)
 	(*domain-classes* *domain-classes*)
 	(*namespace-prefixes* (copy-alist *namespace-prefixes*))
-	(*muffle-warnings-on-load* *muffle-warnings-on-load*))
+	(*muffle-warnings* *muffle-warnings*))
     (funcall closure)))
 
 (defmacro with-ontology ((ontology) &body body)
