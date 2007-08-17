@@ -26,6 +26,14 @@
                      (list env)
                      :fail)))
 
+(def-class float (number)
+  "Floating point numbers."
+  :lisp-fun
+  #'(lambda (x env)
+      (if (floatp (instantiate x env)) ;; Ensure x is instantiated.
+	  (list env)
+	  :fail)))
+
 (def-class NON-NEGATIVE-INTEGER (integer)
    "The class of all integers >= 0"
    :lisp-fun  #'(lambda (x env)
