@@ -2,7 +2,7 @@
 
 (in-package "OCML")
 
-(defconstant +ocml-version+ "7.4")
+(defconstant +ocml-version+ "7.5")
 
 (defvar *library-pathname* "ocml:library;")
 
