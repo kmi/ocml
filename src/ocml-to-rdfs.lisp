@@ -47,7 +47,6 @@
   (format nil "http://www.aktors.org/ontologies/~(~a~)#"
           ontology-name))
 
-
 (defun print-ontology-namespace-declaration (ontology-name ns-label-info stream)
   (format stream "~%  xmlns:~(~a~)=~s"
           (car ns-label-info)
