@@ -1,12 +1,12 @@
-(defpackage ocml
-  (:use common-lisp enrico-utilities)
-  (:export call-with-ocml-thread-safety
-	   call-with-ontology
-	   initialize-ocml
-	   register-namespace
-	   translate
-	   with-ocml-thread-safety
-	   with-ontology))
+(defpackage #:ocml
+  (:use #:common-lisp)
+  (:export #:call-with-ocml-thread-safety
+	   #:call-with-ontology
+	   #:initialize-ocml
+	   #:register-namespace
+	   #:translate
+	   #:with-ocml-thread-safety
+	   #:with-ontology))
 
 (eval-when (:load-toplevel)
  (pushnew :ocml cl:*features*)
