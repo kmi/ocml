@@ -2,7 +2,7 @@ default:
 	@echo "There is no default target."
 
 clean:
-	find . -name "*.fasl" -o -name "*.fsl" -o -name "*.pfsl" -o -name "*.ufasl" -o -name "*.wfasl" | xargs rm -f
+	find . -name "*.fasl" -o -name "*.fsl" -o -name "*.pfsl" -o -name "*.ufasl" -o -name "*.wfasl" -o -name "*.xfasl" | xargs rm -f
 	$(MAKE) -C doc clean
 
 tests: acl-tests lispworks-tests sbcl-tests
