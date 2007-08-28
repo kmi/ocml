@@ -307,38 +307,29 @@
 
 (defun translate-relation-internal (relation domain doc ofile ontology ns-label-alist  fancy-name-conversion? )
   (multiple-value-bind (id label)
-                       (convert-relation-name-to-rdf-name-style 
-                        (name relation) ontology ns-label-alist  fancy-name-conversion? )
-    (format ofile
-            "~2%<rdf:Description rdf:about=~s>"
-            id)
-    (format ofile
-            "~% <rdf:type rdf:resource=~s />"*rdf-Property-id*)
-    
+      (convert-relation-name-to-rdf-name-style 
+       (name relation) ontology ns-label-alist  fancy-name-conversion? )
+    (format ofile "~2%<rdf:Description rdf:about=~s>" id)
+    (format ofile "~% <rdf:type rdf:resource=~s />"*rdf-Property-id*)
     (when doc
-      (format ofile
-              "~% <rdfs:comment>~a</rdfs:comment>"
+      (format ofile "~% <rdfs:comment>~a</rdfs:comment>"
               (remove-bad-rdf-characters doc)))
-      
-    (format ofile
-            "~% <rdfs:label>~a</rdfs:label>"
+    (format ofile "~% <rdfs:label>~a</rdfs:label>"
             (remove-bad-rdf-characters label))
     (when domain
-
-      (format ofile
-              "~% <rdfs:domain rdf:resource=~s/>"
-              (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style (name domain)
-                                                                                  (home-ontology domain)
-                                                                                  ns-label-alist  fancy-name-conversion?)))
+      (format ofile "~% <rdfs:domain rdf:resource=~s/>"
+              (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style
+				 (name domain) (home-ontology domain) 
+				 ns-label-alist  fancy-name-conversion?)))
       (loop  for range in (get-slot-type domain (name relation))
-             do
-             (format ofile
-                     "~% <rdfs:range rdf:resource=~s/>"
-                     (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style 
-                                        range (home-ontology (get-ocml-class range))
-                                        ns-label-alist  fancy-name-conversion? )))))
-    (format ofile
-              "~%</rdf:Description>")))
+	 do
+	 (when (get-ocml-class range)
+	   (format ofile
+		   "~% <rdfs:range rdf:resource=~s/>"
+		   (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style 
+				      range (home-ontology (get-ocml-class range))
+				      ns-label-alist  fancy-name-conversion? ))))))
+    (format ofile "~%</rdf:Description>")))
 
 (defun translate-multi-domain-relation  (relation domain  doc ofile ontology ns-label-alist  fancy-name-conversion? )
   (let ((new-rel-name (gentemp (format nil "~a"(name relation)))))
