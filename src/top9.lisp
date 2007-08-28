@@ -14,7 +14,7 @@
   (values))
 
 (defmacro def-class (name &optional (superclasses)  instance-var  documentation
-                          class-slots &rest relation-spec)
+                          class-slots &body relation-spec)
   `(define-domain-class ',name ',superclasses ',instance-var  ',documentation
      ',class-slots ',relation-spec))
 
@@ -93,7 +93,7 @@
 #+:lispworks 
 (editor::setup-indent 'def-axiom 0 2)
 
-(defmacro def-ontology (name &optional documentation &rest options)
+(defmacro def-ontology (name &optional documentation &body options)
   `(def-ontology-internal ',name ',documentation ',options))
 
 
