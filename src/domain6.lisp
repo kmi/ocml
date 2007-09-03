@@ -156,8 +156,8 @@
 
 ;;;FIND-INSTANCE ---
 
-;;;;(defun find-instance (Name &optional parent)
-;;;;  (find-current-instance name parent))
+(defun find-instance (Name &optional parent)
+  (find-current-instance name parent))
 
 ;;;FIND-CURRENT-INSTANCE --- Finds an instance named <name>.  If <parent> is given, then teh function
 ;;;looks for a direct instance. Otherwise it returns one of (possibly many) instances. 

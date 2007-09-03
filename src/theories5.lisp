@@ -198,10 +198,12 @@ signal an error if NAME does not designate an ontology."
            ":DEFAULT-RULE-PACKET-IN-"
            (string (name ontology))))))
 
-(defun ontology-rule-packets (&optional (onto *current-ontology*))
-  (let ((dir (ontology-directory onto)))
-    (cons (ontology-default-fc-rule-packet dir)
-          (ontology-other-fc-rule-packets dir))))
+(defun ontology-rule-packets (&optional (ontology *current-ontology*))
+  (if ontology
+      (let ((dir (ontology-directory ontology)))
+	(cons (ontology-default-fc-rule-packet dir)
+	      (ontology-other-fc-rule-packets dir)))
+      '()))
 
 (defun find-rule-packet-in-ontology (name &optional (onto *current-ontology*))
   (let ((default (ontology-default-fc-rule-packet

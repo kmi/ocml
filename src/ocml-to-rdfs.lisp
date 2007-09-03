@@ -17,11 +17,12 @@
 		      &key namespaces fancy-name-conversion?
 		      &allow-other-keys)
   (let ((ontology (get-ontology ontology-name :error-if-not-found t)))
-    (unless namespaces
-      (setf namespaces (generate-ns-label-alist ontology)))
-    (generate-rdfs-header ontology-name namespaces where)
-    (translate-all-defs-into-rdfs ontology where namespaces fancy-name-conversion?)
-    (format where "~%</rdf:RDF>")))
+    (with-ontology (ontology)
+      (unless namespaces
+	(setf namespaces (generate-ns-label-alist ontology)))
+      (generate-rdfs-header ontology-name namespaces where)
+      (translate-all-defs-into-rdfs ontology where namespaces fancy-name-conversion?)
+      (format where "~%</rdf:RDF>"))))
 
 ;;; Enrico's entry point to invoke the ocml->rdfs translator.
 (defun translate-ocml-ontology-to-rdfs (&key fancy-name-conversion?
@@ -46,7 +47,6 @@
   (format nil "http://www.aktors.org/ontologies/~(~a~)#"
           ontology-name))
 
-
 (defun print-ontology-namespace-declaration (ontology-name ns-label-info stream)
   (format stream "~%  xmlns:~(~a~)=~s"
           (car ns-label-info)
@@ -60,14 +60,10 @@
                           (ontology-rdf-namespace-url onto))))
           (cons ontology (sub-ontologies ontology))))
 
-
 (defun generate-rdf-namespace-label (onto)
-  (string-downcase (symbol-name  (gentemp (subseq (symbol-name (name onto))
-                                                  0
-                                                  (min 3 (length (symbol-name (name onto)))))))))
-                                                            
-
-
+  (string-downcase (symbol-name
+		    (gentemp (subseq (symbol-name (name onto)) 0
+				     (min 3 (length (symbol-name (name onto)))))))))
 
 (defun generate-rdfs-header (ontology-name ns-label-alist stream )
   (format stream
@@ -77,15 +73,10 @@
   (loop for pair in ns-label-alist 
         do
         (print-ontology-namespace-declaration (car pair) (cdr pair) stream))  
-  
   (format stream ">")
-  
   (format stream 
           "~2%<!-- Automatically translated from OCML ontology ~:(~a~) -->"
           ontology-name))
-
-
-
 
 (defun generate-default-output-file (ontology-name ontology)
   (Let* ((Load-file (default-ontology-load-file  
@@ -102,25 +93,8 @@
                    :name (format nil "~(~a~)" ontology-name)
                    :type *rdfs-suffix*)))
     
-
-;(defun TRANSLATE-OCML-ONTOLOGY-AND-ANCESTORS-TO-RDFS (&key (fancy-name-conversion?)
-;                                                           (ontology *current-ontology*)
-;                                                           (directory "OCML:LIBRARY;RDFS;"))
-;  (loop for onto in (cons ontology (sub-ontologies ontology))
-;        do
-;        (print (translate-ocml-ontology-to-rdfs :ontology-name (name onto) 
-;                                                :fancy-name-conversion? fancy-name-conversion?
-;                                                :output-file (concatenate 'string
-;                                                                  directory
- ;                                                                 (symbol-name (name onto))
- ;                                                                 ".rdfs")))))
-;
-
-
-(defun TRANSLATE-OCML-ONTOLOGY-AND-ANCESTORS-TO-RDFS (&key (fancy-name-conversion?)
-                                                           (ontology *current-ontology*)
-                                                          ;;; (directory "OCML:LIBRARY;RDFS;")
-                                                           )
+(defun translate-ocml-ontology-and-ancestors-to-rdfs
+    (&key (fancy-name-conversion?) (ontology *current-ontology*))
   (loop with ns-label-alist = (generate-ns-label-alist ontology)
         for onto in (cons ontology (sub-ontologies ontology))
         do
@@ -137,15 +111,9 @@
                                                        ".rdfs"))
                                          :ns-label-alist ns-label-alist)))
 
-(defun translate-all-defs-into-rdfs (ontology ofile ns-label-alist  fancy-name-conversion? )
-  
-  (translate-all-classes ontology ofile  ns-label-alist  fancy-name-conversion? )
-  
-  (translate-all-relations ontology ofile  ns-label-alist  fancy-name-conversion? )
-  
-  (translate-all-instances ontology ofile   ns-label-alist  fancy-name-conversion? )
-  )
-
+(defun translate-all-defs-into-rdfs (ontology ofile ns-label-alist fancy-name-conversion?)
+  (mapcar #'(lambda (f) (funcall f ontology ofile ns-label-alist fancy-name-conversion?))
+	  (list #'translate-all-classes #'translate-all-relations #'translate-all-instances)))
 
 (defun translate-all-instances (ontology ofile  ns-label-alist  fancy-name-conversion? )
   (loop for class in (all-ocml-classes t)
@@ -153,14 +121,13 @@
           (loop for instance in (get-current-direct-instances class)
                 do
                 (when (eq ontology (home-ontology instance))
-                  (translate-instance instance  ofile ontology ns-label-alist  fancy-name-conversion? )))))
+                  (translate-instance instance  ofile ontology ns-label-alist 
+				      fancy-name-conversion? )))))
 
 (defun translate-instance (instance  ofile ontology ns-label-alist  fancy-name-conversion? )
   (multiple-value-bind (id label)
-                       (convert-generic-resource-name-to-rdf-name-style
-                        (name instance)
-                        ontology
-                        ns-label-alist  fancy-name-conversion? )
+      (convert-generic-resource-name-to-rdf-name-style
+       (name instance) ontology ns-label-alist  fancy-name-conversion?)
     (let* ((name (name instance))
            (parent (parent-class instance))
            (parent-id (convert-class-or-instance-name-to-rdf-name-style
@@ -168,44 +135,27 @@
                        (home-ontology parent)
                        ns-label-alist  fancy-name-conversion? ))
            (doc (ocml-documentation instance)))
-     ;; (when (eq name 'Event-Of-Launching-Kmi-Planet-Project)
-    ;;  (break))
-    (format ofile
-            "~2%<~a rdf:about=~s>"
-            parent-id id
-            )
-    (when doc
-      (format ofile
-              "~% <rdfs:comment>~a</rdfs:comment>"doc))
-   (format ofile
-            "~% <rdfs:label>~a</rdfs:label>"label)
-
-   (loop for slot in (domain-slots parent)
-          for values = (setofall '?x `(,slot ,name ?x))
-          do
-          (loop for value in values
-                for slot-id = (convert-relation-name-to-rdf-name-style
-                                   slot (home-ontology (get-relation slot)) ns-label-alist  fancy-name-conversion? )
-                do
-                (multiple-value-bind (value-id flag)
-                                     (format-slot-value value  ontology ns-label-alist  fancy-name-conversion? )
-                  (cond (flag
-                         (format ofile
-                                 "~% <~a>" slot-id)
-                         (format ofile
-                                 "~a" value-id)
-                         (format ofile
-                                 "</~a>" slot-id))
-                        (t
-                         (format ofile
-                                 "~% <~a " slot-id)
-                         (format ofile
-                                 "~a/>" value-id))))))
-                         
-                         
-      (format ofile
-              "~%</~a>"
-              parent-id))))
+      (format ofile "~2%<~a rdf:about=~s>" parent-id id)
+      (when doc
+	(format ofile "~% <rdfs:comment>~a</rdfs:comment>"doc))
+      (format ofile "~% <rdfs:label>~a</rdfs:label>"label)
+      (loop for slot in (domain-slots parent)
+	 for values = (setofall '?x `(,slot ,name ?x))
+	 do
+	 (loop for value in values
+	    for slot-id = (convert-relation-name-to-rdf-name-style
+			   slot (home-ontology (get-relation slot)) ns-label-alist  fancy-name-conversion? )
+	    do
+	    (multiple-value-bind (value-id flag)
+		(format-slot-value value  ontology ns-label-alist  fancy-name-conversion? )
+	      (cond (flag
+		     (format ofile "~% <~a>" slot-id)
+		     (format ofile "~a" value-id)
+		     (format ofile "</~a>" slot-id))
+		    (t
+		     (format ofile "~% <~a " slot-id)
+		     (format ofile "~a/>" value-id))))))
+      (format ofile "~%</~a>" parent-id))))
 
 (defun format-slot-value (value  ontology ns-label-alist  fancy-name-conversion? )
   (cond ((stringp value)
@@ -357,38 +307,29 @@
 
 (defun translate-relation-internal (relation domain doc ofile ontology ns-label-alist  fancy-name-conversion? )
   (multiple-value-bind (id label)
-                       (convert-relation-name-to-rdf-name-style 
-                        (name relation) ontology ns-label-alist  fancy-name-conversion? )
-    (format ofile
-            "~2%<rdf:Description rdf:about=~s>"
-            id)
-    (format ofile
-            "~% <rdf:type rdf:resource=~s />"*rdf-Property-id*)
-    
+      (convert-relation-name-to-rdf-name-style 
+       (name relation) ontology ns-label-alist  fancy-name-conversion? )
+    (format ofile "~2%<rdf:Description rdf:about=~s>" id)
+    (format ofile "~% <rdf:type rdf:resource=~s />"*rdf-Property-id*)
     (when doc
-      (format ofile
-              "~% <rdfs:comment>~a</rdfs:comment>"
+      (format ofile "~% <rdfs:comment>~a</rdfs:comment>"
               (remove-bad-rdf-characters doc)))
-      
-    (format ofile
-            "~% <rdfs:label>~a</rdfs:label>"
+    (format ofile "~% <rdfs:label>~a</rdfs:label>"
             (remove-bad-rdf-characters label))
     (when domain
-
-      (format ofile
-              "~% <rdfs:domain rdf:resource=~s/>"
-              (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style (name domain)
-                                                                                  (home-ontology domain)
-                                                                                  ns-label-alist  fancy-name-conversion?)))
+      (format ofile "~% <rdfs:domain rdf:resource=~s/>"
+              (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style
+				 (name domain) (home-ontology domain) 
+				 ns-label-alist  fancy-name-conversion?)))
       (loop  for range in (get-slot-type domain (name relation))
-             do
-             (format ofile
-                     "~% <rdfs:range rdf:resource=~s/>"
-                     (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style 
-                                        range (home-ontology (get-ocml-class range))
-                                        ns-label-alist  fancy-name-conversion? )))))
-    (format ofile
-              "~%</rdf:Description>")))
+	 do
+	 (when (get-ocml-class range)
+	   (format ofile
+		   "~% <rdfs:range rdf:resource=~s/>"
+		   (format nil  "~a" (convert-class-or-instance-name-to-rdf-name-style 
+				      range (home-ontology (get-ocml-class range))
+				      ns-label-alist  fancy-name-conversion? ))))))
+    (format ofile "~%</rdf:Description>")))
 
 (defun translate-multi-domain-relation  (relation domain  doc ofile ontology ns-label-alist  fancy-name-conversion? )
   (let ((new-rel-name (gentemp (format nil "~a"(name relation)))))
@@ -428,9 +369,6 @@
     (format ofile
               "~%</rdf:Description>")))
 
-
-
-
 (defun normalize-ranges (ranges)
   (Let ((or-thing (car (member-if  #'listp ranges))))
      (if or-thing
@@ -438,9 +376,7 @@
                (remove or-thing ranges :test #'equal))
        ranges)))
 
-
-(defun translate-all-classes (ontology ofile ns-label-alist  fancy-name-conversion?)
-  (format t "XXX hi there!")
+(defun translate-all-classes (ontology ofile ns-label-alist fancy-name-conversion?)
   (let (classes)
     (maphash #'(lambda (name structure)
                  name
@@ -535,16 +471,9 @@
     (values (string-append ns ":" (remove #\Space  pretty-string))
             pretty-string)))
 
-
 (defun generate-rdf-footer (&optional (stream *standard-output*))
   (format stream "</rdf:RDF>"))
 
-
-
-
 (defun has-documentation-p (string)
   (not (string= string "nil")))
-
-
-
 

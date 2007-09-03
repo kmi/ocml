@@ -9,8 +9,8 @@ Steal any general purpose OCML utilities from WebOnto.
 
 * call-with-ocml-thread-safety
 
-Make sure we get all the important variables!  vars5.lisp is a lot
-longer than this function...  We can also introduce a
+Make sure we get all the important variables!  globals.lisp has
+a *lot* longer than this function...  We can also introduce a
 special, *with-thread-safety*, which would indicate the prior
 invocation of call-with-ocml-thread-safety and warn about it.
 

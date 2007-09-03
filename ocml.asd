@@ -14,15 +14,15 @@
 
 (defsystem :ocml-pre-webonto
   :description "OCML before loading WebOnto."
-  :depends-on (:enrico-utilities)
+  :depends-on ()
   :components
   ((:module :src
 	    :components
 	    ((:file "defpackage")
 	     (:file "axioms" :depends-on ("defpackage" "globals"))
-	     (:file "backwrd21" :depends-on ("defpackage"
-					     "basic21"
-					     "rels8" "rules4" "globals"))
+	     ;; XXX (:file "backcmp2" :depends-on ("defpackage"))
+	     (:file "backwrd21" :depends-on
+		    ("defpackage" "basic21" "rels8" "rules4" "globals"))
 	     (:file "basic21" :depends-on ("defpackage" "globals"))
 	     (:file "constrs2" :depends-on ("defpackage"))
 	     (:file "delete-things" :depends-on ("defpackage" "rels8"))
@@ -31,14 +31,15 @@
 	     (:file "fc" :depends-on ("defpackage" "rules4"))
 	     (:file "fc-call3" :depends-on ("defpackage"))
 	     (:file "funs7" :depends-on ("defpackage" "globals"))
-	     (:file "io" :depends-on ("defpackage" "globals"))
+	     (:file "globals" :depends-on ("defpackage" "utilities"))
 	     (:file "mapping4" :depends-on ("defpackage"))
 	     (:file "match3" :depends-on ("defpackage"))
 	     (:file "meta" :depends-on ("defpackage"))
 	     (:file "namespaces" :depends-on ("defpackage" "globals"))
+	     (:file "io" :depends-on ("defpackage" "globals"))
 	     (:file "ocml-to-ontolingua2" :depends-on ("defpackage" "globals"))
 	     (:file "ocml-to-owl" :depends-on ("defpackage"))
-	     (:file "ocml-to-rdfs" :depends-on ("defpackage" "globals"))
+	     (:file "ocml-to-rdfs" :depends-on ("defpackage" "globals" "theories5"))
 	     (:file "parser5" :depends-on ("defpackage"))
 	     (:file "rels8" :depends-on ("defpackage" "rules4" "globals"))
 	     (:file "rete4" :depends-on ("defpackage"))
@@ -47,10 +48,8 @@
 	     (:file "tellask4" :depends-on ("defpackage"))
 	     (:file "theories5" :depends-on ("defpackage" "globals"))
 	     (:file "top9" :depends-on ("defpackage"))
-	     (:file "globals" :depends-on ("defpackage"))
 	     (:file "wm2" :depends-on ("defpackage"))
-	     ;; XXX (:file "backcmp2" :depends-on ("defpackage"))
-	     ))))
+	     (:file "utilities" :depends-on ("defpackage"))))))
 
 ;;; Separate out control4 to enable redefinition of ocml-metaclass
 ;;; john domingue may 21 98
@@ -99,4 +98,3 @@
 	    `(("ocml:library;**;*.*.*"
 	       ,(format nil "~Alibrary/**/*.*"
 			(asdf:component-pathname (asdf:find-system :ocml)))))))))
-
