@@ -1388,8 +1388,11 @@ A different internal name will be generated..."
                        (and (listp type)
                             (eq (car type) 'or)))
                    local-types)
-    (error "Slot ~a of class ~a has an invalid type specification: OR type specifications are not allowed"
-	   (car chain) class-name))
+    (funcall (if (member :irs-ocml-hacks cl:*features*)
+		 #'warn
+		 #'error)
+	     "Slot ~a of class ~a has an invalid type specification: OR type specifications are not allowed"
+	     (car chain) class-name))
   (let*((global-types 
          (remove-duplicates
           (apply #'append 
