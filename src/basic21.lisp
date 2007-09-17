@@ -1293,24 +1293,6 @@ A different internal name will be generated..."
   (let ((*package* (find-package "OCML"))) 
     (funcall (read-from-string (string-append "OCML-SLOT-" (string option)))
              structure)))
-
-
-;(defun calculate-slot-info (superclasses precedence-list slot ocml-options)
-;  (let* ((inheritance (decide-inheritance-type precedence-list slot ocml-options))
-;        (values (decide-value-options  superclasses  precedence-list slot ocml-options
-;                                       inheritance))
-;        (type (decide-type-option  superclasses  slot ocml-options ))
-;        (min-cardinality  (decide-min-cardinality
-;                           superclasses  slot ocml-options ))
-;        (max-cardinality  (decide-max-cardinality
-;                           superclasses  slot ocml-options )))
-;    (create-slot-info-structure
-;     (List :inheritance inheritance
-;		     :value (car values)
-;		     :default-value (second values)
-;                     :min-cardinality min-cardinality
-;                     :max-cardinality max-cardinality
-;                     :type type))))
      
 ;;;New version which takes into account renaming - enrico 17/3/99
 (defun calculate-slot-info (class-name ordered-supers slot ocml-options chain)
@@ -1325,25 +1307,20 @@ A different internal name will be generated..."
                             ordered-supers  chain ocml-options ))
          (max-cardinality  (decide-max-cardinality
                             ordered-supers  chain ocml-options )))
-    (create-slot-info-structure
-     (List :inheritance inheritance
-		     :value (car values)
-		     :default-value (second values)
-                     :min-cardinality min-cardinality
-                     :max-cardinality max-cardinality
-                     :type type))))
-
-
-(defun create-slot-info-structure (list)
-  (apply #'make-slot-info list))
+    (make-slot-info :inheritance inheritance
+		    :value (car values)
+		    :default-value (second values)
+		    :min-cardinality min-cardinality
+		    :max-cardinality max-cardinality
+		    :type type)))
 
 (defun decide-inheritance-type (ordered-supers chain ocml-options)
   (find-first-option-value* ordered-supers chain :inheritance ocml-options ))
 
-;;;DECIDE-VALUE-OPTIONS  ---Returns a list of two elements.  The first contains
-;;;all definitional slot values for this slot, and the second all the relevant slot
-;;;values
 (defun decide-value-options (ordered-supers chain ocml-options inheritance)
+  "Returns a list of two elements.  The first contains all
+definitional slot values for this slot, and the second all the
+relevant slot values"
   (list
    (remove-duplicates (find-all-option-values*  ordered-supers chain :value ocml-options)
                       :test #'equal)
@@ -1369,14 +1346,6 @@ A different internal name will be generated..."
                                   finally (return result2))
             until result1
             finally (return result1))))
-
-
-;(defun decide-type-option (superclasses  chain ocml-options )
-;  (remove-duplicates (find-all-option-values*  superclasses chain :type ocml-options)
-;                     :test #'equal))
-
-;;;(defun decide-type-option (superclasses  chain ocml-options )
-;;;  (find-all-non-overridden-option-values  superclasses chain :type ocml-options))
 
 (defun decide-type-option (class-name superclasses  chain ocml-options &aux local-types )
   (setf local-types  (remove-duplicates  (apply #'append 
@@ -1422,29 +1391,6 @@ A different internal name will be generated..."
                                      ;;;;(PRINT 
                                      (set-difference all-types undefined-types)))))))
 
-
-(defun find-all-non-overridden-option-values (ordered-supers chain option ocml-options)
-  ;;;each option ((option value) .... (option value))
-  (let ((value (right-value* option ocml-options)))
-    (if value
-     (List value)
-     (find-all-non-overridden-option-values-aux ordered-supers chain option))))
-
-
-(defun find-all-non-overridden-option-values-aux (ordered-supers chain option)
-  (loop for class in ordered-supers
-        for result1 = (loop for slot in chain
-                            for result2 = (find-option-value class slot option)
-                            until result2
-                            finally (return result2))
-        do
-        (when result1 
-          (Progn
-            (setf ordered-supers (set-difference ordered-supers (cons class (domain-superclasses class))))
-            (return
-             (append result1 (find-all-non-overridden-option-values-aux ordered-supers chain option)))))))
-  
-                     
 ;;;REMOVE-SUBSUMED-CLASSES - Removes all classes, say C, from a list, if the list contains
 ;;;a subclass of C.
 (defun remove-subsumed-classes (classes)
