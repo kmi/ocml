@@ -1,22 +1,42 @@
-* New grounding to XML-RPC 
+* Changes since OCML 7.3
 
-* Web pages showing available goals and services
+** Support for namespaces.
 
-On an IRS server, http://localhost:3000/ontologies now lists goals and
-services, with hyperlinks to the OCML definitions.
+** Unified translation interface.
 
-* Configuration
+** ASDF-based .
 
-** IRS no longer comes with OCML.
+* Changes in OCML 7.3
 
-The OCML package must be obtained separately.
+** Export from OCML to RDF(S).  
 
-** IRS code location is now arbitrary.
+Use function TRANSLATE-OCML-ONTOLOGY-TO-RDFS to generate RDF(S) from
+OCML.
 
-IRS now calculates where it lives when you load the scripts/irs.lisp
-file.
+* Changes in OCML 7.0
 
-
-Local Variables:
-mode: outline
-End:
+** Fully implemented constraint checker.  
+
+This verifies that all type and cardinality restrictions are satisfied
+by a KB.  In addition it also checks constraint expressions specified
+using either :constraint or :iff-def keywords.  These expressions can
+be associated with classes, slots or standard relations.
+
+Functions ENABLE-CONSTRAINT-CHECKING and DISABLE-CONSTRAINT-CHECKING
+switch constraint checking on and off. By default the mechanism is off.
+
+see file OCML:EXPERIMENTAL;CONSTR_CHECK_EX.LISP for an example of
+using the constraint checker.
+
+** Forward chainer gets 
+
+Changes to the forward chainer which allows rules to fire in 'watcher
+mode', as soon as assertions trigger them, as well as by explicit
+program call (i.e., explicit invocations of function run).
+
+Set *fc-in-watcher-mode* to T to enable 'watcher mode'.
+
+** Export from OCML to Ontolingua.  
+
+Use function TRANSLATE-OCML-ONTOLOGY-TO-ONTOLINGUA to generate an
+Ontolingua spec from an OCML ontology.

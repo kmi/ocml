@@ -1,3 +1,5 @@
+get +ocml-version+ from the ASDF version.
+
 ensure-vanilla-class/2 can be merged
 
 check with-thread-variables handles namespace-prefixes properly.
