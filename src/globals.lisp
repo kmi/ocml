@@ -2,7 +2,7 @@
 
 (in-package "OCML")
 
-(defconstant +ocml-version+ "7.5")
+(defconstant +ocml-version+ (asdf:component-version (asdf:find-system :ocml)))
 
 (defvar *library-pathname* "ocml:library;")
 
