@@ -4,7 +4,6 @@
 (defmacro equal* (l)
   `(every #'(lambda (el)(equal el (car ,l)))
 	  (cdr ,l)))
-
     
 (defmacro filter (l test)
   `(remove-if-not ,test ,l))
@@ -22,6 +21,23 @@
          (t
           (delete-duplicates (append (order-filter (car tree) test)
                                      (order-filter (cdr tree) test))))))
+
+;;; XXX Do callers depend on X being mutated?  Because if they do,
+;;; they shouldn't, and if they don't, MOST-COMMON-ELEMENTS shouldn't
+;;; do it.
+(defun most-common-elements (x)
+  (setf x (remove nil x))
+  (unless (null x)
+    (let ((winners (list (car x)))
+          (winner-count (count (car x) x)))
+      (dolist (y (cdr x))
+        (let ((y-count (count y x)))
+          (cond ((> y-count winner-count)
+                 (setf winners (list y)
+                       winner-count y-count))
+                ((= y-count winner-count)
+                 (pushnew y winners)))))
+      (values winners winner-count))))
 
 ;;;FILTER-ORDERED-LIST --- Takes a sequence where the elements are
 ;;;sorted according to some criterion, finds the first element which 
@@ -110,6 +126,12 @@
     (union (car lists)
 	   (union* (cdr lists) :test test)
 	   :test test)))
+
+(defun intersection* (&rest lists)
+  (cond ((null lists) nil)
+        ((= (length lists) 1) (car lists))
+        (t (apply #'intersection* (cons (intersection (car lists) (second lists))
+                                        (cddr lists))))))
 
 (defmacro map-over-hash-table (function hash-table)
   `(let (result)

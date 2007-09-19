@@ -1495,3 +1495,16 @@ relevant slot values"
                 (when class-values 
                   (setf values (funcall fun  class-values values)))))
     values))
+
+;;; {{{ Instance queries
+(defun common-ancestor (objects top-class)
+  (let ((result
+         (if (= (length objects) 1)
+             (car objects)
+             (car (apply #'intersection* (mapcar #'instance-superclasses objects))))))
+    (unless (eq result top-class)
+      result)))
+
+(defun instance-superclasses (instance)
+  (ocml-eval-gen `(setofall ?x (instance-of ,instance ?x)))) 
+;;; }}}

@@ -166,7 +166,10 @@
                    (if class-s
                      (mapcar #'name (direct-domain-superclasses class-s))))))
 
-
+(def-function common-ancestor (?list ?top-class)
+  :lisp-fun
+  #'(lambda (x y)
+      (common-ancestor x y)))
 
 ;;;SUBCLASS-OF
 (def-relation subclass-of (?sub ?c)
