@@ -13,6 +13,7 @@ Dave Lambert <d.j.lambert@open.ac.uk>
     ASDFification.
     Automated testing.
     Namespaces.
+    Ports to Allegro and SBCL.
 
 Enrico Motta <e.motta@open.ac.uk>
 
