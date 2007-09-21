@@ -15,13 +15,13 @@
 
 (in-package :ocml)
 
-(defconstant +token-chars+
+(define-constant +token-chars+
   (concatenate 'list
 	       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-")
   "Should be the chars acecptable in a an XML/RDF/OWL token...
   Perhaps more.  i don't know :-(")
 
-(defconstant +namespace-separator+ #\:)
+(define-constant +namespace-separator+ #\:)
 
 (defun register-namespace (prefix ontology)
   (when (symbolp ontology)

@@ -2,7 +2,11 @@
 
 (in-package "OCML")
 
-(defconstant +ocml-version+ (asdf:component-version (asdf:find-system :ocml)))
+(defmacro define-constant (name value &optional doc)
+  `(defconstant ,name (if (boundp ',name) (symbol-value ',name) ,value)
+     ,@(when doc (list doc))))
+
+(define-constant +ocml-version+ (asdf:component-version (asdf:find-system :ocml)))
 
 (defvar *library-pathname* "ocml:library;")
 
@@ -10,21 +14,21 @@
 
 (defvar *ocml-top-class* 'ocml-thing)
 
-(defconstant +legal-ocml-slot-options+
+(define-constant +legal-ocml-slot-options+
   '(:default-value :value :type  :inheritance :min-cardinality 
   :max-cardinality :cardinality :documentation))
 
-(defconstant +slot-info-options+
+(define-constant +slot-info-options+
   '(:default-value :value :type :inheritance :min-cardinality 
     :max-cardinality))
 
-(defconstant +class-spec-lisp-options+
+(define-constant +class-spec-lisp-options+
   '(:lisp-slots :lisp-class-name))
 
-(defconstant +class-spec-slot-related-options+
+(define-constant +class-spec-slot-related-options+
   '(:own-slots :slot-renaming))
 
-(defconstant +relation-spec-keywords+
+(define-constant +relation-spec-keywords+
   '(:constraint 
     :exclusive-prove-by
     :iff-def
@@ -34,24 +38,24 @@
     :sufficient-for-type-checking 
     :sufficient))
 
-(defconstant +all-class-definition-legal-options+
+(define-constant +all-class-definition-legal-options+
   (append +class-spec-slot-related-options+
 	  +class-spec-lisp-options+
           +relation-spec-keywords+
           '(:avoid-infinite-loop)))
 
-(defconstant +value-options+
+(define-constant +value-options+
   '(:default-value :value))
 
-(defconstant +non-value-options+
+(define-constant +non-value-options+
   '( :type :min-cardinality
     :max-cardinality))
 
 (defvar *default-inheritance* :supersede)
 
-(defconstant +inheritance-options+ '(:merge :supersede))
+(define-constant +inheritance-options+ '(:merge :supersede))
 
-(defconstant +legal-clos-slot-options+
+(define-constant +legal-clos-slot-options+
   '(:reader :writer :accessor :allocation :initarg :initform ;;;:type
     ;;;;:documentation
     ))
