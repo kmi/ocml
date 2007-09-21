@@ -2,8 +2,6 @@
 
 (in-package "OCML")
 
- 
-
 ;;;PARSE-ASSERTION  --- This function is used to parse an assertion (i.e. a relation instance).
 ;;;Parse-assertion only checks that the assertion is a list, creates the associated predicate
 ;;;if it does not already exist, and evaluates all functional terms in the assertion.

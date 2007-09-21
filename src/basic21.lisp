@@ -239,8 +239,6 @@
         do
         (maybe-remove-slot-value instance slot value)))
 
-               
-
 ;; This is a boring thing you have to do to ensure your metaclass
 ;; definition is accepted.
 (defmethod
@@ -248,8 +246,8 @@
     #+:lispworks clos::validate-superclass
     #+:sbcl sb-mop:validate-superclass
     ((class instances-meta) (superclass standard-class))
-  (declare (ignore class superclass))
-  t)
+    (declare (ignore class superclass))
+    t)
 
 ;;;OCML-METACLASS 
 (defclass ocml-metaclass (instances-meta basic-ocml-object)
@@ -404,21 +402,6 @@
                 (when (eq (car option) option-to-find)
                   (list (second option))))
             options)))
-
-
-;;;VALIDATE-SUPERCLASS --- This is a boring thing you have to do to ensure your metaclass
-;;;definition is accepted
-;#-:lispworks
-;(eval-when (compile eval load)
-;  (defmethod validate-superclass ((class ocml-metaclass )(superclass standard-class))
- ;   class superclass
- ;   t))
-
-#+:lispworks
-(eval-when (compile eval load)
-  (defmethod clos::validate-superclass ((class ocml-metaclass )(superclass standard-class))
-    class superclass
-    t))
 
 ;;;ADD-SLOT-OF-LINKS
 (defmethod add-slot-of-links ((class ocml-metaclass))
