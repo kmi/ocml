@@ -1,7 +1,4 @@
-;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
-
-(in-package "OCML")
-
+(in-package :ocml)
 
 ;;;INSTANCES-META
 (defclass instances-meta (standard-class)
@@ -279,9 +276,9 @@
 (defmethod internal-name ((class ocml-metaclass))
   (class-name class))
 
+;;; {{{ Subsumption
 (defmethod direct-domain-superclasses ((class ocml-metaclass))
   (remove (find-class 'basic-domain-class)(direct-superclasses nil class)))
-  
 
 (defmethod domain-superclasses ((class ocml-metaclass))
   (remove class
@@ -308,17 +305,41 @@
       (some  #'(lambda (class2)
                  (member class2 subs))
              classes))))
-            
-            
-         
+
 (defun subclass-of* (class classes)
   (let ((supers (domain-superclasses class)))
     (when supers
       (some  #'(lambda (class2)
                  (member class2 supers))
-             classes))))   
+             classes))))
 
+(defun remove-subsumed-classes (classes)
+  "Return a list of CLASSES, without those which have a superclass in
+CLASSES."
+  (remove-if* #'subclass-of* classes))
 
+(defun remove-subsuming-classes (classes)
+  "Return a copy of CLASSES without those which are superclasses of
+others."
+  (remove-if* #'superclass-of* classes))
+
+(defun remove-if* (test list)
+  "Return a copy of LIST without elements satisfying (test el LIST)."
+  (loop for el in list
+     when (not (funcall test el list))
+     collect el))
+
+(defun common-ancestor (objects top-class)
+  (let ((result (first (if (= (length objects) 1)
+			   objects
+			   (apply #'intersection*
+				  (mapcar #'instance-superclasses objects))))))
+    (unless (eq result top-class)
+      result)))
+
+(defun instance-superclasses (instance)
+  (ocml-eval-gen `(setofall ?x (instance-of ,instance ?x))))
+;;; }}}
 
 (defmethod inherited-slots ((class ocml-metaclass))
   (with-slots (domain-slots local-slots)
@@ -1350,99 +1371,54 @@ relevant slot values"
           (apply #'append 
                  (mapcar #'(lambda (super)
                              (loop for slot in chain
-                                   for result2 = (find-option-value super slot :type)
-                                   until result2
-                                   finally (return result2)))
+				for result2 = (find-option-value super slot :type)
+				until result2
+				finally (return result2)))
                          superclasses)))) ;;;;;)
         (all-types   
          (remove-duplicates
           (append local-types global-types)))
         (undefined-types ;;;;;(print
          (filter all-types #'(lambda (type)
-                               (and (member type      ;;;changed enrico&john may2007
+                               (and (member type ;;;changed enrico&john may2007
                                             all-types) ;;;old code assumes only local types can be undefined
-                                    ;;;(member type local-types) ;;;which is incorrect.  Also global types
-                                    (not (get-ocml-class type)))))))  ;;;can be undefined!!!!!!!
-    
+;;;(member type local-types) ;;;which is incorrect.  Also global types
+                                    (not (get-ocml-class type))))))) ;;;can be undefined!!!!!!!
     (when (and undefined-types *warn-about-undefined-types*)
       (ocml-warn "When parsing definition of class ~s: some types in ~s for slot ~s have not been defined" 
                  class-name ocml-options (car chain) ))
-    ;;;;;;(print "all known types are coming")
+;;;;;;(print "all known types are coming")
     (append undefined-types
             (mapcar #'name  (remove-subsumed-classes ;;can remove more generic classes if more specific ones are given
                              (mapcar #'get-ocml-class
-                                     ;;;;(PRINT 
+;;;;(PRINT 
                                      (set-difference all-types undefined-types)))))))
 
-;;;REMOVE-SUBSUMED-CLASSES - Removes all classes, say C, from a list, if the list contains
-;;;a subclass of C.
-(defun remove-subsumed-classes (classes)
-  (remove-subsumed-classes-aux (cdr classes)  (car classes) (cdr classes)))
-
-(defun remove-subsumed-classes-aux (all-other-classes current-class classes-to-test)
-  (if current-class
-  (if (superclass-of* current-class all-other-classes)
-    (remove-subsumed-classes-aux (remove (car classes-to-test) all-other-classes) (car classes-to-test) (cdr classes-to-test))
-    (remove-subsumed-classes-aux (cons current-class (remove (car classes-to-test) all-other-classes))
-                                 (car classes-to-test) (cdr classes-to-test)))
-  all-other-classes))
-
-                      
-;;;REMOVE-SUBSUMING-CLASSES - Removes all classes, say C, from a list, if the list contains
-;;;a superclass of C.
-(defun remove-subsuming-classes (classes)
-  (remove-subsuming-classes-aux (cdr classes)  (car classes) (cdr classes)))
-
-(defun remove-subsuming-classes-aux (all-other-classes current-class classes-to-test)
-  (if current-class
-    (if (subclass-of* current-class all-other-classes)
-      (remove-subsuming-classes-aux (remove (car classes-to-test) all-other-classes) (car classes-to-test) (cdr classes-to-test))
-      (remove-subsuming-classes-aux (cons current-class (remove (car classes-to-test) all-other-classes))
-                                    (car classes-to-test) (cdr classes-to-test)))
-    all-other-classes))
-                      
-
-;(defun decide-min-cardinality (superclasses  chain ocml-options)
-;  (let ((cardinalities (find-all-option-values*
-;                        superclasses chain :min-cardinality ocml-options t)))
-;    (when cardinalities
-;      (apply #'min cardinalities))))
 
 
-(defun decide-min-cardinality (superclasses  chain ocml-options)
-  
-  
+(defun decide-min-cardinality (superclasses chain ocml-options)
   (let ((cardinalities (find-all-option-values*
-                        superclasses chain :min-cardinality  
+                        superclasses chain :min-cardinality
                         (mapcar #'(lambda (pair)
                                     (if (eq (car pair) :cardinality)
-                                      (List :min-cardinality (second pair))
-                                      pair))
+					(list :min-cardinality (second pair))
+					pair))
                                 ocml-options)
                         t)))
     (when cardinalities
       (apply #'min cardinalities))))
 
-
-
-;(defun decide-max-cardinality (superclasses  chain ocml-options )
-;  (let ((cardinalities (find-all-option-values*
-;                        superclasses chain :max-cardinality ocml-options t)))
-;    (when cardinalities
-;      (apply #'max cardinalities))))
-
-(defun decide-max-cardinality (superclasses  chain ocml-options )
+(defun decide-max-cardinality (superclasses chain ocml-options )
   (let ((cardinalities (find-all-option-values*
                         superclasses chain :max-cardinality 
                         (mapcar #'(lambda (pair)
                                     (if (eq (car pair) :cardinality)
-                                      (List :max-cardinality (second pair))
-                                      pair))
+					(list :max-cardinality (second pair))
+					pair))
                                 ocml-options)
                         t)))
     (when cardinalities
       (apply #'max cardinalities))))
- 
 
 (defun find-first-option-value* (ordered-supers chain option ocml-options)
   ;;;each option ((option value) .... (option value))
@@ -1478,16 +1454,3 @@ relevant slot values"
                 (when class-values 
                   (setf values (funcall fun  class-values values)))))
     values))
-
-;;; {{{ Instance queries
-(defun common-ancestor (objects top-class)
-  (let ((result
-         (if (= (length objects) 1)
-             (car objects)
-             (car (apply #'intersection* (mapcar #'instance-superclasses objects))))))
-    (unless (eq result top-class)
-      result)))
-
-(defun instance-superclasses (instance)
-  (ocml-eval-gen `(setofall ?x (instance-of ,instance ?x)))) 
-;;; }}}

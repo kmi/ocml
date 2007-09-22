@@ -1,4 +1,7 @@
-get +ocml-version+ from the ASDF version.
+remove get-domain-class or get-ocml-class, as per basic21 comment.  I
+prefer deleting get-ocml-class.  It's in the OCML package, we're
+dealing with OCML, so it's pretty redundant.  ‘domain’ makes more
+sense.
 
 ensure-vanilla-class/2 can be merged
 
@@ -8,6 +11,11 @@ general fix here, anyway.
 * webonto goodies
 
 Steal any general purpose OCML utilities from WebOnto.
+
+* base-ontology generates invalid XML in RDFS translation
+
+It also doesn't display in webonto.  What's wrong with our most
+fundamental ontology?!
 
 * call-with-ocml-thread-safety
 
