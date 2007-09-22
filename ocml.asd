@@ -73,6 +73,7 @@
   :components
   ((:module :tests :components
 	    ((:file "defpackage")
+	     (:file "concepts" :depends-on ("defpackage"))
 	     (:file "setup" :depends-on ("defpackage"))
 	     (:file "apples-suite" :depends-on ("defpackage" "setup"))
 	     (:file "namespaces" :depends-on ("defpackage" "setup"))
