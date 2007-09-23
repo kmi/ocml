@@ -126,6 +126,7 @@
 
 ;;;REMOVE-FUNCTION  - Top level method for removing a function
 (defun remove-function (name)
+  "Remove function NAME."
   (let ((function (get-function name)))
     (when function
       (remove-function-in-all-ontologies name function))))

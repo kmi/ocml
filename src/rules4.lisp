@@ -244,6 +244,9 @@
 ;      (setf *fc-rules* (nconc *fc-rules* (list rule)))))
 
 
+(defgeneric remove-rule (rule)
+  (:documentation "Remove forward and backawrd rules."))
+
 ;;;REMOVE-RULE FORWARD-RULE--- Top level method for removing a rule
 (defmethod remove-rule ((rule forward-rule))
   (with-slots (priority packet) rule

@@ -1,9 +1,0 @@
-remove-rule (rule) --- to remove forward and backawrd rules)
-
-remove-direct-instance (instance name &optional class-name  class) --to remove an instance
-
-remove-function (name) ----to remove a function
-
-remove-ocml-class (name) ----to remove a class
-
-remove-relation (name) ---to remove a relation

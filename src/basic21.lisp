@@ -163,9 +163,10 @@
   (find-class (type-of instance)))
 
 
-;;;REMOVE-DIRECT-INSTANCE --Physically removes an instance from its parent class.
-;;;Note that <class-name> is the external, rather than internal, name of the class.
-(defun remove-direct-instance (instance name &optional class-name  class)
+;;;REMOVE-DIRECT-INSTANCE --
+(defun remove-direct-instance (instance name &optional class-name class)
+  "Physically removes an instance from its parent class.  CLASS-NAME
+is the external, rather than internal, name of the class."
   (setf class (or class
                   (parent-class instance))
         class-name (or class-name
