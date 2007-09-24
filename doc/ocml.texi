@@ -34,17 +34,17 @@
 @chapter Introduction
 
 @menu
-* Providence::                  
+* Provenance::                  
 @end menu
 
-@node Providence,  , Introduction, Introduction
-@section Providence
+@node Provenance,  , Introduction, Introduction
+@section Provenance
 
-This manual is substantially based on chapter 4 and appendix 1
-of @ref{Reusable Components for Knowledge Modelling} by Enrico Motta.  Dave Lambert reformatted it
-as DocBook, reorganized the material to something more appropriate to
-a user manual, and added the installation and namespace
-sections.
+This manual is substantially based on chapter 4 and appendix 1 of
+@ref{Reusable Components for Knowledge Modelling} by Enrico Motta.
+Dave Lambert reformatted it as Texinfo, reorganized the material to
+something more appropriate to a user manual, and added the
+installation and namespace sections.
 
 @node Installation, Domain Modelling in OCML, Introduction, Top
 @chapter Installation
