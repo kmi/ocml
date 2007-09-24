@@ -1,12 +1,13 @@
 (in-package #:ocml)
 
 ;;;EQUAL* --- Checks that all elements of a list are equal
-(defmacro equal* (l)
-  `(every #'(lambda (el)(equal el (car ,l)))
-	  (cdr ,l)))
-    
-(defmacro filter (l test)
-  `(remove-if-not ,test ,l))
+(defun equal* (l)
+  (every #'(lambda (el)
+	     (equal el (car l)))
+	 (cdr l)))
+
+(defun filter (list test)
+  (remove-if-not test list))
 
 (defun filter* (tree test)
   (cond ((atom tree)
@@ -105,8 +106,8 @@
 	    (append l list))
              list-of-lists))
 
-(defmacro last-element (l)
-  `(car (last ,l)))
+(defun last-element (l)
+  (car (last l)))
 
 (defun pairify (l)
   (when l
@@ -117,9 +118,9 @@
 (defun substitute-el (sequence index value)
   (substitute value (elt sequence index) sequence :start index :count 1 :test 'equal))
 
-(defmacro mapcan* (f list &rest more-lists)
-  `(apply #'append
-          (apply #'mapcar (list ,f ,list ,@more-lists))))
+(defun mapcan* (f list &rest more-lists)
+  (apply #'append
+	 (apply #'mapcar f list more-lists)))
 
 (defun union* (lists &key (test #'eql))
   (when lists
@@ -133,15 +134,13 @@
         (t (apply #'intersection* (cons (intersection (car lists) (second lists))
                                         (cddr lists))))))
 
-(defmacro map-over-hash-table (function hash-table)
-  `(let (result)
-     (maphash #'(lambda (key value)
-		  (push (funcall ,function key value)
-			result))
-	      ,hash-table)
-     result))
-
-
+(defun map-over-hash-table (function hash-table)
+  (let (result)
+    (maphash #'(lambda (key value)
+		 (push (funcall function key value)
+		       result))
+	     hash-table)
+    result))
 
 (defun list-hash-table (hash &optional list-values)
   (map-over-hash-table #'(lambda (key value)
@@ -357,15 +356,6 @@
   (let ((pos (Position key init-alist)))
     (when pos
       (elt  init-alist (1+ pos)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;Macro SUPPRESSING-WARNINGS
-;(defmacro suppressing-warnings (&body forms)
-;  `(flet ((warn (datum &rest args) (cons datum args)))
-;     ,@forms))
-
-  
 
 ;;;RECORD-SOURCE-FILE
 (defun record-source-file (name type)
