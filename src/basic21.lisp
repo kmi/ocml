@@ -1390,12 +1390,9 @@ relevant slot values"
                  class-name ocml-options (car chain) ))
 ;;;;;;(print "all known types are coming")
     (append undefined-types
-            (mapcar #'name  (remove-subsumed-classes ;;can remove more generic classes if more specific ones are given
-                             (mapcar #'get-ocml-class
-;;;;(PRINT 
-                                     (set-difference all-types undefined-types)))))))
-
-
+            (mapcar #'name (remove-subsuming-classes ;;can remove more generic classes if more specific ones are given
+			    (mapcar #'get-ocml-class
+				    (set-difference all-types undefined-types)))))))
 
 (defun decide-min-cardinality (superclasses chain ocml-options)
   (let ((cardinalities (find-all-option-values*
