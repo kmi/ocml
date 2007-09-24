@@ -74,10 +74,11 @@
   ((:module :tests :components
 	    ((:file "defpackage")
 	     (:file "concepts" :depends-on ("defpackage"))
-	     (:file "setup" :depends-on ("defpackage"))
-	     (:file "apples-suite" :depends-on ("defpackage" "setup"))
-	     (:file "namespaces" :depends-on ("defpackage" "setup"))
-	     (:file "owl-suite" :depends-on ("defpackage" "setup"))))))
+	     (:file "constraints" :depends-on ("defpackage" "sundry"))
+	     (:file "sundry" :depends-on ("defpackage"))
+	     (:file "apples-suite" :depends-on ("defpackage" "sundry"))
+	     (:file "namespaces" :depends-on ("defpackage" "sundry"))
+	     (:file "owl-suite" :depends-on ("defpackage" "sundry"))))))
 
 (defsystem :ocml-xml-tests
     :depends-on (:ocml-xml :ocml-tests)

@@ -1,73 +1,65 @@
-;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
+(in-package :ocml)
 
-(in-package "OCML")
+(define-condition <constraint-violation> (simple-warning)
+  ())
 
+(defun warn-violation (format-control &rest format-arguments)
+  (warn (make-condition '<constraint-violation>
+			:format-control format-control
+			:format-arguments format-arguments)))
 
 ;;;;to check change-instance-parent-class
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun check-relation-instance-constraints (instance relation 
-                                                     &optional 
-                                                     (force-checking? nil))
-  (loop 
-    with violations = nil
-    for constr in (fetch-constraints-from-relation relation)
-    for flag = (check-constraint constr (args instance)) ;;;;(cons (name relation) (args instance )))
-    do
-    (unless flag
-      (push constr violations))
-    finally
-    (when violations
-      (if (and (boundp '*pending-constraints*) *asserting-own-slots* (not force-checking?))
-        (pushnew (list :relation-instance-constraints instance relation) *pending-constraints* :test #'equal)
-         (ocml-warn "Relation instance ~s violates the following applicable constraints: ~%~{ ~s~%~}"
-                 (cons (name relation) (args instance ))  violations)))))
+(defun check-relation-instance-constraints (instance relation &optional (force-checking? nil))
+  (loop with violations = nil
+     for constr in (fetch-constraints-from-relation relation)
+     for flag = (check-constraint constr (args instance))
+     do (unless flag
+	  (push constr violations))
+     finally
+     (when violations
+       (if (and (boundp '*pending-constraints*) *asserting-own-slots* (not force-checking?))
+	   (pushnew (list :relation-instance-constraints instance relation)
+		    *pending-constraints* :test #'equal)
+	   (warn-violation "Instance ~S violates constraints: ~%~{ ~s~%~}"
+			   (cons (name relation) (args instance)) violations)))))
 
-
-(defun check-slot-assertion-constraints (instance slot values 
-                                                  &optional (check-slot-type? t)
-                                                  (force-checking? nil))
-  
+(defun check-slot-assertion-constraints (instance slot values
+					 &optional (check-slot-type? t)
+					 (force-checking? nil))
   (when (and check-slot-type?
              (not (slot-renamed? slot (renaming-chains (parent-class instance)))))
     (check-slot-type instance slot values))
-  (loop 
-    with name = (name instance)
-    with violations = nil
-    for constr in (fetch-constraints-from-relation (get-relation slot))
-    do
-    (loop for value in values
-          for flag = (check-constraint constr (list name value) (and (boundp '*pending-constraints*)
-                                                                     (not force-checking?)))
-                                     ;;;;(list slot name value) )
-          do
-          (unless flag
-            (push (List value (transform-slot-constraint slot constr)) violations)))
-    finally
-    (when violations
+  (loop with name = (name instance)
+     with violations = nil
+     for constr in (fetch-constraints-from-relation (get-relation slot))
+     do (loop for value in values
+	   for flag = (check-constraint constr (list name value)
+					(and (boundp '*pending-constraints*)
+					     (not force-checking?)))
+	   do
+	   (unless flag
+	     (push (List value (transform-slot-constraint slot constr)) violations)))
+     finally
+     (when violations
        (if (and (boundp '*pending-constraints*)
-                (not force-checking?))
-         (pushnew (list :instance-slot-constraints instance slot) *pending-constraints* :test #'equal)
-         (ocml-warn "The following values of slot ~s of instance ~s violate the following applicable constraints:
-~:{ value ~s violates constraint ~a~%~}"
-                 slot name violations)))))
+		(not force-checking?))
+	   (pushnew (list :instance-slot-constraints instance slot) *pending-constraints* :test #'equal)
+	   (warn-violation "Instance ~S violates constraints: ~%~{ ~s~%~}" name violations)))))
 
-;;;CHECK-INSTANCE-CONSTRAINTS - top level function to check the constraints applicable to a 
+;;;CHECK-INSTANCE-CONSTRAINTS - top level function to check the constraints applicable to a
 ;;;newly (re-)defined instance
 (defun check-instance-constraints (instance parent) ;;;  &optional (force-checking? nil))
-  (loop 
-    with violations = nil
-    for constr in (fetch-applicable-constraints parent)
-    for flag = (check-constraint constr (list (name instance)))
-    do
-    (unless flag
-      (push (list constr (find-constraint-in-ancestor constr instance))
-            violations))
-    finally
-    (when violations
-      (ocml-warn "Instance ~s of class ~s violates the following constraints:
-~:{ ~s inherited from class ~s~%~}"
-                 (name instance) (name parent) violations))))
+  (loop with violations = nil
+     for constr in (fetch-applicable-constraints parent)
+     for flag = (check-constraint constr (list (name instance)))
+     do
+     (unless flag
+       (push (list constr (find-constraint-in-ancestor constr instance))
+	     violations))
+     finally
+     (when violations
+       (warn-violation "Instance ~S violates constraints: ~%~{ ~s~%~}" (name instance) violations))))
 
 ;      (if (and (boundp '*pending-constraints*)
 ;               (not force-checking?))
@@ -89,7 +81,7 @@
 (defun transform-slot-constraint (slot constr)
   (destructuring-bind (kappa schema body) constr
     (list kappa schema
-          (list '=> (cons slot schema) body))))  
+          (list '=> (cons slot schema) body))))
 
 (defun check-constraint (constraint args &optional suppress-warning?)
   (let ((*ignore-undefined-relations* (if suppress-warning?
@@ -107,8 +99,8 @@
   (let ((ontology))
     (if (eq *current-ontology* (home-ontology class))
       (fetch-constraints-from-relation (get-relation (name class)))
-      (unwind-protect  
-        (progn 
+      (unwind-protect
+        (progn
           (setf ontology *current-ontology*)
           (switch-to-ontology (home-ontology class))
           (fetch-constraints-from-relation (get-relation (name class)))
@@ -120,12 +112,12 @@
 (defun fetch-constraints-from-relation (rel)
   ;;(print *current-ontology*)
   "Fetch all applicable constraints associated with a relation.
-   Note that :no-op and :axiom-def constraints are not returned.
-   The former because they are not operational (and therefore we 
-   do not check them.  The latter because they are not meant to be checked 
-   every time an assertion is made, but are properties of the relation,
-   to be checked under user/developer control (e.g. an axiom def may 
-   specify that a relation defines a partial order"
+   Note that :no-op and :axiom-def constraints are not returned.  The
+   former because they are not operational (and therefore we do not
+   check them.  The latter because they are not meant to be checked
+   every time an assertion is made, but are properties of the
+   relation, to be checked under user/developer control (e.g. an axiom
+   def may specify that a relation defines a partial order"
   (Let ((constraint (constraint rel))
         (iff-def (iff-def rel))
         )
@@ -150,14 +142,14 @@
             (return (name c))))))
 
 
-;;;VALIDATE-CLASSES-IN-ONTOLOGY-INTERNAL - Returns all the undefined classes used as 
-;;;type constraints
+;;; XXX Can be replaced with with-ontology in the correct places.
 (defun validate-classes-in-ontology-internal (ontology)
+  "Returns all the undefined classes used as type constraints."
   (let ((current-ontology *current-ontology*))
     (cond ((eq current-ontology ontology)
            (validate-classes-in-current-ontology))
           (t
-           (unwind-protect  
+           (unwind-protect
              (progn
                (switch-to-ontology ontology)
                (validate-classes-in-current-ontology))
@@ -192,11 +184,3 @@
                 (push (cons class slot) bad-slots)))
         finally
         (return bad-slots)))
-
-        
-        
-
-  
-    
-
-    

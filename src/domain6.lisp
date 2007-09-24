@@ -632,9 +632,9 @@
          (class (parent-class instance))
          (types (get-slot-type class slot)))
     (loop with violations = nil
-          for value in values 
+          for value in values
           do
-          (loop for type in types 
+          (loop for type in types
                 for flag = (check-slot-type-internal type value) ;;;;;(holds?  type value)
                 do
                 (unless flag
@@ -645,9 +645,8 @@
                      (not force-checking?))
               (pushnew (list :instance-slot-type instance slot) *pending-constraints* :test #'equal)
               (loop for violation in violations
-                    do
-                    (ocml-warn "The value ~s of slot ~s of ~S violates type constraint ~s"
-                               (car violation) (second violation) name (third violation))))))))
+		 do (warn-violation "The value ~s of slot ~s of ~S violates type constraint ~s"
+				    (car violation) (second violation) name (third violation))))))))
 
 (defun check-slot-type-internal (type value)
   (let* ((rel  (get-relation type)))
