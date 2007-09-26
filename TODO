@@ -1,11 +1,18 @@
-remove get-domain-class or get-ocml-class, as per basic21 comment.  I
-prefer deleting get-ocml-class.  It's in the OCML package, we're
+* Constraint checking is broken due to finalise-ontology change
+
+Constraint checking, like slot type computation, must be done *after*
+the whole ontology is loaded.
+
+* remove get-domain-class or get-ocml-class, as per basic21 comment.  
+
+I prefer deleting get-ocml-class.  It's in the OCML package, we're
 dealing with OCML, so it's pretty redundant.  ‘domain’ makes more
 sense.
 
-ensure-vanilla-class/2 can be merged
+* ensure-vanilla-class/2 can be merged
 
-check with-thread-variables handles namespace-prefixes properly.
+*  check with-thread-variables handles namespace-prefixes properly.
+
 general fix here, anyway.
 
 * webonto goodies

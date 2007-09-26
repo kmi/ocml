@@ -463,6 +463,7 @@ changed by john domingue 6/2/03
   (when new?
     (add-ontology name ontology))
   (load-ontology-files-new  ontology files pathname select-this-ontology?)
+  (finalise-ontology ontology)
   ;;;;;;(maybe-set-rdf-related-information name ontology)
   ontology)
 

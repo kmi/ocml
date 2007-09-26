@@ -23,7 +23,7 @@
 	     ;; XXX (:file "backcmp2" :depends-on ("defpackage"))
 	     (:file "backwrd21" :depends-on
 		    ("defpackage" "basic21" "rels8" "rules4" "globals"))
-	     (:file "basic21" :depends-on ("defpackage" "globals"))
+	     (:file "basic21" :depends-on ("defpackage" "globals" "theories5"))
 	     (:file "constrs2" :depends-on ("defpackage"))
 	     (:file "delete-things" :depends-on ("defpackage" "rels8"))
 	     (:file "describe" :depends-on ("defpackage"))

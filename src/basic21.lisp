@@ -1292,32 +1292,30 @@ A different internal name will be generated..."
   (value)
   (default-value)
   (inheritance)
+  (type-options)
   (type))
 
 (defun get-slot-info-from-structure (option structure)
   (let ((*package* (find-package "OCML"))) 
     (funcall (read-from-string (string-append "OCML-SLOT-" (string option)))
              structure)))
-     
+
 ;;;New version which takes into account renaming - enrico 17/3/99
 (defun calculate-slot-info (class-name ordered-supers slot ocml-options chain)
   (unless chain
     (setf chain (list slot)))
   (let* ((inheritance (decide-inheritance-type ordered-supers chain ocml-options))
-         (type (decide-type-option class-name ordered-supers  chain ocml-options ))
+         (type-options (decide-type-option class-name ordered-supers chain ocml-options))
          (values (decide-value-options ordered-supers chain ocml-options
                                        (or inheritance *default-inheritance* )))
-         
-         (min-cardinality  (decide-min-cardinality
-                            ordered-supers  chain ocml-options ))
-         (max-cardinality  (decide-max-cardinality
-                            ordered-supers  chain ocml-options )))
+         (min-cardinality (decide-min-cardinality ordered-supers chain ocml-options ))
+         (max-cardinality (decide-max-cardinality ordered-supers chain ocml-options)))
     (make-slot-info :inheritance inheritance
 		    :value (car values)
 		    :default-value (second values)
 		    :min-cardinality min-cardinality
 		    :max-cardinality max-cardinality
-		    :type type)))
+		    :type-options type-options)))
 
 (defun decide-inheritance-type (ordered-supers chain ocml-options)
   (find-first-option-value* ordered-supers chain :inheritance ocml-options ))
@@ -1352,47 +1350,70 @@ relevant slot values"
             until result1
             finally (return result1))))
 
-(defun decide-type-option (class-name superclasses  chain ocml-options &aux local-types )
-  (setf local-types  (remove-duplicates  (apply #'append 
-                                                (mapcar #'(lambda (option)
-                                                            (when (eq (car option) :type)
-                                                              (list(second option))))
-                                                        ocml-options))))
-  (when (member-if #'(lambda (type)
-                       (and (listp type)
-                            (eq (car type) 'or)))
-                   local-types)
-    (funcall (if (member :irs-ocml-hacks cl:*features*)
-		 #'warn
-		 #'error)
-	     "Slot ~a of class ~a has an invalid type specification: OR type specifications are not allowed"
-	     (car chain) class-name))
-  (let*((global-types 
-         (remove-duplicates
-          (apply #'append 
-                 (mapcar #'(lambda (super)
-                             (loop for slot in chain
-				for result2 = (find-option-value super slot :type)
-				until result2
-				finally (return result2)))
-                         superclasses)))) ;;;;;)
-        (all-types   
-         (remove-duplicates
-          (append local-types global-types)))
-        (undefined-types ;;;;;(print
-         (filter all-types #'(lambda (type)
-                               (and (member type ;;;changed enrico&john may2007
-                                            all-types) ;;;old code assumes only local types can be undefined
-;;;(member type local-types) ;;;which is incorrect.  Also global types
-                                    (not (get-ocml-class type))))))) ;;;can be undefined!!!!!!!
-    (when (and undefined-types *warn-about-undefined-types*)
-      (ocml-warn "When parsing definition of class ~s: some types in ~s for slot ~s have not been defined" 
-                 class-name ocml-options (car chain) ))
-;;;;;;(print "all known types are coming")
-    (append undefined-types
-            (mapcar #'name (remove-subsuming-classes ;;can remove more generic classes if more specific ones are given
-			    (mapcar #'get-ocml-class
-				    (set-difference all-types undefined-types)))))))
+(defun decide-type-option (class-name superclasses chain ocml-options)
+  (list class-name superclasses chain ocml-options))
+
+;; XXX FINALIZE-ONTOLOGY is called in the wrong place, IMHO.  It's
+;; called at the end of the DEF-ONTOLOGY clause.  Now, that means that
+;; interactive entry of an ontology cannot be done, because certain
+;; operations (such as recomputing slot type specifiers) can be done
+;; only after the ontology's contents have been seen.
+(defun finalise-ontology (ontology)
+  (with-ontology (ontology)
+     (compute-slot-type-specifiers ontology)))
+
+;;; XXX This does not work if *ocml-top-class* is invalid.  That only
+;;; happens if the base ontology hasn't been loaded, which we never
+;;; do.
+(defun compute-slot-type-specifiers (ontology)
+  "Once the ontology is loaded, compute slot types from the slot type specifiers."
+  (declare (ignore ontology))
+  (assert *ocml-top-class*)
+  ;; The classes must be ordered such that subclasses are preceded by
+  ;; any superclasses, so that inherited slot specifiers are valid
+  ;; when the subclass goes looking for them.
+  (let ((classes (sort (current-subclasses (get-ocml-class *ocml-top-class*))
+		       (lambda (a b) (superclass-of* a (list b))))))
+    (dolist (class classes)
+      (let ((slot-infos (slot-info-alist class)))
+	(dolist (slot-info slot-infos)
+	  (let ((struct (cdr slot-info)))
+	    (setf (ocml-slot-type struct)
+		  (apply #'compute-slot-type (ocml-slot-type-options struct)))))))))
+
+(defun compute-slot-type (class-name superclasses chain ocml-options)
+  (let* ((new (remove-duplicates (apply #'append
+					(mapcar #'(lambda (option)
+						    (when (eq (car option) :type)
+						      (list(second option))))
+						ocml-options))))
+	 (inherited (remove-duplicates
+		     (apply #'append
+			    (mapcar #'(lambda (super)
+					(loop for slot in chain
+					   for result2 = (find-option-value super slot :type)
+					   until result2
+					   finally (return result2)))
+				    superclasses))))
+	 (all-types (union new inherited))
+	 (undefined-types (filter all-types #'(lambda (type)
+						(and (member type all-types)
+						     (not (get-ocml-class type)))))))
+    (when (member-if #'(lambda (type)
+			 (and (listp type)
+			      (eq (car type) 'or)))
+		     new)
+      (funcall (if (member :irs-ocml-hacks cl:*features*)
+		   #'warn
+		   #'error)
+	       "Slot ~a of class ~a has an invalid type specification: OR type specifications are not allowed"
+	       (car chain) class-name))
+    (cond (undefined-types
+	   ;; XXX This should be an error, but some ontologies depend on it.
+	   (ocml-warn "Class ~A references undefined classes ~A in definition of slot ~A."
+		      class-name undefined-types (car chain))
+	   nil)
+	  (t (mapcar #'name (remove-subsuming-classes (mapcar #'get-domain-class all-types)))))))
 
 (defun decide-min-cardinality (superclasses chain ocml-options)
   (let ((cardinalities (find-all-option-values*
