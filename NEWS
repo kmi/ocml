@@ -1,21 +1,53 @@
+This is OCML version 7.5.  It is a development branch of OCML.
+
 * Changes since OCML 7.3
 
 ** Support for namespaces.
 
-** Unified translation interface.
+** Language translation
 
-** ASDF-based .
+*** Unified KR lanaguage translation interface.
+
+*** New OCML -> OWL translator.
+
+*** New XML and XSD to OCML translators.
+
+** New user manual.
+
+Based on Enrico Motta’s book ‘Reusable Components for Knowledge
+Modelling’, IOS Press, ISBN 1-58603-003-5.
+
+** API.
+
+*** New with-ontology and with-ocml-thread-safety macros.
+
+*** Constants use +foo+ naming scheme.
+
+** Configuration and test
+
+*** Test cases.
+
+*** ASDF system definition.
+
+*** Ports.
+
+OCML now works on Lispworks (4 and 5), SBCL (various recent versions),
+and Allegro (Express 8.1).
+
+** Bug fixes.
+
+*** Slot types are correctly computed for forward-referenced types.
 
 * Changes in OCML 7.3
 
-** Export from OCML to RDF(S).  
+** Export from OCML to RDF(S).
 
 Use function TRANSLATE-OCML-ONTOLOGY-TO-RDFS to generate RDF(S) from
 OCML.
 
 * Changes in OCML 7.0
 
-** Fully implemented constraint checker.  
+** Fully implemented constraint checker.
 
 This verifies that all type and cardinality restrictions are satisfied
 by a KB.  In addition it also checks constraint expressions specified
@@ -40,3 +72,8 @@ Set *fc-in-watcher-mode* to T to enable 'watcher mode'.
 
 Use function TRANSLATE-OCML-ONTOLOGY-TO-ONTOLINGUA to generate an
 Ontolingua spec from an OCML ontology.
+
+
+Local Variables:
+mode: outline
+End:
