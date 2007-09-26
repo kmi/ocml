@@ -62,7 +62,7 @@
 
 (defvar *current-environment*)
 
-(defvar *muffle-warnings* t
+(defvar *muffle-warnings* nil
   "Muffle warnings when defining ontologies.  Particularly aimed
   at redefinition warnings.")
 
