@@ -1,7 +1,10 @@
-;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
+(in-package :ocml)
 
-(in-package "OCML")
+;;; {{{ Constants
 
+;;; SBCL is anally-retentive about ‘redefinitions’ of defconstants, so
+;;; we use this to placate it.
+;;; http://www.sbcl.org/manual/Defining-Constants.html
 (defmacro define-constant (name value &optional doc)
   `(defconstant ,name (if (boundp ',name) (symbol-value ',name) ,value)
      ,@(when doc (list doc))))
@@ -15,11 +18,11 @@
 (defvar *ocml-top-class* 'ocml-thing)
 
 (define-constant +legal-ocml-slot-options+
-  '(:default-value :value :type  :inheritance :min-cardinality 
-  :max-cardinality :cardinality :documentation))
+  '(:default-value :value :type  :inheritance :min-cardinality
+    :max-cardinality :cardinality :documentation))
 
 (define-constant +slot-info-options+
-  '(:default-value :value :type :inheritance :min-cardinality 
+  '(:default-value :value :type :inheritance :min-cardinality
     :max-cardinality))
 
 (define-constant +class-spec-lisp-options+
@@ -29,13 +32,13 @@
   '(:own-slots :slot-renaming))
 
 (define-constant +relation-spec-keywords+
-  '(:constraint 
+  '(:constraint
     :exclusive-prove-by
     :iff-def
     :lisp-fun
-    :no-proofs-by 
+    :no-proofs-by
     :prove-by
-    :sufficient-for-type-checking 
+    :sufficient-for-type-checking
     :sufficient))
 
 (define-constant +all-class-definition-legal-options+
@@ -48,17 +51,16 @@
   '(:default-value :value))
 
 (define-constant +non-value-options+
-  '( :type :min-cardinality
-    :max-cardinality))
-
-(defvar *default-inheritance* :supersede)
+  '(:type :min-cardinality :max-cardinality))
 
 (define-constant +inheritance-options+ '(:merge :supersede))
 
 (define-constant +legal-clos-slot-options+
-  '(:reader :writer :accessor :allocation :initarg :initform ;;;:type
-    ;;;;:documentation
-    ))
+  '(:reader :writer :accessor :allocation :initarg :initform))
+
+;;; }}}
+
+(defvar *default-inheritance* :supersede)
 
 (defvar *current-environment*)
 
@@ -168,7 +170,7 @@
   `(let ((*default-eval-args* t))
      ,@body))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; XXX This has to go
 (defvar *in-irs* nil)
 
 (defvar *base-ontology*)
@@ -188,7 +190,7 @@
 (defvar *current-ontologies* nil 
   "All currently selected ontologies")
 
-;;;;;;;;;;;variables related to Mauro's compiler
+;;; {{{ Mauro's compiler variables
 
 (defvar *compile-trace* nil)   ;;; Show the code of compiled functions during compilation.
 (defvar *compiled* nil)        ;;; Whe this variable is set to t the compiled code is executed.
@@ -196,8 +198,9 @@
 ;;;;(defvar *compile* nil)         ;;; When this variable is set to t the lisp compiler is called.
 (defvar *in-line* nil)         ;;; Whe this variable is set to t relations are compiled in line.
 
-
 (defvar *nocompile* nil)      ;;;When T do not compile lisp code
+
+;;; }}}
 
 (defvar *trace-depth-counter* 0)
 
@@ -222,7 +225,9 @@
 (defvar *namespace-prefixes* '()
   "Active namespace prefixes for reading OCML namespace sensitive symbols.")
 
-;;;; Interface to OCML.
+;;; {{{ Interface to OCML
 
 (defgeneric translate (src dst thing where &key &allow-other-keys)
   (:documentation "Translate THING from language SRC to DST."))
+
+;;; }}}
