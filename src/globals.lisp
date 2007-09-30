@@ -11,6 +11,10 @@
 
 (define-constant +ocml-version+ (asdf:component-version (asdf:find-system :ocml)))
 
+(define-constant +ontology-types+
+    '(applications domains goals mediators methods tasks web-services)
+  "Classification schema for ontologies.")
+
 (defvar *library-pathname* "ocml:library;")
 
 (defvar *lisp-suffix* "lisp")
