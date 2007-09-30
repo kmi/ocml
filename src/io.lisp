@@ -6,16 +6,6 @@
 (defun ocml-output (string &rest format-args)
   (apply #'format t  string format-args))
 
-(defvar *do-not-record-p* nil)
-
-(defmacro with-no-source-file-recording (&rest body)
-  `(let ((*do-not-record-p* t))
-    (declare (special *do-not-record-p*))
-    ,@body))
-
-#+:lispworks 
-(editor::setup-indent 'with-no-source-file-recording 0 2)
-    
 (defun get-source-pathname (dspec)
   #+:lispworks-dspec
   (cadar (dspec:find-dspec-locations dspec)))
