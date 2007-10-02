@@ -9,14 +9,9 @@
 (defsystem :ocml
     :description "Operational Concept Modelling Language."
     :version "7.5"
-    :author "John Domingue <j.b.domingue@open.ac.uk> and Enrico Motta <e.motta@open.ac.uk>"
-    :depends-on (:ocml-pre-webonto :ocml-post-webonto))
-
-(defsystem :ocml-pre-webonto
-  :description "OCML before loading WebOnto."
-  :depends-on ()
-  :components
-  ((:module :src
+    :author "Enrico Motta <e.motta@open.ac.uk> et al at the Open University."
+    :components
+    ((:module :src
 	    :components
 	    ((:file "defpackage")
 	     (:file "axioms" :depends-on ("defpackage" "globals"))
@@ -25,6 +20,8 @@
 		    ("defpackage" "basic21" "rels8" "rules4" "globals"))
 	     (:file "basic21" :depends-on ("defpackage" "globals" "theories5"))
 	     (:file "constrs2" :depends-on ("defpackage"))
+             (:file "control4" :depends-on ("defpackage" "basic21" "parser5" "io"
+                                                         "slot-renaming3" "top9"))
 	     (:file "delete-things" :depends-on ("defpackage" "rels8"))
 	     (:file "describe" :depends-on ("defpackage"))
 	     (:file "domain6" :depends-on ("defpackage" "globals"))
@@ -50,13 +47,6 @@
 	     (:file "top9" :depends-on ("defpackage"))
 	     (:file "wm2" :depends-on ("defpackage"))
 	     (:file "utilities" :depends-on ("defpackage"))))))
-
-;;; Separate out control4 to enable redefinition of ocml-metaclass
-;;; john domingue may 21 98
-(defsystem :ocml-post-webonto
-    :depends-on (:ocml-pre-webonto)
-    :components ((:module :src :components
-			  ((:file "control4")))))
 
 ;;; XXX The XML/XSD translators depends on the XML parser in the IRS.
 ;;; For the moment, we'll pretend that the IRS ASDF package is

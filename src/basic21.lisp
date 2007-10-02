@@ -248,7 +248,7 @@ is the external, rather than internal, name of the class."
     t)
 
 ;;;OCML-METACLASS 
-(defclass ocml-metaclass (instances-meta basic-ocml-object)
+(defclass almost-ocml-metaclass (instances-meta basic-ocml-object)
   ((instance-var :initarg :instance-var)
    (ocml-name  :accessor name)
    ;;;;;(methods :initform nil :accessor methods)
@@ -273,6 +273,9 @@ is the external, rather than internal, name of the class."
     :accessor renaming-pairs  ;;;These are the locally defined renaming pairs for a 
     :initform nil             ;;;class, which make sense - i.e., they have been checked
     )))
+
+(defclass ocml-metaclass (almost-ocml-metaclass)
+  ())
 
 (defmethod internal-name ((class ocml-metaclass))
   (class-name class))
