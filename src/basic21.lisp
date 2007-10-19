@@ -1365,18 +1365,14 @@ relevant slot values"
   (with-ontology (ontology)
      (compute-slot-type-specifiers ontology)))
 
-;;; XXX This does not work if *ocml-top-class* is invalid.  That only
-;;; happens if the base ontology hasn't been loaded, which we never
-;;; do.
 (defun compute-slot-type-specifiers (ontology)
   "Once the ontology is loaded, compute slot types from the slot type specifiers."
-  (declare (ignore ontology))
-  (assert *ocml-top-class*)
   ;; The classes must be ordered such that subclasses are preceded by
   ;; any superclasses, so that inherited slot specifiers are valid
   ;; when the subclass goes looking for them.
-  (let ((classes (sort (current-subclasses (get-ocml-class *ocml-top-class*))
-		       (lambda (a b) (superclass-of* a (list b))))))
+  (let ((classes (sort (mapcar #'get-domain-class
+                               (list-hash-table (ontology-classes (ontology-directory ontology))))
+                       (lambda (a b) (superclass-of* a (list b))))))
     (dolist (class classes)
       (let ((slot-infos (slot-info-alist class)))
 	(dolist (slot-info slot-infos)
