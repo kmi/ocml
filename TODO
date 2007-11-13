@@ -1,4 +1,15 @@
-* Constraint checking is broken due to finalise-ontology change
+* Translation
+
+OWL species needs to be specifiable.
+
+* Bugs
+
+** base-ontology generates invalid XML in RDFS translation
+
+It also doesn't display in webonto.  What's wrong with our most
+fundamental ontology?!
+
+** Constraint checking is broken due to finalise-ontology change
 
 Constraint checking, like slot type computation, must be done *after*
 the whole ontology is loaded.
@@ -18,11 +29,6 @@ general fix here, anyway.
 * webonto goodies
 
 Steal any general purpose OCML utilities from WebOnto.
-
-* base-ontology generates invalid XML in RDFS translation
-
-It also doesn't display in webonto.  What's wrong with our most
-fundamental ontology?!
 
 * call-with-ocml-thread-safety
 

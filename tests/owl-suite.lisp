@@ -8,7 +8,9 @@
 (in-suite owl-suite)
 
 (test create-owl-onto-test
-  (finishes (ocml:with-ontology ('ocml::apples2)
-	      (ocml::create-owl-onto
-	       'ocml::apple 'ocml::apples2
-	       "http://www.world-of-apples.com/onto.owl" "./onto.owl"))))
+  (finishes (ocml:translate :ocml :owl 'ocml::apples2 "./onto.owl"
+                            :top-class 'ocml::apple
+                            :namespace-prefix 'ocml::apples2
+                            :namespace "http://www.world-of-apples.com/onto.owl")))
+
+

@@ -1,42 +1,62 @@
-;; OCML--> OWL translator
+;;; OCML--> OWL translator
 
-;; 2007 Michele Pasin
+;;; 2007 Michele Pasin
 
-;; the translator at the moment is just a major help to port an ocml
-;; ontology to owl you will probably have to manually review the
-;; ontology - see below for detail
+;;; the translator at the moment is just a major help to port an ocml
+;;; ontology to owl you will probably have to manually review the
+;;; ontology - see below for detail
 
+;;; call the translator with the appropriate arguments:
+;;;
+;;; (translate :ocml :owl 'ontology-name stream
+;;;  :top-class 'top-class-to-translate-from
+;;;  :namespace "http://my-onto-namespace.owl"
+;;;  :namespace-prefix 'a-prefix)
 
-#|  
+;;; What it does:
 
-HOWTO:
+;;; - it can  properly translate the TAXONOMY
+;;; - it creates a protege-readable owl file
+;;; - it transforms all the ocml-classes' slots into
+;;;   owl-OBJECT-PROPERTIES and owl-CLASS-RESTRICTIONS
+;;;
+;;; (interesting side-effect --> it helps checking the consistency of
+;;; an OCML ontology!..typos, wrong args etc..)
 
-1) load your ontology into OCML (translator works from within OCML)
-2) compile&load the translator functions (this file)
-3) call the translator with the appropriate arguments, e.g.
-(create-owl-onto 'top-class-to-translate-from 'a-prefix "http://my-onto-namespace.owl" "local-path")
+;;; What it doesn't do (for now):
+;;; - check for DATATYPEs, and translate them to XML-types
+;;; - translate complex restrictions
+;;; - translate contraints
+;;; - translate fixed values on ocml slots (in this case it outputs
+;;;   the same class as the property range)
+;;; - translate instances
 
-For example, in my case I used:
-(create-owl-onto 'philosurfical-entity 'phil "http://philosurfical.open.ac.uk/ontology/philosurfical.owl"  "/Users/michelepasin/Desktop/-last-translation.owl")
+;;; ALGORiTHM (not updated):
 
-What it does:
-- it can  properly translate the TAXONOMY
-- it creates a protege-readable owl file
-- it transforms all the ocml-classes' slots into owl-OBJECT-PROPERTIES + owl-CLASS-RESTRICTIONS
-...(interesting side-effect --> it helps checking the consistency of an OCML ontology!..typos, wrong args etc..)
+;;; take top-class
+;;; get subclasses
+;;; for each class
+;;; write class-owl
+;;; get the documentation, translate the documentation
+;;; close class-owl
+;;; call translate slots
+;;; return
 
-What it doesn't do (for now):
-- check for DATATYPEs, and translate them to XML-types
-- translate complex restrictions
-- translate contraints
-- translate fixed values on ocml slots (in this case it outputs the same class as the property range)
-- tanslate instances
-
-|#
-
+;;; for each class:
+;;; get the list of local slots
+;;; for each slot
+;;; get the slot type
+;;; write slot-owl-ObjectProperties
 
 (in-package :ocml)
 
+(defmethod translate ((src (eql :ocml)) (dst (eql :owl))
+		      (ontology-name symbol) where
+		      &key namespace namespace-prefix top-class
+		      &allow-other-keys)
+  (let ((ontology (get-ontology ontology-name :error-if-not-found t)))
+    (with-ontology (ontology)
+      (create-owl-onto top-class namespace-prefix namespace where))))
 
 ;; creates the header, the top class definition and the closing stuff
 (defun create-owl-onto (topclass prefix namespace your-path)
@@ -107,23 +127,3 @@ What it doesn't do (for now):
 
 ;; on (first (get-slot-type (get-ocml-class classname) rel) we will have to check whether it's an objectProperty, or a dataType, or a fixed value!
 
-#|
-
-ALGORiTHM (not updated):
-
-take top-class
-get subclasses
-for each class
-write class-owl
-get the documentation, translate the documentation
-close class-owl
-call translate slots
-return
- 
-for each class:
-get the list of local slots
-for each slot
-get the slot type
-write slot-owl-ObjectProperties
-
- |#
