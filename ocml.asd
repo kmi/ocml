@@ -35,7 +35,7 @@
 	     (:file "namespaces" :depends-on ("defpackage" "globals"))
 	     (:file "io" :depends-on ("defpackage" "globals"))
 	     (:file "ocml-to-ontolingua2" :depends-on ("defpackage" "globals"))
-	     (:file "ocml-to-owl" :depends-on ("defpackage"))
+	     (:file "ocml-to-owl" :depends-on ("defpackage" "theories5"))
 	     (:file "ocml-to-rdfs" :depends-on ("defpackage" "globals" "theories5"))
 	     (:file "parser5" :depends-on ("defpackage"))
 	     (:file "rels8" :depends-on ("defpackage" "rules4" "globals"))
