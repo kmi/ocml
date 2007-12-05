@@ -1028,3 +1028,17 @@
         do
         (tell1 exp documentation)))
 
+;;relation-instance 'name' is in fact the expression
+(defun get-relation-instance (name)
+  (let* ((relation-name (car name))
+         (relation (get-ocml-relation relation-name)))
+    (when relation
+      (find name (get-direct-relation-instances relation)
+            :key #'get-relation-instance-expression
+            :test #'equal))))
+
+(defun get-ocml-relation (name)
+  (gethash name *defined-relations*))
+
+(defun get-direct-relation-instances (structure)
+  (relation-instances structure))
