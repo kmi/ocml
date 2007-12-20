@@ -4,7 +4,6 @@ default:
 clean:
 	find . -name "*.fasl" -o -name "*.fsl" -o -name "*.pfsl" -o -name "*.ufasl" -o -name "*.wfasl" -o -name "*.xfasl" | xargs rm -f
 	$(MAKE) -C doc clean
-	rm -rf /var/cache/common-lisp-controller/`id --user`/*/local`pwd`
 
 tests: acl-tests lispworks-tests sbcl-tests
 
