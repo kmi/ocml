@@ -14,7 +14,7 @@
     ((:module :src
               :components
               ((:file "defpackage")
-               (:file "ask-tell" :depends-on ("defpackage"))
+               (:file "ask-tell" :depends-on ("defpackage" "globals"))
                (:file "axioms" :depends-on ("defpackage" "globals"))
                ;; XXX (:file "back-chain-compiler" :depends-on ("defpackage"))
                (:file "back-chain" :depends-on
