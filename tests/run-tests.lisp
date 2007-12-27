@@ -1,5 +1,7 @@
 ;;; 2007 Open University
 
+(push "." asdf:*central-registry*)
+
 #+:lispworks5 (setf system:*stack-overflow-behaviour* :warn)
 
 (asdf:operate 'asdf:load-op :ocml)
