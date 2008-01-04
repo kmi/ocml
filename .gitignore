@@ -1,0 +1,8 @@
+# Backups
+*~
+
+# Compiled Lisp code
+*.fsl
+*.ofasl
+*.ufasl
+*.xfasl
