@@ -2,7 +2,8 @@
 
 (eval-when (:compile-toplevel :execute :load-toplevel)
   (ocml:initialize-ocml)
-  (load "ocml:library;applications;apple-heuristic-classify-redux;load"))
+  ;; XXX Should really be a test, but it makes a mess of the output.
+  (ocml:load-ontology-by-name :apple-heuristic-classify-redux))
 
 (defun run-all-tests (&optional (break nil))
   (let ((5am:*debug-on-error* break)
@@ -11,7 +12,6 @@
 		     ;; XXX Constraints now don't work because slot
 		     ;; types are computed after all classes have been
 		     ;; defined.  Skip the test for now.
-
 		     ;; constraints-suite
 		     namespaces-suite
 		     apples-suite

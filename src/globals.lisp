@@ -186,6 +186,8 @@
 
 (defvar *base-ontology-load-file* "load")
 
+(defvar *load-filename* "load.lisp")
+
 (defvar *all-ontologies* nil "All currently defined ontologies")
 
 (defvar *current-ontology* nil 

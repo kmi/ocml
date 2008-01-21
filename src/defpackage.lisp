@@ -1,8 +1,11 @@
 (defpackage #:ocml
   (:use #:common-lisp)
-  (:export #:call-with-ocml-thread-safety
+  (:export #:*load-filename*
+           #:call-with-ocml-thread-safety
 	   #:call-with-ontology
+	   #:find-ontology-directory
 	   #:initialize-ocml
+           #:load-ontology-by-name
 	   #:register-namespace
 	   #:translate
 	   #:with-ocml-thread-safety

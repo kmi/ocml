@@ -127,6 +127,51 @@
                       `(def-relation-instances ,name ,ontology)))
   :definedp #'(lambda (x) (and (listp x) (get-relation-instance x))))
 
+;;; {{{ Ontology file search and loading
+
+(defun load-ontology-by-name (ontology-name)
+  "Search for and load the ontology called ONTOLOGY-NAME."
+  (let ((dir (find-ontology-directory ontology-name)))
+    (if dir
+        (load (format nil "~A~A" dir *load-filename*))
+        (error "Cannot find ontology called ~A." ontology-name))))
 
 
+(ocml::define-constant +directory-separator+
+    #+:win32 #\\
+    #+:unix #\/)
 
+;; We have to return the true pathname here, because it contains case
+;; information that would be lost by converting to a logical pathname.
+(defun find-ontology-directory (ontology-name)
+  "Return true pathname of the directory holding ONTOLOGY-NAME files
+if it can be found, or NIL."
+   (dolist (type ocml::+ontology-types+)
+     (let* ((base (logical-pathname (format nil "~A~A;" ocml::*library-pathname* type)))
+            (dir (find-truename-ci base ontology-name)))
+       (when dir
+         (return dir)))))
+
+(defun find-truename-ci (path ext)
+  "Return the local name of EXT in directory in PATH where the local
+  matches EXT, ignoring case."
+  (let* ((paths (directory path))
+         (finds (remove-if #'(lambda (path)
+                               (not (string-equal ext (file-basename path))))
+                           paths))
+         (n (length finds)))
+    (cond ((= 0 n)
+           nil)
+          ((= 1 n)
+           (first finds))
+          (t
+           (error "Ambiguous directory or filename for ~S in directory ~A." ext path)))))
+
+(defun file-basename (path)
+  (let* ((string (format nil "~A" path))
+         (base (subseq string (position +directory-separator+
+                                        (string-right-trim (list +directory-separator+) string)
+                                        :from-end t))))
+    (string-trim (list +directory-separator+) base)))
+
+;;; }}}
