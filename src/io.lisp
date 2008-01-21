@@ -163,7 +163,7 @@ if it can be found, or NIL."
     (cond ((= 0 n)
            nil)
           ((= 1 n)
-           (first finds))
+	   (format nil "~A" (first finds)))
           (t
            (error "Ambiguous directory or filename for ~S in directory ~A." ext path)))))
 
