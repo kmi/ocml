@@ -50,7 +50,8 @@ installation and namespace sections.
 @chapter Installation
 
 @noindent
-OCML is implemented in Lisp, and currently requires Lispworks.
+OCML is implemented in Lisp, and currently runs under Lispworks and
+SBCL.
 
 @menu
 * Obtaining OCML::              
@@ -63,11 +64,10 @@ OCML is implemented in Lisp, and currently requires Lispworks.
 
 @noindent
 You can obtain the development version of OCML using
-Mercurial@footnote{@samp{http://www.selenic.com/mercurial/wiki/}}(which
-is invoked with the command @code{hg}).
+Git@footnote{@url{http://git.or.cz/}}.
 
 @example
-hg clone http://kmi-forge.open.ac.uk/hg/ocml/trunk ocml
+git clone http://kmi-forge.open.ac.uk/git/ocml.git
 @end example
 
 This should leave you with a directory called @samp{ocml}.
@@ -94,7 +94,7 @@ CL-USER> (require :ocml)
 You then need to initialize OCML:
 
 @example
-CL-USER> (initialize-ocml)
+CL-USER> (ocml:initialize-ocml)
 @end example
 
 @node Library locations,  , Setup, Installation
