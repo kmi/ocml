@@ -705,8 +705,7 @@ supports a convenient interface for namespaces which is very similar
 to the XML namespaces scheme.  Three things are involved in this
 extension:
 
-@enumerate 
-
+@enumerate
 @item
 OCML ontologies must indicate the URI which
 identifies them.
@@ -717,12 +716,13 @@ before use.
 
 @item
 Namespaced symbols are prefixed
-with @samp{#_} 
+with @samp{#_}.
 @end enumerate
 
-Ontology definitions should include
-a @samp{:namespace-uri} initialization argument, which is
-a string holding the URI identifying the ontology.
+Ontology definitions should include a @samp{:namespace-uri}
+initialization argument, which is a string holding the URI identifying
+the ontology.  If you do not supply a namespace URI, OCML will assign
+one based on the ontology's name.
 
 @example
 (def-ontology colours

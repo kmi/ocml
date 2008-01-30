@@ -104,7 +104,7 @@ signal an error if NAME does not designate an ontology."
   ;;;;(tasks (make-hash-table))
   ;;;;(roles (make-hash-table))
   (classes (make-hash-table)))
-        
+
 ;;;; OCML-ONTOLOGY
 
 ;;; WebOnto wants other slots in the ocml-ontology class, so allow it
@@ -136,6 +136,14 @@ signal an error if NAME does not designate an ontology."
                       :initform nil
                       :initarg :rdf-namespace-url)))
 
+(defmethod shared-initialize ((o almost-ocml-ontology) slot-names
+                              &rest args &key &allow-other-keys)
+  (call-next-method)
+  (unless (namespace-uri-of o)
+    ;; Give it a default namespace.
+    (setf (namespace-uri-of o) (assumed-namespace-uri (name o))))
+  o)
+
 (defclass ocml-ontology (almost-ocml-ontology)
   ())
 
@@ -145,7 +153,6 @@ signal an error if NAME does not designate an ontology."
 (defun known-ontology? (struct)
   (and (left-value struct  *all-ontologies*)
        struct))
-  
 
 (defun sub-ontologies (ontology)
   (let ((direct-sub-ontologies (ontology-includes ontology)))
@@ -160,7 +167,6 @@ signal an error if NAME does not designate an ontology."
                              (member x (sub-ontologies y)))
                          (remove x ontologies)))
                ontologies))
-        
 
 (defun dependent-ontologies (ontology)
   (let ((direct-dependents (ontology-included-by ontology)))
@@ -175,7 +181,6 @@ signal an error if NAME does not designate an ontology."
   (sort  (dependent-ontologies ontology)
          #'(lambda (x y)
              (member x (sub-ontologies y)))))
-        
 
 ;;;HOME-ONTOLOGY-OF
 ;;(defun home-ontology-of (name type)
@@ -189,7 +194,6 @@ signal an error if NAME does not designate an ontology."
 (defmethod print-object ((ontology ocml-ontology) stream)
   (with-slots (name) ontology
     (format stream "#<~S ~S>" 'OCML-ONTOLOGY name)))
-
 
 (defun make-default-rule-packet (ontology)
   (make-instance 'rule-packet 

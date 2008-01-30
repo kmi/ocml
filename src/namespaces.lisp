@@ -28,6 +28,11 @@
     (setf ontology (get-ontology ontology)))
   (setf (prefix->ontology prefix) ontology))
 
+(defun assumed-namespace-uri (ontology-name)
+  "Generate a unique namespace for ontologies which don't explicitly declare one."
+  (format nil "http://www.kmi.open.ac.uk/projects/ocml/namespaces/assumed/~A#"
+          ontology-name))
+
 (defun ocml-encode-symbol (symbol-name)
   (check-type symbol-name string)
   (intern symbol-name :ocml))
