@@ -15,7 +15,7 @@
 		     ;; constraints-suite
 		     namespaces-suite
 		     apples-suite
-		     owl-suite))
+		     translation-suite))
       (format t "Running ~A: " (symbol-name suite))
       (run! suite))))
 

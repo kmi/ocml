@@ -12,9 +12,9 @@
 
 (defvar *rdf-Property-id* "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property")
 
-(defmethod translate ((src (eql :ocml)) (dst (eql :rdfs)) 
-		      (ontology-name symbol) (where stream)
-		      &key namespaces fancy-name-conversion?
+(defmethod translate ((src (eql :ocml)) (dst (eql :rdfs))
+		      (ontology-name symbol)
+		      &key where namespaces fancy-name-conversion?
 		      &allow-other-keys)
   (let ((ontology (get-ontology ontology-name :error-if-not-found t)))
     (with-ontology (ontology)

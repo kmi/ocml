@@ -51,8 +51,8 @@
 (in-package :ocml)
 
 (defmethod translate ((src (eql :ocml)) (dst (eql :owl))
-		      (ontology-name symbol) where
-		      &key namespace namespace-prefix top-class
+		      (ontology-name symbol)
+		      &key where namespace namespace-prefix top-class
 		      &allow-other-keys)
   (let ((ontology (get-ontology ontology-name :error-if-not-found t)))
     (with-ontology (ontology)

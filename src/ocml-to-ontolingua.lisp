@@ -2,8 +2,13 @@
 
 ;;; The Open University
 
-(in-package "OCML")
+(in-package #:ocml)
 
+(defmethod translate ((src (eql :ocml)) (dst (eql :ontolingua))
+		      (ontology-name symbol) &key &allow-other-keys)
+  (let ((ontology (get-ontology ontology-name :error-if-not-found t)))
+    (with-ontology (ontology)
+      (translate-ocml-ontology-to-ontolingua ontology-name ))))
 
 ;;;  STILL TO DO:   <:OWN-SLOTS>, forward chaining rules, 
 ;;;relation instances (def-relation-instance and tell)

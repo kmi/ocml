@@ -94,6 +94,12 @@ places?  So, the basic library would come from the OCML src directory,
 core IRS libraries would be somewhere else, and IRS applications would
 be application specific!  
 
+** Uncompiled files
+
+We don't currently build the files back-chain-compiler, dthreeify,
+expressions, methods, operator.  Why not?  Should we, or should they
+be rm'd?
+
 * Namespaces
 
 Do we want to have prefixes independant of ontologies?  I.e., would we
@@ -120,9 +126,6 @@ used around (load)s, or when printing using a modified symbol printer.
 
 might want to override the symbol printing method for namespaced ocml
 symbols...
-
-require should check out asdf packages first, then fall back to the
-default behaviour.
 
 
 Local variables:

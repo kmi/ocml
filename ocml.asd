@@ -68,7 +68,7 @@
 	     (:file "sundry" :depends-on ("defpackage"))
 	     (:file "apples-suite" :depends-on ("defpackage" "sundry"))
 	     (:file "namespaces" :depends-on ("defpackage" "sundry"))
-	     (:file "owl-suite" :depends-on ("defpackage" "sundry"))))))
+	     (:file "translation" :depends-on ("defpackage" "sundry"))))))
 
 (defsystem :ocml-xml-tests
     :depends-on (:ocml-xml :ocml-tests)

@@ -233,7 +233,7 @@
 
 ;;; {{{ Interface to OCML
 
-(defgeneric translate (src dst ontology where &key &allow-other-keys)
+(defgeneric translate (src dst ontology &key &allow-other-keys)
   (:documentation "Translate ONTOLOGY from language SRC to DST."))
 
 ;;; }}}
