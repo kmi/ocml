@@ -60,7 +60,7 @@
     (let ((old-fun (get-function name)))
       (when old-fun 
         (let ((old-ontology (home-ontology old-fun))
-              (source-file (car (source-files name 'ocml-function))))
+              (source-file (car (source-files name 'def-function))))
             (cond ((eq old-ontology *current-ontology*)
                    (unless (equal (and source-file
                                        (translate-logical-pathname source-file))
