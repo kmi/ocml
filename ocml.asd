@@ -15,10 +15,11 @@
               :components
               ((:file "defpackage")
                (:file "ask-tell" :depends-on ("defpackage" "globals"))
-               (:file "axioms" :depends-on ("defpackage" "globals"))
+               (:file "axioms" :depends-on ("base" "defpackage" "globals"))
                ;; XXX (:file "back-chain-compiler" :depends-on ("defpackage"))
                (:file "back-chain" :depends-on
                       ("defpackage" "basic" "relations" "rules" "globals"))
+               (:file "base" :depends-on ("defpackage"))
                (:file "basic" :depends-on ("defpackage" "globals" "theories"))
                (:file "constraints" :depends-on ("defpackage"))
                (:file "control" :depends-on ("defpackage" "basic" "parser" "io"
@@ -42,9 +43,9 @@
                (:file "relations" :depends-on ("defpackage" "rules" "globals"))
                (:file "rete" :depends-on ("defpackage"))
                (:file "rete-working-memory" :depends-on ("defpackage"))
-               (:file "rules" :depends-on ("defpackage"))
+               (:file "rules" :depends-on ("basic" "defpackage" "theories"))
                (:file "slot-renaming" :depends-on ("defpackage"))
-               (:file "theories" :depends-on ("defpackage" "globals"))
+               (:file "theories" :depends-on ("defpackage" "base" "globals"))
                (:file "top" :depends-on ("defpackage"))
                (:file "utilities" :depends-on ("defpackage"))))))
 
