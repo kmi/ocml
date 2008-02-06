@@ -190,10 +190,9 @@ signal an error if NAME does not designate an ontology."
 ;;    (relation (home-ontology (get-relation name)))
 ;;    (function (home-ontology (get-function name)))))
 
-;;;PRINT-OBJECT
 (defmethod print-object ((ontology ocml-ontology) stream)
-  (with-slots (name) ontology
-    (format stream "#<~S ~S>" 'OCML-ONTOLOGY name)))
+  (format stream "#<~S ~S>"
+          (class-name (class-of ontology)) (name ontology)))
 
 (defun make-default-rule-packet (ontology)
   (make-instance 'rule-packet 
