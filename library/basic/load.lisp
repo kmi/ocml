@@ -14,9 +14,8 @@
   :type :basic
   :pathname "ocml:library;basic;"
   :author "enrico"
-  :files ("foundation" "meta7" "sets2" "rels2" "strings" "nums"
-                       "list2" "infer" "env" "funs2"
-		       ;; "ops2"
-		       "frames4" "task6" "mapping" "acquire"))
+  :files ("foundation" "meta" "sets" "relations" "strings" "numbers"
+                       "lists" "infer" "env" "functions"
+		       "frames" "tasks" "mapping" "acquire"))
 
 
