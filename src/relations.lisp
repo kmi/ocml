@@ -18,18 +18,16 @@
   (remhash name *defined-relations*))
 
 (defun all-relations (&optional structures)
-  "Returns all names of relations"
-  (if structures
-    (map-over-hash-table #'(lambda (name structure)
-                             name ;;ignore
+  "List names of all relations, or the structures if STRUCTURES is
+non-nil."
+  (map-over-hash-table (if structures
+                           (lambda (name structure)
+                             (declare (ignore name))
                              structure)
-                         *defined-relations*)
-    
-    (map-over-hash-table #'(lambda (name structure)
-                             structure ;;ignore
-                             name)
-                         *defined-relations*)))
-
+                           (lambda (name structure)
+                             (declare (ignore structure))
+                             name))
+                       *defined-relations*))
 
 ;;;RELATION 
 (defclass ocml-relation (name-mixin lisp-attachment-mixin ;;;;;onto-spec-mixin
