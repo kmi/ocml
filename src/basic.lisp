@@ -720,7 +720,7 @@ local."
      name relation-spec1 +all-class-definition-legal-options+ 'class)
     (do-class-definition name superclasses instance-var1  documentation1
                          class-slots1 relation-spec1)))
-    
+
 
 
 ;;;CREATE-INITIAL-CLASS-DEFINITION ---This is called to create an initial definition of the class.
@@ -741,36 +741,38 @@ local."
                                           slots)
            (:metaclass ocml-metaclass))))
 
-;;;DO-CLASS-DEFINITION
-(defun do-class-definition (name superclasses instance-var  documentation    
-				 class-slots relation-spec
-                                 &aux supers lost-slots new-class slots-to-recompute domain-slots
-                                 )
+(defun redefinition-warning? (condition)
+  "Check if CONDITION is a warning about redefinition."
+  #+lispworks5 (string= "~S defined more than once in ~A."
+                        (simple-condition-format-control condition)))
+
+(defun do-class-definition (name superclasses instance-var documentation
+                            class-slots relation-spec)
   (let* ((relation-class (get-relation name))
          (local-slots-spec (parse-class-slots name class-slots))
-         (local-slots (mapcar #'car local-slots-spec)))
+         (local-slots (mapcar #'car local-slots-spec))
+         supers lost-slots new-class slots-to-recompute domain-slots)
     (when relation-class
       (unless (= (arity relation-class)1)
         (error "Cannot introduce class ~s. A relation named ~s, with arity different from 1 (~a) already exists"
                name name (arity relation-class))))
     (loop for slot in local-slots
-          for relation = (get-relation slot)
-          do
-          (when relation
-            (unless  (= (arity relation)2)
-              (error "Cannot introduce class ~s with slot ~s. A relation named ~s, with arity different from 2 (~a) already exists"
-                     name slot slot (arity relation)))))
+       for relation = (get-relation slot)
+       do
+       (when relation
+         (unless  (= (arity relation)2)
+           (error "Cannot introduce class ~s with slot ~s. A relation named ~s, with arity different from 2 (~a) already exists"
+                  name slot slot (arity relation)))))
     (setf supers (mapcar #'get-ocml-class superclasses))
     (when (member nil supers)
       (error "Some class in ~S has not been defined..when parsing class ~S" superclasses name))
-    
-    ;;;now every class inherits from the *ocml-top-class*, unless this 
-    ;;;does not exists - e.g., because this user has opted out of the base ontology
+    ;; now every class inherits from the *ocml-top-class*, unless this
+    ;; does not exists - e.g., because this user has opted out of the
+    ;; base ontology
     (unless supers
       (when (and (get-ocml-class *ocml-top-class*)
                  (not (eq name *ocml-top-class*)))
         (setf supers (list (get-ocml-class *ocml-top-class*)))))
-      
     (setf supers  (standardise-superclasses supers)
           superclasses (mapcar #'name supers))
     (Let* ((inherited-slots (set-difference (class-inherited-slots supers)
@@ -782,24 +784,18 @@ local."
                               (generate-internal-ocml-class-name name)))
            (renaming-pairs (second (member :slot-renaming relation-spec)))
            (ordered-supers) (inherited-chains))
-      
-      (when renaming-pairs 
+      (when renaming-pairs
         (setf relation-spec (remove-if #'(lambda (x) (or (eq x :slot-renaming)
                                                          (equal x renaming-pairs)))
                                        relation-spec)
-             )) ;;the two bits below should be done anyway...I hope...26/10/01
-      (setf
-     
-              inherited-chains (normalize-inherited-chains    ;;removes redundant chains
-                                (mapcar #'renaming-chains 
-                                        supers))
-              renaming-pairs (check-local-renaming-feasibility ;;checks validity of new renaming pairs
-                              name local-slots 
-                              inherited-slots renaming-pairs
-                              inherited-chains))
-      ;)
+              )) ;;the two bits below should be done anyway...I hope...26/10/01
+      (setf inherited-chains (normalize-inherited-chains ;;removes redundant chains
+                              (mapcar #'renaming-chains supers))
+            renaming-pairs
+            (check-local-renaming-feasibility ;; Check validity of new renaming pairs.
+             name local-slots inherited-slots renaming-pairs inherited-chains))
       (let ((class-with-same-internal-name (find-class internal-name nil)))
-        (when class-with-same-internal-name 
+        (when class-with-same-internal-name
           ;;a class with the same internal name already exists. we need to make sure that no conflicts arise.
           (cond ((not (typep class-with-same-internal-name 'ocml-metaclass))
                  (ocml-warn "cannot use internal name ~s for class ~s..a lisp class with the same name already exists.
@@ -811,7 +807,7 @@ A different internal name will be generated..."
                        (lisp-class-ontology (home-ontology class-with-same-internal-name))
                        (current-ontology *current-ontology*))
                    (when (and lisp-class-ontology
-                              (eq (get-ontology  ;;we check that this is an active ontology
+                              (eq (get-ontology ;;we check that this is an active ontology
                                    (name lisp-class-ontology))
                                   lisp-class-ontology))
                      (unwind-protect (progn
@@ -821,9 +817,9 @@ A different internal name will be generated..."
                        (switch-to-ontology current-ontology))
                      (when in-use?
                        (unless 
-                         ;;only if we are re-defining the same class we can ignore the internal name conflict
-                         (and (eq (name class-with-same-internal-name) name)
-                              (eq lisp-class-ontology *current-ontology*))
+                           ;;only if we are re-defining the same class we can ignore the internal name conflict
+                           (and (eq (name class-with-same-internal-name) name)
+                                (eq lisp-class-ontology *current-ontology*))
                          (ocml-warn "cannot use internal name ~s for class ~s..OCML class ~s in ontology ~s already uses this internal name.  
 A different internal name will be generated..."
                                     internal-name name (name class-with-same-internal-name) (name lisp-class-ontology))
@@ -832,7 +828,7 @@ A different internal name will be generated..."
       (cond ((and already-exists?
                   (eq (home-ontology class) *current-ontology*))
              (warn "Redefining class ~S" name)
-             (setf (find-class internal-name)  ;;Hope this works in all common lisp systems.....
+             (setf (find-class internal-name) ;;Hope this works in all common lisp systems.....
                    class) 
              (setf lost-slots (set-difference (domain-slots class) 
                                               (append local-slots inherited-slots)))
@@ -842,8 +838,8 @@ A different internal name will be generated..."
              ;;one.  In practice it is as if the previous one does not exist
              (setf already-exists? nil))
             ((find-class internal-name nil)
-             ;;;(and (find-class internal-name nil)
-             ;;;     (typep (find-class internal-name)'ocml-metaclass))
+;;;(and (find-class internal-name nil)
+;;;     (typep (find-class internal-name)'ocml-metaclass))
              
              (clear-subclasses-slot (find-class internal-name))
              (initialize-instances (find-class internal-name))
@@ -877,42 +873,43 @@ A different internal name will be generated..."
                                        (< (position x (class-precedence-list class))
                                           (position y (class-precedence-list class))))))
       (multiple-value-bind (clos-specs slot-info-list ocml-options)
-                           (finalize-class-spec  
-                            name
-                            ordered-supers
-                            local-slots-spec
-                            inherited-slots
-                            (effective-renaming-chains class))
+          (finalize-class-spec  
+           name
+           ordered-supers
+           local-slots-spec
+           inherited-slots
+           (effective-renaming-chains class))
         ;;here we ensure that all slots-info both local and 
         ;;inherited takes renaming into account
         ;;(setf slot-info-list
         ;;      (standardize-slots-spec-for-renaming  class ordered-supers slot-info-list ocml-options))
-        
-        (setf new-class (make-domain-class name internal-name supers instance-var documentation
-			                   clos-specs
-                                           (append local-slots inherited-slots)
-                                           local-slots
-                                           lisp-slots
-                                           ocml-options
-                                           slot-info-list
-			                   relation-spec))
+        (handler-bind
+            ((warning #'(lambda (c)
+                          (if (redefinition-warning? c)
+                              (muffle-warning c)
+                              (signal c)))))
+          (setf new-class (make-domain-class name internal-name supers instance-var
+                                             documentation clos-specs
+                                             (append local-slots inherited-slots)
+                                             local-slots lisp-slots ocml-options
+                                             slot-info-list relation-spec)))
         (when already-exists?
-          ;;;;;;;;;;;;;;;;;
-          ;;;this line added because when renaming local and inherited slots are changed
+;;;;;;;;;;;;;;;;;
+;;;this line added because when renaming local and inherited slots are changed
           (setf lost-slots (set-difference lost-slots 
                                            (append local-slots inherited-slots)))
-          ;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
           (dolist (slot lost-slots)
             (remove-slot-of-entry (get-relation slot) class)
             (remove-local-slot-of-entry (get-relation slot) class))
           (Setf domain-slots (domain-slots new-class)
-                slots-to-recompute                   ;;The slots to recompute are all the domain slots
-                (union (domain-slots new-class)      ;;of the new class, + the slots 
-		       lost-slots))                  ;;which have been 'lost'
+                slots-to-recompute ;;The slots to recompute are all the domain slots
+                (union (domain-slots new-class) ;;of the new class, + the slots 
+		       lost-slots)) ;;which have been 'lost'
        	  (update-class-direct-instances new-class
                                          domain-slots) ;;Only domain slots are needed for instances 
 	  (update-subclasses new-class slots-to-recompute  lost-slots))
-        ;;;harlequin can't quite cope
+;;;harlequin can't quite cope
         #+lispworks
         (ensure-all-superclasses-know-me new-class supers)
         (propagate-new-def-to-sub-ontologies name new-class 'class)
@@ -1021,7 +1018,6 @@ A different internal name will be generated..."
                                &aux class own-slots)
   (unless documentation
     (setf documentation ""))    ;;Needed for maclisp--Enrico
-  
   (prog1
       (setf class
 	    (eval `(defclass ,internal-name ,(ensure-vanilla-class2
