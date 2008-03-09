@@ -104,18 +104,13 @@ non-nil."
 
 (defun define-relation-internal (name schema documentation options)
   (multiple-value-bind (name schema documentation options)
-                       (parse-define-relation-form name schema
-                                                   documentation options)
+      (parse-define-relation-form name schema documentation options)
     (check-no-duplicates-in-rel-options name options)
     (prog1
-      (apply #'make-ocml-relation name :schema schema :documentation
-             documentation
-             :defined-from-def-relation t
-             options
-             )
-      #-:lispworks(record-source-file name 'ocml-relation)
-      ;;#+(or allegro lispworks)(record-source-file name 'def-relation)
-      #+(or allegro lispworks)(ocml-record-source-file name 'def-relation))))
+        (apply #'make-ocml-relation name :schema schema :documentation
+               documentation :defined-from-def-relation t options)
+      #+(or :allegro :lispworks)
+      (ocml-record-source-file name 'def-relation))))
 
 (defun check-no-duplicates-in-rel-options
     (name spec &optional (option-list +relation-spec-keywords+) (type 'relation))
@@ -249,7 +244,7 @@ non-nil."
         
         ;;ok, no incompatibilities with slots or classes
         (let ((old-ontology (home-ontology structure))
-                (source-file (car (source-files rel 'ocml-relation))))
+                (source-file (car (source-files rel 'def-relation))))
             (cond ((eq old-ontology *current-ontology*)
                    (unless (equal (and source-file
                                        (translate-logical-pathname source-file))
@@ -339,8 +334,9 @@ non-nil."
 
 ;;;MAYBE-PROCESS-SUFFICIENT-&-IFF-DEF-ENTRIES --- modified by Mauro
 (defmethod  maybe-process-sufficient-&-iff-def-entries ((obj ocml-relation))
-  (with-slots (sufficient iff-def name schema prove-by
-			  exclusive-prove-by no-proofs-by) obj
+  (with-slots (sufficient iff-def name schema prove-by exclusive-prove-by
+                          no-proofs-by sufficient-for-type-checking)
+      obj
     (when sufficient
       (unless (member :sufficient no-proofs-by)
         ;; (unless (find-bc-rule name)
@@ -570,7 +566,6 @@ non-nil."
     (find args relation-instances :test #'(lambda (x y)
                                                    (equal x (args y))))))
 
-
 ;;;ADD-RELATION-INSTANCE
 (defmethod add-relation-instance ((relation ocml-relation) instance)
                                  ;;;;; (instance relation-instance))
@@ -711,10 +706,10 @@ non-nil."
     (destructuring-bind (instancen value) args
       (cond ((variable? instancen)
              (if (variable? value)
-               (remove-all-slot-values-from-all-instances-of-these-classes (filter-active-classes local-slot-of)
-                                                                           name)
-               (remove-slot-value-from-all-instances-of-these-classes (filter-active-classes local-slot-of)
-                                                                           name value)))
+               (remove-all-slot-values-from-all-instances-of-these-classes
+                (filter-active-classes local-slot-of) name)
+               (remove-slot-value-from-all-instances-of-these-classes
+                (filter-active-classes local-slot-of) name value)))
             ((variable? value)
              (remove-all-slot-values-from-all-instances-named-x-of-these-classes 
               instancen
@@ -915,10 +910,11 @@ non-nil."
   ;;in the same way as i changed the buffer reader for def-instance
   ;;The new reader copes with the fact that the first form may be a documentation string
   ;;which we want to ignore
-  #+(or allegro lispworks)(ocml-record-source-file (car exps) 'def-relation-instances)
+  #+(or :allegro :lispworks)
   (loop for exp in exps
-        do
-        (tell1 exp documentation)))
+     do
+       (ocml-record-source-file exp 'def-relation-instance)
+       (tell1 exp documentation)))
 
 ;;relation-instance 'name' is in fact the expression
 (defun get-relation-instance (name)

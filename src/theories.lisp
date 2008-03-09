@@ -461,8 +461,7 @@ changed by john domingue 6/2/03
         do
         (copy-ontology from-onto ontology))
   #-:lispworks(record-source-file name 'ocml-ontology)
-  #+(or allegro lispworks)(ocml-record-source-file name 'def-ontology name)
-  ;;#+:lispworks(record-source-file name 'def-ontology)
+  #+(or :allegro :lispworks) (ocml-record-source-file name 'def-ontology name)
   (when new?
     (add-ontology name ontology))
   (load-ontology-files-new  ontology files pathname select-this-ontology?)
