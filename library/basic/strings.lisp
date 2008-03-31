@@ -26,4 +26,4 @@
 
 (def-class url (string) ?x
   "A URL is a particular type of string"
-  :sufficient-for-type-checking (string ?x))
+  :constraint (string ?x))
