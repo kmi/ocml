@@ -23,3 +23,7 @@
    :constraint (string ?msg)
    :lisp-fun #'(lambda (msg &rest args)
                  (apply #'format nil  msg args)))
+
+(def-class url (string) ?x
+  "A URL is a particular type of string"
+  :sufficient-for-type-checking (string ?x))
