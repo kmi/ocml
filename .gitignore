@@ -21,3 +21,7 @@ doc/*.pg
 doc/*.toc
 doc/*.tp
 doc/*.vr
+
+# Folders tweaking information from Mac OSX
+.DS_Store
+
