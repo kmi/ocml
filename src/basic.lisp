@@ -1359,7 +1359,7 @@ relevant slot values"
 ;; only after the ontology's contents have been seen.
 (defun finalise-ontology (ontology)
   (with-ontology (ontology)
-     (compute-slot-type-specifiers ontology)))
+    (compute-slot-type-specifiers *current-ontology*)))
 
 (defun compute-slot-type-specifiers (ontology)
   "Once the ontology is loaded, compute slot types from the slot type specifiers."
