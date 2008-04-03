@@ -28,6 +28,7 @@
 * Reference::                   
 * Interpreters and Proof System::  
 * Bibliography::                
+* Function Index::              
 @end menu
 
 @node Introduction, Installation, Top, Top
@@ -1017,20 +1018,30 @@ them, until one fails.  This mechanism makes it possible to integrate
 data-driven and goal-driven reasoning and to specify arbitrarily
 complex right hand sides.
 
-A special operator, exec, is provided to allow OCML users to
+A special operator, @code{exec}, is provided to allow OCML users to
 introduce control (and therefore functional) terms in the right hand
 side of a rule.  In particular, two useful procedures are tell, to
 assert new facts, and output, to produce output.  A simple example
-showing how to use these in a forward chaining rule is given
-below.
+showing how to use these in a forward chaining rule is given below.
 
 @smallexample
-(def-rule foo 
-  (has-project ?x ?y) 
-  then 
-   (exec (tell (project-covered-by ?y ?x)))
-   (exec (output "has project ~S ~S" ?x ?y)))
+(def-rule has-project-cond
+    (has-project ?x ?y)
+  then
+  (exec (tell (project-covered-by ?y ?x)))
+  (exec (output "has-project-cond deduced ~S has project ~S~%" ?x ?y)))
+
+(enable-fc-watcher-mode)
+
+(def-instance larry-e researcher
+  ((has-project tigris)
+   (smoker no)
+   (hacker yes)
+   (works-with harry_d)))
 @end smallexample
+
+This produces the output @code{has-project-cond deduced LARRY-E has
+project TIGRIS}.
 
 While forward rules can be useful in a number of situations when
 building application models (e.g. to define watchers, which are
@@ -1039,8 +1050,22 @@ are not essential to the model building process.  The reason for this
 is that knowledge-level modelling is mainly about constructing
 definitions, while forward-chaining rules are about behaviour.  Thus
 they can be used in place of procedures to describe behaviour but they
-cannot replace constructs for relation or function
-specification.
+cannot replace constructs for relation or function specification.
+
+@deffn Function run-fc-rules
+@deffnx Function run
+Explicitly run forward-chaining rules in the current ontology.
+@end deffn
+
+@deffn Function enable-fc-watcher-mode &optional packets
+@deffnx Function disable-fc-watcher-mode
+Enable and disable the automatic triggering of forward chaining rules.
+@end deffn
+
+@deffn Function trace-fc
+@deffnx Function untrace-fc
+Turn on and off the tracing of forward chaining rules.
+@end deffn
 
 @node Modelling issues, Functional View of OCML, Rule-based reasoning, Top
 @chapter Modelling issues
@@ -1803,12 +1828,16 @@ respect to first-order logic statements.  In particular, disjunctions
 can only be proved by proving each clause separately and negated
 expressions are only proved by default.
 
-@node Bibliography,  , Interpreters and Proof System, Top
+@node Bibliography, Function Index, Interpreters and Proof System, Top
 @chapter Bibliography
 
 @noindent
 @anchor{Reusable Components for Knowledge Modelling}
 
-[Motta99] Enrico Motta. @i{Reusable Components for Knowledge Modelling}. IOS Press. 1-58603-003-5. 
+[Motta99] Enrico Motta. @i{Reusable Components for Knowledge Modelling}. IOS Press. 1-58603-003-5.
+
+@node Function Index,  , Bibliography, Top
+@unnumbered Function Index
+@printindex fn
 
 @bye
