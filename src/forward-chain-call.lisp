@@ -140,24 +140,13 @@
                         do
                         (remove-wm-pattern-from-rete  node (list name value)))))))
 
-                      
-(defun run-fc-rules (&optional (packets :all)&aux rules)
-  (setf rules
-        (if (eq packets :all)
-            (merge-rules (all-rule-packets))
-            (merge-rules (mapcar #'get-rule-packet packets))))
-   (compile-fc-rules rules)
-   (do-interpreter-cycle rules))
-
-
-  
-  
-
-;;;;;;;---------------------------------------------------------------------------------
-;;;;;;;---------------------------------------------------------------------------------
-;;;;;;;---------------------------------------------------------------------------------
-;;;;;;;---------------------------------------------------------------------------------
-;;;;;;;---------------------------------------------------------------------------------
+(defun run-fc-rules (&optional (packets :all))
+  "Run the forward-chainer rules."
+  (let ((rules (merge-rules (if (eq packets :all)
+                                (all-rule-packets)
+                                (mapcar #'get-rule-packet packets)))))
+    (compile-fc-rules rules)
+    (do-interpreter-cycle rules)))
 
 ;;;UNASSERT-CLASS-SLOTS-FROM-ALL-INSTANCES ----
 ;;;This function is called when a domain class is redefined, to ensure that
