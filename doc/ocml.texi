@@ -128,18 +128,18 @@ Translations earlier in the list take precedence.
 
 @menu
 * Overview::                    
+* Ontologies::                  
 * Classes::                     
 * Instances::                   
 * Relations::                   
 * Functions::                   
-* Ontologies::                  
-* Namespaces::                  
 * Procedures::                  
+* Namespaces::                  
 * Translation between representation languages::  
 * The ask-tell interface::      
 @end menu
 
-@node Overview, Classes, Domain Modelling in OCML, Domain Modelling in OCML
+@node Overview, Ontologies, Domain Modelling in OCML, Domain Modelling in OCML
 @section Overview
 
 OCML provides mechanisms for defining relations, functions,
@@ -202,8 +202,136 @@ and quantifiers - forall and exists.  Operational semantics is
 provided for all operators and quantifiers.  Relations are defined by
 means of the Lisp macro @code{def-relation}.
 
-@node Classes, Instances, Overview, Domain Modelling in OCML
+@node Ontologies, Classes, Overview, Domain Modelling in OCML
+@section Ontologies
+@cindex ontology
+@findex def-ontology
+
+OCML organises its knowledge models using ontologies.  When an
+ontology is defined, say @samp{O}, it is possible to specify which
+ontologies are included in @samp{O} and as a result @samp{O} will
+include all the definitions from its parent ontologies.  When
+conflicts are detected (e.g., the same concept is defined in two
+different parent ontologies), a warning is issued.  Primitives for
+loading and selecting ontologies are also provided.
+
+By default all ontologies are built on top of the OCML base
+ontology.  This comprises twelve sub-ontologies which include the
+basic definitions required to reason about basic data types
+(e.g. lists, numbers, sets and strings), the OCML system itself and
+the OCML frame representation.  Specifically, the following
+sub-ontologies are provided:
+
+@table @asis
+
+@item Meta
+This ontology defines the concepts required to
+describe the OCML language.  It includes constructs such as `OCML
+expression', `functional term', `rule', `relation', `function',
+`assertion', etc.  This ontology is particularly important to
+construct reasoning components which can verify OCML
+models.
+
+@item Functions
+Defines the concepts associated with functions - e.g.,
+it includes relations such as domain, range, unary-function,
+binary-function, etc.
+
+@item Relations
+Defines the various notions associated with relations.
+These include the universe and the extension of a relation, the
+definition of reflexive and transitive relations, partial and total
+orders, etc.
+
+@item Sets
+This ontology defines the notions associated with sets
+- e.g., `empty set', `union', `intersection', `set partition', `set
+cardinality', etc.
+
+@item Numbers
+Defines the various concepts and operations required
+for reasoning about numbers and for performing
+calculations.
+
+@item Lists
+Defines the concepts and operations associated with
+lists.  It includes classes such as list and atom; functions such as
+first, rest and append; and relations such as
+member.
+
+@item Strings
+Specifies the concepts and operations associated with
+strings - e.g., string, string-append, etc.
+
+@item Mapping
+This ontology defines the concepts associated with the
+mapping mechanism described earlier.  It includes only three
+definitions: relation maps-to and functions meta-reference and
+domain-reference.  The former takes a domain-level instance and
+returns the associated task/method level instance.  The latter
+performs the inverse function.
+
+@item Frames
+Defines the concepts associated with the frame-based
+representation used in OCML.  It comprise (meta-) classes such as
+class and instance; functions such as direct-instances and
+all-slot-values; relations such as has-one and has-at-most; and
+procedures such as append-slot-value.
+
+@item Inferences
+The purpose of this ontology is to provide a
+repository for defining functions and relations supporting the
+specification of KADS-like inferences.  So far only a few such
+inferences have been added to this ontology to support different types
+of selection and sorting.
+
+@item Environment
+This ontology provides a kind of `environmental
+support' for the construction of OCML models.  It includes special
+operators like exec, which makes it possible to invoke procedures from
+rules, and procedures such as output, which prints out a
+message.
+
+@item Task-Method
+This ontology provides the concepts required to model
+tasks and problem solving methods, i.e. to support the construction of
+task and problem solving models.
+@end table
+
+This set of ontologies provides a rich modelling platform from
+which to build other ontologies and/or problem solving models.  It is
+natural to compare the OCML and Ontolingua base ontologies (Farquhar
+et al., 1996).  There are two aspects which distinguish these two sets
+of ontologies: their nature and their scope.
+
+The first difference is related to the operational nature of
+OCML.  The Ontolingua base ontology is not concerned with
+operationality and therefore includes many non-operational
+definitions.  The OCML base ontology is concerned with providing
+support for the construction of operational models.  As a result it
+attempts to minimize the number of non-executable specifications.  A
+typical approach is to weaken a non-operational definition to make it
+executable.  For instance let's consider the function universe.  In
+the Ontolingua base ontology the universe of a relation is defined as
+the set of all objects for which the relation is true.  Of course this
+is not an operational definition.  However, we can provide a weaker
+version of universe, called known-universe, which returns the set of
+all entities which are part of a tuple satisfying the relation in
+question.  This function can be either defined separately from
+universe or attached to it to provide an operational
+definition.
+
+The second difference concerns the scope of the two base
+ontologies.  Both the Ontolingua and OCML base ontologies provide a
+rich set of definitions for domain modelling.  In order to comply with
+the requirements imposed by the TMDA framework, the OCML base ontology
+provides support also for specifying tasks and problem solving
+methods.
+
+@node Classes, Instances, Ontologies, Domain Modelling in OCML
 @section Classes
+@cindex class
+@findex def-class
 
 OCML also supports the specification of classes and instances
 and the inheritance of slots and values through isa
@@ -278,6 +406,8 @@ more generic ones.
 
 @node Instances, Relations, Classes, Domain Modelling in OCML
 @section Instances
+@cindex instance
+@findex def-instance
 
 Instances are simply members of a class.  An instance is defined
 by means of def-instance, which takes as arguments the name of the
@@ -508,8 +638,10 @@ modelling, OCML also supports formal specification.  Moreover, it
 provides facilities for integrating a specification with efficient
 proof mechanisms.
 
-@node Functions, Ontologies, Relations, Domain Modelling in OCML
+@node Functions, Procedures, Relations, Domain Modelling in OCML
 @section Functions
+@cindex function
+@findex def-function
 
 A function defines a mapping between a list of input arguments
 and its output argument.  Formally functions can be characterized as a
@@ -579,132 +711,36 @@ provides a declarative way of specifying a function; the
 option @code{:body} an effective way of computing its
 value, for a given set of input arguments.
 
-@node Ontologies, Namespaces, Functions, Domain Modelling in OCML
-@section Ontologies
+@node Procedures, Namespaces, Functions, Domain Modelling in OCML
+@section Procedures
+@cindex procedure
+@findex def-procedure
 
-OCML also provides support for defining ontologies.  When an
-ontology is defined, say O, it is possible to specify which ontologies
-are included in O and as a result O will include all the definitions
-from its parent ontologies.  When conflicts are detected (e.g., the
-same concept is defined in two different parent ontologies), a warning
-is issued.  Primitives for loading and selecting ontologies are also
-provided.
+Procedures define actions or sequences of actions which cannot
+be characterized as functions between input and output arguments.  For
+example, the procedure below defines the sequence of actions needed to
+set the value of a slot.  These include a unassert statement, which
+removes any existing value from the slot, and a tell statement, which
+adds the new value.  Both tell and unassert are procedures.  The
+former takes a ground logical expression and adds it to the current
+model.  The latter takes a relation expression and removes from the
+current model all assertions which match it.  Note that in accordance
+with the uniform view of a knowledge model, slot changes are carried
+out by means of generic assertion and deletion operations (i.e. in
+terms of tell and unassert).
 
-By default all ontologies are built on top of the OCML base
-ontology.  This comprises twelve sub-ontologies which include the
-basic definitions required to reason about basic data types
-(e.g. lists, numbers, sets and strings), the OCML system itself and
-the OCML frame representation.  Specifically, the following
-sub-ontologies are provided:
+@smallexample
+(def-procedure SET-SLOT-VALUE (?i ?s ?v)
+  :constraint (and (instance-of ?i ?c)
+                   (slot-of ?s ?c))
+  :body (do
+          (unassert (list-of ?s ?i ?any))
+          (tell (list-of ?s ?i ?v))))
+@end smallexample
 
-@table @asis
-
-@item Meta
-This ontology defines the concepts required to
-describe the OCML language.  It includes constructs such as `OCML
-expression', `functional term', `rule', `relation', `function',
-`assertion', etc.  This ontology is particularly important to
-construct reasoning components which can verify OCML
-models.
-
-@item Functions
-Defines the concepts associated with functions - e.g.,
-it includes relations such as domain, range, unary-function,
-binary-function, etc.
-
-@item Relations
-Defines the various notions associated with relations.
-These include the universe and the extension of a relation, the
-definition of reflexive and transitive relations, partial and total
-orders, etc.
-
-@item Sets
-This ontology defines the notions associated with sets
-- e.g., `empty set', `union', `intersection', `set partition', `set
-cardinality', etc.
-
-@item Numbers
-Defines the various concepts and operations required
-for reasoning about numbers and for performing
-calculations.
-
-@item Lists
-Defines the concepts and operations associated with
-lists.  It includes classes such as list and atom; functions such as
-first, rest and append; and relations such as
-member.
-
-@item Strings
-Specifies the concepts and operations associated with
-strings - e.g., string, string-append, etc.
-
-@item Mapping
-This ontology defines the concepts associated with the
-mapping mechanism described earlier.  It includes only three
-definitions: relation maps-to and functions meta-reference and
-domain-reference.  The former takes a domain-level instance and
-returns the associated task/method level instance.  The latter
-performs the inverse function.
-
-@item Frames
-Defines the concepts associated with the frame-based
-representation used in OCML.  It comprise (meta-) classes such as
-class and instance; functions such as direct-instances and
-all-slot-values; relations such as has-one and has-at-most; and
-procedures such as append-slot-value.
-
-@item Inferences
-The purpose of this ontology is to provide a
-repository for defining functions and relations supporting the
-specification of KADS-like inferences.  So far only a few such
-inferences have been added to this ontology to support different types
-of selection and sorting.
-
-@item Environment
-This ontology provides a kind of `environmental
-support' for the construction of OCML models.  It includes special
-operators like exec, which makes it possible to invoke procedures from
-rules, and procedures such as output, which prints out a
-message.
-
-@item Task-Method
-This ontology provides the concepts required to model
-tasks and problem solving methods, i.e. to support the construction of
-task and problem solving models.
-@end table
-
-This set of ontologies provides a rich modelling platform from
-which to build other ontologies and/or problem solving models.  It is
-natural to compare the OCML and Ontolingua base ontologies (Farquhar
-et al., 1996).  There are two aspects which distinguish these two sets
-of ontologies: their nature and their scope.
-
-The first difference is related to the operational nature of
-OCML.  The Ontolingua base ontology is not concerned with
-operationality and therefore includes many non-operational
-definitions.  The OCML base ontology is concerned with providing
-support for the construction of operational models.  As a result it
-attempts to minimize the number of non-executable specifications.  A
-typical approach is to weaken a non-operational definition to make it
-executable.  For instance let's consider the function universe.  In
-the Ontolingua base ontology the universe of a relation is defined as
-the set of all objects for which the relation is true.  Of course this
-is not an operational definition.  However, we can provide a weaker
-version of universe, called known-universe, which returns the set of
-all entities which are part of a tuple satisfying the relation in
-question.  This function can be either defined separately from
-universe or attached to it to provide an operational
-definition.
-
-The second difference concerns the scope of the two base
-ontologies.  Both the Ontolingua and OCML base ontologies provide a
-rich set of definitions for domain modelling.  In order to comply with
-the requirements imposed by the TMDA framework, the OCML base ontology
-provides support also for specifying tasks and problem solving
-methods.
-
-@node Namespaces, Procedures, Ontologies, Domain Modelling in OCML
+@node Namespaces, Translation between representation languages, Procedures, Domain Modelling in OCML
 @section Namespaces
+@cindex namespace
 
 OCML uses Lisp symbols to name things.  This is convenient, but
 awkward when dealing with ontologies on a global scale.  OCML now
@@ -821,34 +857,7 @@ NIL
 The notation @code{#_} is modelled after the WSML
 syntax for IRIs, @code{_"http://www.deri.org/foo"}.
 
-@node Procedures, Translation between representation languages, Namespaces, Domain Modelling in OCML
-@section Procedures
-@cindex procedure
-@findex def-procedure
-
-Procedures define actions or sequences of actions which cannot
-be characterized as functions between input and output arguments.  For
-example, the procedure below defines the sequence of actions needed to
-set the value of a slot.  These include a unassert statement, which
-removes any existing value from the slot, and a tell statement, which
-adds the new value.  Both tell and unassert are procedures.  The
-former takes a ground logical expression and adds it to the current
-model.  The latter takes a relation expression and removes from the
-current model all assertions which match it.  Note that in accordance
-with the uniform view of a knowledge model, slot changes are carried
-out by means of generic assertion and deletion operations (i.e. in
-terms of tell and unassert).
-
-@smallexample
-(def-procedure SET-SLOT-VALUE (?i ?s ?v)
-  :constraint (and (instance-of ?i ?c)
-                   (slot-of ?s ?c))
-  :body (do
-          (unassert (list-of ?s ?i ?any))
-          (tell (list-of ?s ?i ?v))))
-@end smallexample
-
-@node Translation between representation languages, The ask-tell interface, Procedures, Domain Modelling in OCML
+@node Translation between representation languages, The ask-tell interface, Namespaces, Domain Modelling in OCML
 @section Translation between representation languages
 
 While OCML is an excellent language for knowledge modelling,
