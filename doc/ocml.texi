@@ -957,18 +957,22 @@ the query.
 
 @node Rule-based reasoning, Modelling issues, Domain Modelling in OCML, Top
 @chapter Rule-based reasoning
+@cindex rule
+@findex def-rule
 
 @menu
 * Backward-chaining rules::     
 * Forward-chaining rules::      
 @end menu
 
+OCML can reason with backward and forward chaining rules.
+
 @node Backward-chaining rules, Forward-chaining rules, Rule-based reasoning, Rule-based reasoning
 @section Backward-chaining rules
+@cindex backward chaining
 
-OCML also supports the specification of backward and forward
-rules.  A backward rule consists of a number of backward clauses, each
-of which is defined according to the following syntax:
+A backward rule consists of a number of backward clauses, each of
+which is defined according to the following syntax:
 
 @smallexample
 backward-clause	::= (relation-expression @{if @{logical-expression@}+@})
@@ -1025,6 +1029,7 @@ room next to the entrance.
 
 @node Forward-chaining rules,  , Backward-chaining rules, Rule-based reasoning
 @section Forward-chaining rules
+@cindex forward chaining
 
 OCML also allows the user to define forward rules.  A forward
 rule comprises zero or more antecedents and one or more consequents.
