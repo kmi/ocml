@@ -71,15 +71,15 @@ Git@footnote{@url{http://git.or.cz/}}.
 git clone http://kmi-forge.open.ac.uk/git/ocml.git
 @end smallexample
 
-This should leave you with a directory called @samp{ocml}.
+This should leave you with a directory called @file{ocml}.
 
 @node Setup, Library locations, Obtaining OCML, Installation
 @section Setup
 
 OCML uses the ASDF system definition package.  You can find out more
 about ASDF at @uref{http://www.cliki.net/asdf}.  If you have ASDF
-installed, make sure the @samp{ocml.asd} file is accessible from
-@samp{asdf:*central-registry*}, and then load it:
+installed, make sure the @file{ocml.asd} file is accessible from
+@code{asdf:*central-registry*}, and then load it:
 
 @smallexample
 CL-USER > (asdf:operate 'asdf:load-op :ocml)
@@ -102,7 +102,7 @@ CL-USER> (ocml:initialize-ocml)
 @section Library locations
 
 OCML finds its libraries (the ontologies) via logical pathnames.
-The logical host @samp{ocml} holds the translations.
+The logical host @code{ocml} holds the translations.
 Immediately after loading OCML, this will be set to include the basic
 OCML library:
 
@@ -165,7 +165,7 @@ in-environment7 - see appendix 1 for a description of the semantics of
 these terms.  Variables are represented as Lisp symbols beginning with
 a question mark, e.g. ?x is a variable.  Strings are sequences of
 characters enclosed in double quotes, e.g. "string".  A function
-application is a term such as @samp{(fun @{fun-term@}*)},
+application is a term such as @code{(fun @{fun-term@}*)},
 where fun is the name of a function and fun-term a functional term.
 Functions are defined by means of the Lisp macro def-function, which
 is described in @ref{Functions}.
@@ -192,14 +192,14 @@ means of a control interpreter.  This is described in appendix
 
 OCML also provides the usual machinery for specifying logical
 expressions.  The simplest kind of logical expression is a relation
-expression, which has the form @samp{(rel @{fun-term@}*)},
+expression, which has the form @code{(rel @{fun-term@}*)},
 where rel is the name of a relation and fun-term is a functional term.
 More complex expressions can be constructed by using the logical
 operators
-@samp{and}, @samp{or}, @samp{not}, @samp{=>}, @samp{<=>}
+@code{and}, @code{or}, @code{not}, @code{=>}, @code{<=>}
 and quantifiers - forall and exists.  Operational semantics is
 provided for all operators and quantifiers.  Relations are defined by
-means of the Lisp macro @samp{def-relation}.
+means of the Lisp macro @code{def-relation}.
 
 @node Classes, Instances, Overview, Domain Modelling in OCML
 @section Classes
@@ -209,7 +209,7 @@ and the inheritance of slots and values through isa
 hierarchies.
 
 Classes are defined by means of a Lisp
-macro, @samp{def-class}, which takes as arguments the name
+macro, @code{def-class}, which takes as arguments the name
 of the class, a list (possibly empty) of superclasses, optional
 documentation, and a list of slot specifications, as illustrated by
 the definitions in the next box.  These show a number of classes taken
@@ -239,38 +239,38 @@ the following slot options.
 
 @multitable @columnfractions 0.5 0.5
 @item
-@samp{value}@tab A value which is
+@code{value}@tab A value which is
 inherited by all instances of a class.
 @item
-@samp{default-value}@tab A value
+@code{default-value}@tab A value
 which is inherited by all instances of a class, unless
 overridden by other values.
 @item
-@samp{type}@tab The value of this
+@code{type}@tab The value of this
 option should be a class, say C.  This option specifies that all
 values of the associated slot should be instances of C.  It is also
 possible to specify that a slot value must belong to one or more
 classes, say C1,...., Cn, by using the notation (or C1
 C2..Cn).
 @item
-@samp{max-cardinality}@tab The maximum numbers of slot values allowed for a slot.
+@code{max-cardinality}@tab The maximum numbers of slot values allowed for a slot.
 @item
-@samp{min-cardinality}@tab The minimum numbers of slot values required for a slot.
+@code{min-cardinality}@tab The minimum numbers of slot values required for a slot.
 @item
-@samp{cardinality}@tab The numbers
+@code{cardinality}@tab The numbers
 of slot values required for a slot.  This option subsumes
-both @samp{:min-cardinality}
-and @samp{:max-cardinality}.
+both @code{:min-cardinality}
+and @code{:max-cardinality}.
 @item
-@samp{documentation}@tab The value
+@code{documentation}@tab The value
 of this option is a string providing documentation for a
 slot.
 @item
-@samp{inheritance}@tab 
+@code{inheritance}@tab 
 The inheritance mechanism used for dealing with default values.  If
-@samp{:merge} is used, then all default values inherited
+@code{:merge} is used, then all default values inherited
 from different ancestors are collected.
-If @samp{:supersede} is used, then default values
+If @code{:supersede} is used, then default values
 inherited from more specific ancestors override those inherited from
 more generic ones.
 @end multitable
@@ -294,9 +294,9 @@ Sisyphus-I domain model, is shown in the box below.
 @end smallexample
 
 In particular the above definition shows that a slot can have
-multiple values.  In this case @samp{harry_c} works both
+multiple values.  In this case @code{harry_c} works both
 with
-@samp{jurgen_l} and @samp{thomas_d}.
+@code{jurgen_l} and @code{thomas_d}.
 
 @node Relations, Functions, Instances, Domain Modelling in OCML
 @section Relations
@@ -330,22 +330,22 @@ of the homonymous Ontolingua constructs.
 @item
 Relation option@tab Role in specification
 @item
-@samp{:iff-def}@tab Specifies
+@code{:iff-def}@tab Specifies
 both sufficient and necessary conditions for the relation to hold for
 a given set of arguments.
 @item
-@samp{:sufficient}@tab Specifies a sufficient condition for the relation to hold for a given
+@code{:sufficient}@tab Specifies a sufficient condition for the relation to hold for a given
 set of arguments.
 @item
-@samp{:constraint}@tab Specifies
+@code{:constraint}@tab Specifies
 an expression which follows from the definition of the relation and
 must be true for each instance of the relation.
 @item
-@samp{:def}@tab This is for compatibility with
+@code{:def}@tab This is for compatibility with
 Ontolingua: it specifies a constraint which is also meant to provide a
 partial definition of a relation.
 @item
-@samp{:axiom-def}@tab A statement which mentions the relation to which it is
+@code{:axiom-def}@tab A statement which mentions the relation to which it is
 associated.  It provides a mechanism to associate theory axioms with
 specific relations.
 @end multitable
@@ -380,58 +380,58 @@ Relation option@tab Supports constraint checking @tab Provides proof mechanism
 
 As shown in the table, constraint checking is supported by the
 following
-keywords: @samp{:constraint}, @samp{:def} and
-@samp{:iff-def}.  While these have different
+keywords: @code{:constraint}, @code{:def} and
+@code{:iff-def}.  While these have different
 model-theoretic semantics, from a constraint checking point of view
 they are equivalent.  They all specify an expression which has to be
 satisfied by each known instance of the relevant relation.
 
 The relation
-options @samp{:iff-def}, @samp{:sufficient},
-@samp{:prove-by} and @samp{:lisp-fun} provide
+options @code{:iff-def}, @code{:sufficient},
+@code{:prove-by} and @code{:lisp-fun} provide
 mechanisms for verifying whether or not a relation holds for some
-arguments.  The first two---@samp{:iff-def}
-and @samp{:sufficient}---also play a specification role.
-The others---@samp{:prove-by} and
-@samp{:lisp-fun}---only play an operational role.
+arguments.  The first two---@code{:iff-def}
+and @code{:sufficient}---also play a specification role.
+The others---@code{:prove-by} and
+@code{:lisp-fun}---only play an operational role.
 
-Both @samp{:iff-def}
-and @samp{:sufficient} indicate logical expressions which
+Both @code{:iff-def}
+and @code{:sufficient} indicate logical expressions which
 can be used to prove whether some tuple is an instance of a relation.
 From a theorem proving point of view there is an important difference
 between them.  Let's suppose we are trying to prove that a tuple, say
 T, satisfies a relation, say R.  If a
-@samp{:sufficient} condition is tried and failed, the OCML
+@code{:sufficient} condition is tried and failed, the OCML
 proof system will then search for alternative ways of proving that T
-satisfies R.  If an @samp{:iff-def} condition is tried and
+satisfies R.  If an @code{:iff-def} condition is tried and
 failed, then no alternative proof mechanism will be attempted.
 
-The relation options @samp{:prove-by}
-and @samp{:lisp-fun} are meant to support rapid
+The relation options @code{:prove-by}
+and @code{:lisp-fun} are meant to support rapid
 prototyping and early validation by providing efficient mechanisms for
 checking whether a tuple satisfies a relation.  The difference between
 :prove-by and :lisp-fun has to do with the expressions which are used
 as values to the two options:
-@samp{:prove-by} points to a logical
-expression, @samp{:lisp-fun} to a non-logical one
+@code{:prove-by} points to a logical
+expression, @code{:lisp-fun} to a non-logical one
 (specifically a Lisp expression).
 
 The box below provides an example of how the various types of
 relation options can be used concurrently to specify a relation and to
 support constraint checking and efficient proofs.  The relation
 has-value, shown below, associates a design parameter to its value in
-a design model.  The definition specifies that @samp{?v}
-is the value of a parameter, @samp{?p}, in a design
-model, @samp{?dm}, if and only if the pair @samp{(?p
-. ?v)} is an element of @samp{?dm}.  In addition,
+a design model.  The definition specifies that @code{?v}
+is the value of a parameter, @code{?p}, in a design
+model, @code{?dm}, if and only if the pair @code{(?p
+. ?v)} is an element of @code{?dm}.  In addition,
 it also specifies the constraint that the value of a parameter has to
 be a member of its value range, if this has been specified.  Finally,
-the definition includes a @samp{:prove-by} option whose
+the definition includes a @code{:prove-by} option whose
 value is an expression which can be used for verifying whether the
-relation is satisfied for a triple, @samp{(?p ?v ?dm)}.
+relation is satisfied for a triple, @code{(?p ?v ?dm)}.
 This expression provides an efficient proof method (by weakening the
 :iff-def statement which formally defines
-relation @samp{has-value}) but does not contribute to the
+relation @code{has-value}) but does not contribute to the
 specification.
 
 @smallexample
@@ -456,11 +456,11 @@ some cases we might want to use a keyword only for specification and
 not operationally, for instance when we know that the value of the
 keyword in question is a non-operational expression.  To cater for
 these situations, OCML provides a special
-meta-keyword, @samp{:no-op}, which can be used to indicate
+meta-keyword, @code{:no-op}, which can be used to indicate
 that the enclosed relation option only plays a specification role.  An
 example of its use is shown by the definition of relation range, which
-is shown below.  In the example the keyword @samp{:no-op}
-is used to indicate that the @samp{:iff-def} specification
+is shown below.  In the example the keyword @code{:no-op}
+is used to indicate that the @code{:iff-def} specification
 of the relation is not operational - in particular it is not normally
 feasible to test the range of a function on all its possible
 inputs!
@@ -482,9 +482,9 @@ inputs!
 @end smallexample
 
 In the above definition it is worth highlighting the use of the
-special meta-relation holds.  An expression such as @samp{(holds
+special meta-relation holds.  An expression such as @code{(holds
 <r> <arg1>....<argn>)} is satisfied if and
-only if the expression @samp{(<r>
+only if the expression @code{(<r>
 <arg1>....<argn>)} is satisfied.  Thus holds has
 variable arity: it can take one or more arguments.  In particular the
 number of additional arguments in a holds statement reflects the arity
@@ -519,25 +519,25 @@ This takes as argument the name of a function, its argument list, an
 optional variable indicating the output argument (as in Ontolingua
 this is preceded by an arrow, ->), optional documentation and zero
 or more function specification options.  These
-are @samp{:def},
-@samp{:constraint}, @samp{:body}
-and @samp{:lisp-fun}.
+are @code{:def},
+@code{:constraint}, @code{:body}
+and @code{:lisp-fun}.
 
 The option :constraint provides a way to constrain the domain
 (i.e. the set of possible inputs) of a function.  It specifies a
 logical expression which must be satisfied by the input arguments of
-the function.  The @samp{:def} option indicates a logical
+the function.  The @code{:def} option indicates a logical
 expression which `defines' the function.  This expression should be
 predicated over both (some) input arguments and the output variable.
 Operationally, the expression denoted by
-the @samp{:constraint} option provides a mechanism for
+the @code{:constraint} option provides a mechanism for
 testing the feasibility of applying a function to a set of arguments.
 The expression denoted by :def provides a mechanism for verifying that
 the output produced by a function application is consistent with the
 formal definition of the function.
 
-Finally, the options @samp{:body}
-and @samp{:lisp-fun} provide effective mechanisms for
+Finally, the options @code{:body}
+and @code{:lisp-fun} provide effective mechanisms for
 computing the value of a function.  The former specify a functional
 term which is evaluated in an environment in which the variables in
 the function schema are bound to the actual arguments.  The latter
@@ -564,13 +564,13 @@ function.
 @end smallexample
 
 The above definition shows an example of the use of
-@samp{def-function}.  The OCML function filter takes as
-arguments a list, @samp{?l}, and a unary
-relation, @samp{?rel}, and returns the elements
-of @samp{?l} which satisfy @samp{?rel}.  As
-illustrated by the definition, the @samp{:def} option
+@code{def-function}.  The OCML function filter takes as
+arguments a list, @code{?l}, and a unary
+relation, @code{?rel}, and returns the elements
+of @code{?l} which satisfy @code{?rel}.  As
+illustrated by the definition, the @code{:def} option
 provides a declarative way of specifying a function; the
-option @samp{:body} an effective way of computing its
+option @code{:body} an effective way of computing its
 value, for a given set of input arguments.
 
 @node Ontologies, Namespaces, Functions, Domain Modelling in OCML
@@ -717,10 +717,10 @@ before use.
 
 @item
 Namespaced symbols are prefixed
-with @samp{#_}.
+with @code{#_}.
 @end enumerate
 
-Ontology definitions should include a @samp{:namespace-uri}
+Ontology definitions should include a @code{:namespace-uri}
 initialization argument, which is a string holding the URI identifying
 the ontology.  If you do not supply a namespace URI, OCML will assign
 one based on the ontology's name.
@@ -746,7 +746,7 @@ Next, we tell OCML which prefixes we intend to use:
 @end smallexample
 
 We can then use these prefixes in ontologies, using a Lisp
-reader macro, @samp{#_}.  Classes, instances, and
+reader macro, @code{#_}.  Classes, instances, and
 relations can all be named in this way.  Viz:
 
 @smallexample
@@ -768,24 +768,24 @@ relations can all be named in this way.  Viz:
  (#_colors:has-colour #_colours:orange))
 @end smallexample
 
-Here, @samp{#_colours:orange}
-and @samp{#_fruit:orange} are different symbols, from
+Here, @code{#_colours:orange}
+and @code{#_fruit:orange} are different symbols, from
 different namespaces and ontologies, used together in one
 ontology.
 
 When Lisp reads a namespaced symbol, it converts it to a symbol
 by concatenating the value of the referenced
-ontology's @samp{namespace-uri} slot with the symbol.
-Thus, @samp{#_fruit:orange}
-becomes @samp{OCML::|http://www.kmi.open.ac.uk/fruits#orange|}.
-It is important to remember that the @samp{#_} syntax is
+ontology's @code{namespace-uri} slot with the symbol.
+Thus, @code{#_fruit:orange}
+becomes @code{OCML::|http://www.kmi.open.ac.uk/fruits#orange|}.
+It is important to remember that the @code{#_} syntax is
 merely a shorthand for the long, quoted Lisp symbol.  If you so wish,
 you can enter the long form directly, as a normal Lisp symbol.  Given
 this, namespaced variables interoperate fully with non-namespaced
 ones.  The prefixes themselves are discarded after they have been read
 in by the Lisp reader.  Namespaced symbols are case
-sensitive: @samp{#_foo} is distinct
-from @samp{#_Foo}.
+sensitive: @code{#_foo} is distinct
+from @code{#_Foo}.
 
 Further examples from a Lisp listener session:
 
@@ -812,8 +812,8 @@ OCML> (eq '#_colours:orange '#_colours:Orange)
 NIL
 @end smallexample
 
-The notation @samp{#_} is modelled after the WSML
-syntax for IRIs, @samp{_"http://www.deri.org/foo"}.
+The notation @code{#_} is modelled after the WSML
+syntax for IRIs, @code{_"http://www.deri.org/foo"}.
 
 @node Procedures, Translation between representation languages, Namespaces, Domain Modelling in OCML
 @section Procedures
@@ -876,7 +876,7 @@ and slots.  In particular, because these are relations, it is possible
 to characterize them by means of the relation options discussed in
 section @ref{Relations}.  For instance, the definition
 below specifies the class of empty sets in terms of
-an @samp{:iff-def} relation option.
+an @code{:iff-def} relation option.
 
 @smallexample
 (def-class EMPTY-SET (set) ?set
@@ -1367,7 +1367,7 @@ passed as argument to the relation instance being retracted.
 @subsection setofall
 
 @noindent
-@samp{setofall} finds all solutions (i.e. environments)
+@code{setofall} finds all solutions (i.e. environments)
 to basic-log-expression and then returns the list obtained by
 instantiating template in all the returned environments, ensuring that
 the list contains no duplicates.  If no solutions are found then the
@@ -1377,7 +1377,7 @@ empty list is returned.
 @subsection findall
 
 @noindent
-@samp{findall} is the same as setofall except that it does
+@code{findall} is the same as setofall except that it does
 not remove duplicate solutions.
 
 @node the, in-environment, findall, Functional Term Constructors
@@ -1587,38 +1587,38 @@ default value is operationalized as follows.
 Instances inherit values and default values from their
 superclasses down the inheritance hierarchy specified by instance-of
 and subclass-of links.  For a given slot, say s, of a sample instance,
-say @samp{I}, the following scenarios can arise:
+say @code{I}, the following scenarios can arise:
 
 @enumerate 
 
 @item
-@samp{I} has not inherited any default value.  In this
-case the value of s in @samp{I} is given by all the
-values @samp{I} has inherited from its superclasses, plus
+@code{I} has not inherited any default value.  In this
+case the value of s in @code{I} is given by all the
+values @code{I} has inherited from its superclasses, plus
 any value locally specified for slot s of
-@samp{I}.
+@code{I}.
 
 @item
-@samp{I} has inherited some default values as well as
+@code{I} has inherited some default values as well as
 non-default ones.  In this case the default values are ignored and
 rule (i) is applied.  We say that the default values are overridden by
 the non-default ones.
 
 @item
-@samp{I} has inherited only default values and local
+@code{I} has inherited only default values and local
 values have been specified.  As in the previous case, the default
 values are ignored and only the local values are considered.
 
 @item
-@samp{I} has inherited only default values and no local
+@code{I} has inherited only default values and no local
 values have been specified.  In this case there are two possibilities.
 If the :inheritance facet has not been specified, or it has been
 specified and it is :merge, all default values apply.  If the
 :inheritance facet has been specified and it is :supersede, then the
 value of s in
-@samp{I} is obtained by (i) ranking the ancestors
-of @samp{I} according to the class precedence order of the
-parent of @samp{I}, and (ii) retrieving the default value
+@code{I} is obtained by (i) ranking the ancestors
+of @code{I} according to the class precedence order of the
+parent of @code{I}, and (ii) retrieving the default value
 of the first class in the class precedence order which specifies a
 (default) value for s.  The details of the algorithm used to compute
 the class precedence order are given at pp. 782-786 of the Common Lisp
@@ -1643,7 +1643,7 @@ list of direct superclasses of C.
 @section Functional term interpreter
 
 The OCML interpreter is implemented by means of a Lisp macro,
-@samp{ocml-eval}.  This evaluates a functional term, term,
+@code{ocml-eval}.  This evaluates a functional term, term,
 in an environment, env, according to the following rules.
 
 @enumerate 
