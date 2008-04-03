@@ -66,9 +66,9 @@ SBCL.
 You can obtain the development version of OCML using
 Git@footnote{@url{http://git.or.cz/}}.
 
-@example
+@smallexample
 git clone http://kmi-forge.open.ac.uk/git/ocml.git
-@end example
+@end smallexample
 
 This should leave you with a directory called @samp{ocml}.
 
@@ -80,22 +80,22 @@ about ASDF at @uref{http://www.cliki.net/asdf}.  If you have ASDF
 installed, make sure the @samp{ocml.asd} file is accessible from
 @samp{asdf:*central-registry*}, and then load it:
 
-@example
+@smallexample
 CL-USER > (asdf:operate 'asdf:load-op :ocml)
-@end example
+@end smallexample
 
 or, if you're using a Lisp which integrates ASDF with @code{require},
 just do:
 
-@example
+@smallexample
 CL-USER> (require :ocml)
-@end example
+@end smallexample
 
 You then need to initialize OCML:
 
-@example
+@smallexample
 CL-USER> (ocml:initialize-ocml)
-@end example
+@end smallexample
 
 @node Library locations,  , Setup, Installation
 @section Library locations
@@ -105,19 +105,19 @@ The logical host @samp{ocml} holds the translations.
 Immediately after loading OCML, this will be set to include the basic
 OCML library:
 
-@example
+@smallexample
 CL-USER> (logical-pathname-translations "ocml")
 (("ocml:library;basic;**;*" "/home/djl/dev/ocml/library/basic/"))
-@end example
+@end smallexample
 
 Additional translations can be added, for instance in the IRS,
 the translations look like this:
 
-@example
+@smallexample
 CL-USER> (logical-pathname-translations "ocml")
 (("ocml:library;basic;**;*" "/home/djl/dev/ocml/documentation//library/basic/")
  ("ocml:library;**;*" "/home/djl/dev/irs/live/code/ocml/library/v5-0/**/*"))
-@end example
+@end smallexample
 
 Translations earlier in the list take precedence.
 
@@ -217,7 +217,7 @@ from the domain model for the Sisyphus-I office allocation problem
 members of the YQT laboratory to the appropriate offices, according to
 a number of constraints.
 
-@example
+@smallexample
 (def-class YQT-member ()
   ((has-project :type project)
    (smoker :type boolean :cardinality 1)
@@ -230,7 +230,7 @@ a number of constraints.
 (def-class secretary (YQT-member))
 
 (def-class manager (YQT-member))
-@end example
+@end smallexample
 
 OCML provides support for the usual slot specification machinery
 which is found in frame-based languages.  Specifically, it provides
@@ -284,13 +284,13 @@ instance belongs to), optional documentation and a number of
 slot-value pairs.  An example of instance definition, taken from the
 Sisyphus-I domain model, is shown in the box below.
 
-@example
+@smallexample
 (def-instance harry_c researcher
   ((has-project babylon)
    (smoker no)
    (hacker yes)
    (works-with jurgen_l thomas_d)))
-@end example
+@end smallexample
 
 In particular the above definition shows that a slot can have
 multiple values.  In this case @samp{harry_c} works both
@@ -433,7 +433,7 @@ This expression provides an efficient proof method (by weakening the
 relation @samp{has-value}) but does not contribute to the
 specification.
 
-@example
+@smallexample
 (def-relation HAS-VALUE (?p ?v ?dm)
   "Parameters have values w.r.t a particular design model"
   :iff-def (and (parameter ?p)
@@ -445,7 +445,7 @@ specification.
                   (not (exists ?vr 
                                (has-value-range ?p ?vr))))
   :prove-by (element-of (?p . ?v) ?dm))
-@end example
+@end smallexample
 
 A meta-option for non-operational specifications
 
@@ -464,7 +464,7 @@ of the relation is not operational - in particular it is not normally
 feasible to test the range of a function on all its possible
 inputs!
 
-@example
+@smallexample
 (def-relation RANGE (?f-r ?relation)
   "The range of a function or a binary relation is a relation which is 
    true for any possible output of the function or second argument of 
@@ -478,7 +478,7 @@ inputs!
                          (forall (?x ?y)
                                  (=> (holds ?f-r ?x ?y))
                                      (holds ?relation ?y))))))
-@end example
+@end smallexample
 
 In the above definition it is worth highlighting the use of the
 special meta-relation holds.  An expression such as @samp{(holds
@@ -545,7 +545,7 @@ procedural attachment, expressed as a Lisp function.  The arity of
 this Lisp function should be the same as that of the associated OCML
 function.
 
-@example
+@smallexample
 (def-function filter (?l ?rel) -> ?sub-l
   "Returns all the elements in ?l which satisfy ?rel"
   :def (and (unary-relation ?rel)
@@ -560,7 +560,7 @@ function.
             (cons (first ?l)
                   (filter (rest ?l) ?rel))
             (filter (rest ?l) ?rel))))
-@end example
+@end smallexample
 
 The above definition shows an example of the use of
 @samp{def-function}.  The OCML function filter takes as
@@ -724,7 +724,7 @@ initialization argument, which is a string holding the URI identifying
 the ontology.  If you do not supply a namespace URI, OCML will assign
 one based on the ontology's name.
 
-@example
+@smallexample
 (def-ontology colours
     :author "dave"
     :namespace-uri "http://www.kmi.open.ac.uk/colours#"
@@ -734,21 +734,21 @@ one based on the ontology's name.
     :author "dave"
     :namespace-uri "http://www.kmi.open.ac.uk/fruits#"
     :files ())
-@end example
+@end smallexample
 
 @noindent
 Next, we tell OCML which prefixes we intend to use:
 
-@example
+@smallexample
 (register-namespace "colours" 'colours)
 (register-namespace "fruit" 'fruits)
-@end example
+@end smallexample
 
 We can then use these prefixes in ontologies, using a Lisp
 reader macro, @samp{#_}.  Classes, instances, and
 relations can all be named in this way.  Viz:
 
-@example
+@smallexample
 (in-ontology colours)
 
 (def-class #_colour ())
@@ -765,7 +765,7 @@ relations can all be named in this way.  Viz:
 
 (def-class #_orange (#_fruit)
  (#_colors:has-colour #_colours:orange))
-@end example
+@end smallexample
 
 Here, @samp{#_colours:orange}
 and @samp{#_fruit:orange} are different symbols, from
@@ -788,7 +788,7 @@ from @samp{#_Foo}.
 
 Further examples from a Lisp listener session:
 
-@example
+@smallexample
 OCML> (in-ontology fruits)
 #<OCML-ONTOLOGY FRUITS>
 OCML> '#_colours:orange
@@ -809,7 +809,7 @@ OCML> (eq '#_colors:orange 'ocml::|http://www.kmi.open.ac.uk/colours#orange|)
 T
 OCML> (eq '#_colours:orange '#_colours:Orange)
 NIL
-@end example
+@end smallexample
 
 The notation @samp{#_} is modelled after the WSML
 syntax for IRIs, @samp{_"http://www.deri.org/foo"}.
@@ -830,14 +830,14 @@ with the uniform view of a knowledge model, slot changes are carried
 out by means of generic assertion and deletion operations (i.e. in
 terms of tell and unassert).
 
-@example
+@smallexample
 (def-procedure SET-SLOT-VALUE (?i ?s ?v)
   :constraint (and (instance-of ?i ?c)
                    (slot-of ?s ?c))
   :body (do
           (unassert (list-of ?s ?i ?any))
           (tell (list-of ?s ?i ?v))))
-@end example
+@end smallexample
 
 @node Translation between representation languages, The ask-tell interface, Procedures, Domain Modelling in OCML
 @section Translation between representation languages
@@ -850,9 +850,9 @@ function.  @code{translate} takes 4 required arguments:
 keywords indicating source and destination lanuages, an object in the
 source language, and a stream to write the output to.
 
-@example
+@smallexample
 (translate :ocml :rdf 'colours *standard-output*)
-@end example
+@end smallexample
 
 XXX At present, not all translations are available through this
 interface, and the methods of returning the result are
@@ -877,10 +877,10 @@ section @ref{Relations}.  For instance, the definition
 below specifies the class of empty sets in terms of
 an @samp{:iff-def} relation option.
 
-@example
+@smallexample
 (def-class EMPTY-SET (set) ?set
    :iff-def (not (exists ?x (element-of ?x ?set))))
-@end example
+@end smallexample
 
 @noindent
 The generic Tell-Ask interface
@@ -893,19 +893,19 @@ or simply relation instances.  For example I can use tell to add a new
 value to the list of projects carried out by harry_c as
 follows.
 
-@example
+@smallexample
 ? (tell (has-project harry_c mlt))
 (HAS-PROJECT HARRY_C MLT)
-@end example
+@end smallexample
 
 @noindent
 Analogously I can add a new instance of class researcher simply by
 stating:
 
-@example
+@smallexample
 ? (tell (researcher mickey_m))
 (RESEARCHER MICKEY_M)
-@end example
+@end smallexample
 
 The relation-centred view makes it possible to examine the
 contents of an OCML model simply by asking whether a logical statement
@@ -919,14 +919,14 @@ Lisp macro ask to pose the query (has-project harry_c ?c).  The
 resulting interaction with the OCML proof system is shown
 below.
 
-@example
+@smallexample
 ? (ask (has-project harry_c ?c))
 Solution: ((HAS-PROJECT HARRY_C BABYLON))  
 More solutions?  (y or n)  y
 Solution: ((HAS-PROJECT HARRY_C MLT))  
 More solutions?  (y or n)  y
 No more solutions
-@end example
+@end smallexample
 
 This uniform, relation-centred view over OCML models also
 provides a way to index inferences.  For instance, when answering the
@@ -952,9 +952,9 @@ OCML also supports the specification of backward and forward
 rules.  A backward rule consists of a number of backward clauses, each
 of which is defined according to the following syntax:
 
-@example
+@smallexample
 backward-clause	::= (relation-expression @{if @{logical-expression@}+@})
-@end example
+@end smallexample
 
 Each backward clause specifies a different goal-subgoal
 decomposition.  When carrying out a proof by means of a backward rule
@@ -988,7 +988,7 @@ office allocation domain: professors and secretaries.  In this example
 the former can only go into a double room; the latter into a large
 room next to the entrance.
 
-@example
+@smallexample
 (def-rule has-value-range-1 
   ((has-value-range-gen ?m ?l)
    if
@@ -1003,7 +1003,7 @@ room next to the entrance.
                    (and (room ?r size ?n usable yes)
                         (> ?n 1)
                         (close-to ?r kmi-entrance))))))
-@end example
+@end smallexample
 
 @node Forward-chaining rules,  , Backward-chaining rules, Rule-based reasoning
 @section Forward-chaining rules
@@ -1024,13 +1024,13 @@ assert new facts, and output, to produce output.  A simple example
 showing how to use these in a forward chaining rule is given
 below.
 
-@example
+@smallexample
 (def-rule foo 
   (has-project ?x ?y) 
   then 
    (exec (tell (project-covered-by ?y ?x)))
    (exec (output "has project ~S ~S" ?x ?y)))
-@end example
+@end smallexample
 
 While forward rules can be useful in a number of situations when
 building application models (e.g. to define watchers, which are
@@ -1163,9 +1163,9 @@ level one.
 
 In the Sisyphus-I application model we should then state:
 
-@example
+@smallexample
 (def-upward-class-mapping yqt-member yqt-parameter)
-@end example
+@end smallexample
 
 The above form iterates over each instance of class yqt-member,
 say I, creating a new instance of class yqt-parameter, say Meta-I, and
@@ -1173,7 +1173,7 @@ associating this to I, i.e., asserting (maps-to Meta-I I).  Hence, if
 we now ask for the mapping between parameters and YQT members we get
 the following results.
 
-@example
+@smallexample
 ? (ask (maps-to ?z ?x)t)
 
 Solution: ((MAPS-TO YQT-PARAMETER-EVA_I EVA_I))  
@@ -1191,13 +1191,13 @@ Solution: ((MAPS-TO YQT-PARAMETER-HARRY_C HARRY_C))
 Solution: ((MAPS-TO YQT-PARAMETER-ANDY_L ANDY_L))  
 Solution: ((MAPS-TO YQT-PARAMETER-MARC_M MARC_M))  
 Solution: ((MAPS-TO YQT-PARAMETER-WERNER_L WERNER_L))  
-@end example
+@end smallexample
 
 The advantage of this solution is that parameters and YQT
 members maintain their separate identities, as shown in the next
 box.
 
-@example
+@smallexample
 ? (describe-instance 'YQT-PARAMETER-WERNER_L)
 
 Instance YQT-PARAMETER-WERNER_L of class YQT-PARAMETER
@@ -1217,7 +1217,7 @@ HACKER: YES
 WORKS-WITH: ANGY_W, MARC_M
 
 GROUP: YQT
-@end example
+@end smallexample
 
 Formally, a mapping can be characterized as an association
 between an object, say o, and its meta-object, m-o, so that the entity
@@ -1225,13 +1225,13 @@ denoted by the entity denoted by m-o is the same as the entity denoted
 by o (Genesereth and Nilsson, 1988).  This notion can be formalized in
 OCML by means of the following definition.
 
-@example
+@smallexample
  (def-relation maps-to (?x ?y)
   "This relation allows the user to specify an association between
    an object at the task layer and one at the domain layer.
    Formally ?y denotes the object denoted by the object denoted by ?x"
   :no-op (:iff-def (= ?y (denotation ?x))))
-@end example
+@end smallexample
 
 @node Relation mapping,  , Instance mapping, Functional View of OCML
 @section Relation mapping
@@ -1268,14 +1268,14 @@ assertions present in the current snapshot of the domain knowledge
 base.  The relation maps-to is used to retrieve the parameter
 associated with each particular YQT member.
 
-@example
+@smallexample
 (def-relation-mapping current-design-model :up
    ((current-design-model ?dm)
     if
     (= ?dm (setofall (?p . ?v)
                     (and (in-room ?x ?v)
                          (maps-to ?p ?x))))))
-@end example
+@end smallexample
 
 An upward relation mapping ensures that when a task/method level
 relation is needed the relevant information is obtained from the
@@ -1290,7 +1290,7 @@ mappings are needed to ensure that when the design model considered by
 the problem solver is modified, the relevant changes are reflected
 onto the domain model - see definition below.
 
-@example
+@smallexample
 (def-relation-mapping current-design-model (:down :add)
   (lambda (?x)
     (do
@@ -1299,21 +1299,21 @@ onto the domain model - see definition below.
             do
             (if (maps-to (first ?pair) ?z)
               (tell (in-room ?z (rest ?pair))))))))
-@end example
+@end smallexample
 
 Finally, the definition below shows the :remove downward mapping
 associated with relation current-design-model: it simply removes the
 domain level assertions associated with the design model which is
 passed as argument to the relation instance being retracted.
 
-@example
+@smallexample
 (def-relation-mapping current-design-model (:down :remove)
    (lambda (?x)
      (loop for ?pair in ?x
             do
             (if (maps-to (first ?pair) ?z)
               (unassert (in-room ?z (rest ?pair)))))))
-@end example
+@end smallexample
 
 @node Reference, Interpreters and Proof System, Functional View of OCML, Top
 @chapter Reference
@@ -1485,7 +1485,7 @@ is returned.
 @node Grammar, Inheritance and Default Values, Control Term Constructors, Reference
 @section Grammar
 
-@example
+@smallexample
 loop-control-term	::=	(loop for variable in term do @{control-term@}+)
 do-control-term 	::=	(do-actions @{control-term@}+)
 repeat-control-term 	::=	(repeat-actions @{end-test@} @{control-term@}+ ) |
@@ -1550,7 +1550,7 @@ return-control-term	::=	(return term)
 if-control-term	::=	(if log-expression then-control-term
 @{else-control-term@})
 return-control-term	::=	(return term)
-@end example
+@end smallexample
 
 @node Inheritance and Default Values,  , Grammar, Reference
 @section Inheritance and Default Values
