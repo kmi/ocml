@@ -29,6 +29,7 @@
 * Interpreters and Proof System::  
 * Bibliography::                
 * Function Index::              
+* Concept Index::               
 @end menu
 
 @node Introduction, Installation, Top, Top
@@ -300,10 +301,12 @@ with
 
 @node Relations, Functions, Instances, Domain Modelling in OCML
 @section Relations
+@cindex relation
+@findex def-relation
 
-Relations allow the OCML user to define labelled n-ary
-relationships between OCML entities.  Relations are defined by means
-of a Lisp macro, def-relation, which takes as arguments the name of a
+Relations allow the OCML user to define labelled n-ary relationships
+between OCML entities.  Relations are defined by means of a Lisp
+macro, @code{def-relation}, which takes as arguments the name of a
 relation, its argument schema, optional documentation and a number of
 relation options.  An argument schema is a list (possibly empty) of
 variables.  Relation options play two roles, one related to the formal
@@ -318,6 +321,7 @@ These roles are discussed in the next two sections.
 
 @node Relation specification options, Operationally-relevant relation options, Relations, Relations
 @subsection Relation specification options
+@cindex relation options
 
 From a formal semantics point of view the purpose of a relation
 option is to help characterize the extension of a relation.  The table
@@ -326,9 +330,9 @@ relation specifications and, for each option, informally describes its
 semantics.  A formal semantics to these options can be given in terms
 of the homonymous Ontolingua constructs.
 
-@multitable @columnfractions 0.5 0.5
+@multitable @columnfractions 0.2 0.8
 @item
-Relation option@tab Role in specification
+@strong{Relation option}@tab @strong{Role in specification}
 @item
 @code{:iff-def}@tab Specifies
 both sufficient and necessary conditions for the relation to hold for
@@ -352,6 +356,7 @@ specific relations.
 
 @node Operationally-relevant relation options, Summing up, Relation specification options, Relations
 @subsection Operationally-relevant relation options
+@cindex relation options
 
 Relation options also play an operational role.  Specifically,
 some relation options support constraint checking over relation
@@ -361,9 +366,10 @@ table below lists the relation options which are meaningful from an
 operational point of view and informally describes their relevance to
 constraint checking and theorem proving.
 
-@multitable @columnfractions 0.333333333333333 0.333333333333333 0.333333333333333
+@need 3000
+@multitable @columnfractions 0.2 0.4 0.4
 @item
-Relation option@tab Supports constraint checking @tab Provides proof mechanism
+@strong{Relation option}@tab @strong{Supports constraint checking}@tab@strong{Provides proof mechanism}
 @item
 @code{:sufficient}@tab No@tab Yes
 @item
@@ -817,6 +823,8 @@ syntax for IRIs, @code{_"http://www.deri.org/foo"}.
 
 @node Procedures, Translation between representation languages, Namespaces, Domain Modelling in OCML
 @section Procedures
+@cindex procedure
+@findex def-procedure
 
 Procedures define actions or sequences of actions which cannot
 be characterized as functions between input and output arguments.  For
@@ -1836,8 +1844,12 @@ expressions are only proved by default.
 
 [Motta99] Enrico Motta. @i{Reusable Components for Knowledge Modelling}. IOS Press. 1-58603-003-5.
 
-@node Function Index,  , Bibliography, Top
+@node Function Index, Concept Index, Bibliography, Top
 @unnumbered Function Index
 @printindex fn
+
+@node Concept Index,  , Function Index, Top
+@unnumbered Concept Index
+@printindex cp
 
 @bye
