@@ -642,13 +642,12 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
 ;;;;                               (string-downcase (string name))
 ;;;;                               ";")))
 
-;;;ENSURE-ONTOLOGY-INTERNAL ---Ensures that the ontology <name> has been loaded.
-(defun ensure-ontology-internal(name type load-file)
-  (unless (get-ontology name)
-    (unless load-file
-      (Setf load-file (default-ontology-load-file name type)))
-            ;;;;;;(make-ontology-pathname name type)))
-    (ocml-load load-file)))
+(defun ensure-ontology-internal (ontology-name &optional type load-file)
+  "If ONTOLOGY-NAME is not already loaded, load it now."
+  (unless (get-ontology ontology-name)
+    (if load-file
+        (ocml-load load-file)
+        (load-ontology-by-name ontology-name))))
 
 (defun load-ontology (name type &optional load-file)
   (unless load-file
