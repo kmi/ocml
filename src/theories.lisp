@@ -315,6 +315,7 @@ changed by john domingue 6/2/03
 			       (pathname (default-ontology-pathname name type))
 			       author allowed-editors
 			       (files (default-ontology-files name))
+                               (namespaces)
 			       (select-this-ontology? t)
 			       ;; rdf-namespace-label 
 			       rdf-namespace-url
@@ -324,6 +325,8 @@ changed by john domingue 6/2/03
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))
     (mapcar #'ensure-ontology-internal includes)
+    (dolist (namespace-pair namespaces)
+      (register-namespace (first namespace-pair) (second namespace-pair)))
     (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
     (with-muffled-warnings ()
       (if ontology
