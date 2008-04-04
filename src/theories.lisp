@@ -323,6 +323,7 @@ changed by john domingue 6/2/03
     (when (and (eq includes nil)
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))
+    (mapcar #'ensure-ontology-internal includes)
     (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
     (with-muffled-warnings ()
       (if ontology
