@@ -22,7 +22,7 @@
   "Legal characters in a namespaced symbol's 'local name'.")
 
 (define-constant +valid-whitespace+
-    (list #\space #\return #\linefeed #\tab #\( #\) #\' #\`)
+    (list #\space #\return #\linefeed #\tab #\( #\) #\' #\` #\")
   "Characters which can legitimately follow a valid token.")
 
 (define-constant +namespace-separator+ #\:)

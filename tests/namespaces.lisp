@@ -53,7 +53,9 @@
   (is (symbolp (read-from-string (namespaced-symbol-ending-with #\tab))))
   (is (symbolp (read-from-string (namespaced-symbol-ending-with #\( ))))
   (is (symbolp (read-from-string (namespaced-symbol-ending-with #\) ))))
-  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\' )))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\' ))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\` ))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\" )))))
 
 (test (namespace-ontologies-test :depends-on namespace-reader-test)
   (finishes (handler-bind ((warning #'muffle-warning))
