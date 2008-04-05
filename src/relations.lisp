@@ -335,7 +335,7 @@ non-nil."
 ;;;MAYBE-PROCESS-SUFFICIENT-&-IFF-DEF-ENTRIES --- modified by Mauro
 (defmethod  maybe-process-sufficient-&-iff-def-entries ((obj ocml-relation))
   (with-slots (sufficient iff-def name schema prove-by exclusive-prove-by
-                          no-proofs-by sufficient-for-type-checking)
+                          no-proofs-by)
       obj
     (when sufficient
       (unless (member :sufficient no-proofs-by)

@@ -648,6 +648,7 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
 
 (defun ensure-ontology-internal (ontology-name &optional type load-file)
   "If ONTOLOGY-NAME is not already loaded, load it now."
+  (declare (ignore type))
   (unless (get-ontology ontology-name)
     (if load-file
         (ocml-load load-file)
