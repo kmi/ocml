@@ -1051,7 +1051,7 @@ showing how to use these in a forward chaining rule is given below.
     (has-project ?x ?y)
   then
   (exec (tell (project-covered-by ?y ?x)))
-  (exec (output "has-project-cond deduced ~S has project ~S~%" ?x ?y)))
+  (exec (output "has-project-cond rule deduced (project-covered-by ~S ~S)~%" ?y ?x)))
 
 (enable-fc-watcher-mode)
 
@@ -1062,8 +1062,8 @@ showing how to use these in a forward chaining rule is given below.
    (works-with harry_d)))
 @end smallexample
 
-This produces the output @code{has-project-cond deduced LARRY-E has
-project TIGRIS}.
+This produces the output @samp{has-project-cond rule deduced
+(project-covered-by TIGRIS LARRY-E)}.
 
 While forward rules can be useful in a number of situations when
 building application models (e.g. to define watchers, which are
