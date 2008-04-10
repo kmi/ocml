@@ -967,6 +967,30 @@ the query.
 
 OCML can reason with backward and forward chaining rules.
 
+@deffn Macro def-rule name &optional documenation &body clauses
+Defines a forward or backward chaining rule.  Each of the
+@var{clauses} should be a list with the relation name and schema at
+its head.  The rule's @var{name} need not be the same as the relation
+name in the clause head.  This allows multiple, concurrently active
+definitions to be supplied for the same relation by different rules.
+
+@smallexample
+(def-rule collaborates-with-by-proximity
+   ((collaborates-with ?x ?y)
+     if
+     (shares-office ?x ?y)))
+
+(def-rule collaborates-by-coauthoring
+   ((collaborates-with ?x ?y)
+     if
+     (person ?x)
+     (person ?y)
+     (not (= ?x ?y))
+     (has-authored ?x ?p)
+     (has-authored ?y ?p)))
+@end smallexample
+@end deffn
+
 @node Backward-chaining rules, Forward-chaining rules, Rule-based reasoning, Rule-based reasoning
 @section Backward-chaining rules
 @cindex backward chaining
@@ -978,15 +1002,15 @@ which is defined according to the following syntax:
 backward-clause	::= (relation-expression @{if @{logical-expression@}+@})
 @end smallexample
 
-Each backward clause specifies a different goal-subgoal
-decomposition.  When carrying out a proof by means of a backward rule
-the OCML interpreter will try to prove the relevant goal by firing the
-clauses in the order in which these are listed in the rule definition.
-As in Prolog, depth-first search with chronological backtracking is
-used to control the proof process.
+Each backward clause specifies a different goal-subgoal decomposition.
+When carrying out a proof by means of a backward rule the OCML
+interpreter will try to prove the relevant goal by firing the clauses
+in the order in which these are listed in the rule definition.  As in
+Prolog, depth-first search with chronological backtracking is used to
+control the proof process.
 
-Both semantically and operationally a backward chaining rule is
-the same as a :sufficient relation option: they both provide an
+Both semantically and operationally a backward chaining rule is the
+same as a @code{:sufficient} relation option: they both provide an
 expression which is sufficient to verify that a tuple holds for a
 relation.  Thus, one might wonder whether rules are needed at all.  In
 practice the advantage of including backward rules in the language is
@@ -994,21 +1018,20 @@ that these provide a modular mechanism for refining existing (possibly
 generic) relation specifications, for instance in cases where
 application-specific knowledge is needed to complete the specification
 of a relation.  To clarify this point let's consider an example taken
-from the KMI office allocation problem (see chapter 9 for an extensive
-analysis of this application).
+from the KMI office allocation problem.
 
-The relation has-value-range is defined in the parametric design
-task ontology to characterize the set of possible values which can be
-assigned to a design parameter - see chapter 6.  When building an
-application model the generic has-value-range specification is usually
-refined, so that the space of possible values that can be assigned to
-a particular parameter is precisely defined.  A modular way to achieve
-this is to refine the definition of the relation by means of the
-appropriate backward chaining rules.  The rules shown below fulfil
-this purpose for two of the classes of parameters present in the KMI
-office allocation domain: professors and secretaries.  In this example
-the former can only go into a double room; the latter into a large
-room next to the entrance.
+The relation @code{has-value-range} is defined in the parametric
+design task ontology to characterize the set of possible values which
+can be assigned to a design parameter - see chapter 6.  When building
+an application model the generic @code{has-value-range} specification
+is usually refined, so that the space of possible values that can be
+assigned to a particular parameter is precisely defined.  A modular
+way to achieve this is to refine the definition of the relation by
+means of the appropriate backward chaining rules.  The rules shown
+below fulfil this purpose for two of the classes of parameters present
+in the KMI office allocation domain: professors and secretaries.  In
+this example the former can only go into a double room; the latter
+into a large room next to the entrance.
 
 @smallexample
 (def-rule has-value-range-1 
