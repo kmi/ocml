@@ -367,9 +367,10 @@
 	     (ccl:create-directory directory))
   #+:sbcl
   ;; XXX Not very thread-friendly :-(
-  (let ((umask (sb-posix:umask 0)))
-    (sb-posix:umask umask)
-    (sb-posix:mkdir directory umask)))
+  (unless (probe-file directory)
+    (let ((umask (sb-posix:umask 0)))
+      (sb-posix:umask umask)
+      (sb-posix:mkdir directory umask))))
 
 (defun remove-subclass (class superclasses)
   (loop for super in superclasses
