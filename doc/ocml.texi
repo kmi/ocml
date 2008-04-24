@@ -27,6 +27,7 @@
 * Functional View of OCML::     
 * Reference::                   
 * Interpreters and Proof System::  
+* Task Is Enough: Some Comments on Logic Reasoning Power of OCML::  
 * Bibliography::                
 * Function Index::              
 * Concept Index::               
@@ -1674,7 +1675,7 @@ C precedes the direct superclasses of C specified to its right in the
 list of direct superclasses of C.
 @end enumerate
 
-@node Interpreters and Proof System, Bibliography, Reference, Top
+@node Interpreters and Proof System, Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Reference, Top
 @chapter Interpreters and Proof System
 
 @menu
@@ -1873,7 +1874,247 @@ respect to first-order logic statements.  In particular, disjunctions
 can only be proved by proving each clause separately and negated
 expressions are only proved by default.
 
-@node Bibliography, Function Index, Interpreters and Proof System, Top
+@node Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Bibliography, Interpreters and Proof System, Top
+@chapter Task Is Enough: Some Comments on Logic Reasoning Power of OCML
+
+Note: This chapter is a reformatting the IBrow project deliverable D1,
+as found in the IRS source.
+
+@menu
+* Background::                  
+@end menu
+
+@node Background,  , Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Task Is Enough: Some Comments on Logic Reasoning Power of OCML
+@section Background
+
+Task specification is based on a task ontology. The task ontology
+defines classes, relations and functions for defining the task. In OCML
+classes (and slots) are also treated as relations. Therefore the task
+ontology, in fact, defines a declarative language to specify task.
+
+On the other hand, OCML is an operational language. So the definition of
+the ontology can be understand as an implementation of the ontology in
+OCML. Therefore a task specification in the ontology can be understood
+as an executive program (declarative).
+
+Recall that how a task is specified in the OCML. Essentially a task is
+characterised by its goal expression. Assume that a task has
+
+@itemize
+@item input roles @math{i_{1},i_{2},\dots,i_{k}}
+@item output role @math{o}
+@item assumptions (or pre-condition) @math{P}
+@item goal expression @math{G}
+@end itemize
+
+then the task specification can be expressed by the following formula:
+
+@math{\forall i_{1},i_{2},{\dots},i_{k} \exists o . P(i_{1},
+i_{2}, \dots,i_{k}) \rightarrow G(i_{1},i_{2}, \dots,
+i_{k}, o)}
+
+where @math{P, G} are first order formula.  Now for given input
+@math{I_{1},I_{2},{\dots},I_{k}}, further, we assume that the
+pre-condition is trivial satisfied, then we get the following formula:
+
+@math{\exists o G(I_{1},I_{2},{\dots},I_{k}, o)}
+
+A PSM is then to find an output @math{o} procedurally such that
+@math{G(I_{1}, I_{2}, {\dots}, I_{k}, O)} holds.  Because every
+relation and function occurring in @math{G(I_{1}, I_{2}, {\dots},
+I_{k}, O)} are defined in the task ontology and they are all
+implemented in OCML, therefore the following functions would be
+executable in OCML,
+
+@code{(the ?o (G I1 I2 ... Ik ?o))}
+
+@code{(setofall ?o (G I1 I2 ... Ik ?o))}
+
+The former is used to find a single solution and later is used to find
+all solutions.
+
+Based on this observation, given PSM tackling a task @math{T} and
+input, we can test the correctness of the PSM by comparing the output
+of the PSM and the result of evaluating the goal expression of task
+@math{T} . The following is an example of problem solver for
+classification which is a declarative one in the sense that it is
+composed by goal expression of task classification and goal expression
+of its subtasks.
+
+@smallexample
+(in-package :ocml)
+
+(def-class declarative-heuristic-optimal-sol-classifier (problem-solving-method) ?psm
+    ((has-input-role :value has-abstractors
+                     :value has-refiners
+                     :value has-observables
+                     :value has-candidate-solutions
+                     :value has-solution-exclusion-criterion)
+     (has-output-role :value has-solution)
+     (has-abstractors :type abstractors)
+     (has-refiners :type refiners)
+     (has-observables :type observables)
+     (has-solution-exclusion-criterion
+      :type candidate-exclusion-criterion
+      :default-value default-candidate-exclusion-criterion)
+     (has-candidate-solutions :type solution-space)
+     (has-solution :type solution)
+     (has-body
+      :value
+      '(lambda (?psm)
+        (in-environment
+         ((?observables
+           (the ?observables
+             (and (generalized-abstract-from
+                   ?observables
+                   (role-value ?psm has-observables)
+                   (role-value ?psm has-abstractors))
+                  (forall ?ab
+                          (=> (member ?ab (role-value ?psm has-abstractors))
+                              (not (abstractor-is-applicable? ?ab ?observables)))))))
+          (?candidate-solutions
+           (the-virtual-solution-space (role-value ?psm 'has-candidate-solutions)
+                                       (role-value ?psm 'has-refiners))))
+         (setofall ?sol
+          (and (member ?sol ?candidate-solutions)
+               (admissible-solution
+                ?sol (apply-match-criterion
+                      (role-value ?psm 'has-match-criterion) ?observables ?sol)
+                (role-value ?psm 'has-solution-admissibility-criterion))
+               (best-match ?observables ?sol ?candidate-solutions
+                           (role-value ?psm o'has-match-criterion)))))))))
+@end smallexample
+
+@section Some problems
+
+The theorem proving system in OCML has some problems.
+
+@itemize
+@item
+Order-dependent: the order of relations occurring in a goal expression
+has a effect on the computation. For example evaluating the following
+expression will result in a overflow in the computation stack.
+@end itemize
+
+@example
+(exists ?sol (and (admissible-solution ?sol
+(apply-match-criterion ?psm.has-match-criterion
+?psm.has-observables ?sol)
+
+?psm.has-solution-admissibility-criterion))
+
+(member
+?sol (the-virtual-solution-space
+?psm.has-candidate-solutions ?psm.has-refiners))))))
+@end example
+
+However if we change order of the relations @math{number }and
+@math{admission-solution}, that is, evaluate the following the
+following expression the problem will be disappeared.
+@example
+(exists ?sol (and (member ?sol (the-virtual-solution-space
+?psm.has-candidate-solutions ?psm.has-refiners))
+(admissible-solution
+?sol (apply-match-criterion ?psm.has-match-criterion
+?psm.has-observables ?sol)
+?psm.'has-solution-admissibility-criterion)))))
+@end example
+
+@itemize
+@item
+The theorem can not deal with too abstract definition. For example the
+following definition of relation @code{generalised-refinement-of}
+results in a infinite loop
+@end itemize
+
+@example
+(def-relation generalised-refinement-of (?sol-out ?sol-in ?refs)
+:iff-def (or (exists ?ref (and (member ?ref ?refs)
+(member ?sol-out (apply-refiner-operator ?ref ?sol-in))))
+(exists ?sol-temp
+        (and (generalised-refinement-of ?sol-temp ?sol-in ?refs)
+             (generalised-refinement-of ?sol-out ?sol-temp ?refs)))))
+@end example
+
+If change the definition as follows, then it works well.
+
+@example
+(def-relation generalised-refinement-of (?sol-out ?sol-in ?refs)
+    :iff-def (or (exists ?ref (and (member ?ref ?refs)
+                 (member ?sol-out (apply-refiner-operator ?ref ?sol-in))))
+                 (exists (?sol-temp ?ref1)
+                  (and (member ?ref1 ?refs)
+                      (member ?sol-temp (apply-refiner-operator ?ref1 ?sol-in))
+                      (generalised-refinement-of ?sol-out ?sol-temp ?refs)))))
+:own-slots ((tackles-task-type
+optimal-classification-task)))
+@end example
+
+@itemize
+@item
+There is some bug in the theorem proving system of OCML, for example ,
+evaluate the following expression, it returns true.@end itemize
+
+@smallexample
+(not (exists (?ob1 ?ob2) (and (not (= ?ob1 ?ob2))
+
+(member ?ob1 (the ?observables
+               (and (generalized-abstract-from
+                     ?observables
+                     (role-value ?psm has-observables)
+                     (role-value ?psm has-abstractors))
+                    (forall ?ab (=> (member ?ab
+                                            (role-value ?psm has-abstractors))
+                                    (not (abstractor-is-applicable? ?ab
+                                                                    ?observables)))))))
+
+(member ?ob2 (the ?observables
+               (and (generalized-abstract-from
+                     ?observables
+                     (role-value ?psm has-observables)
+                     (role-value ?psm has-abstractors))
+                    (forall ?ab (=> (member ?ab (role-value ?psm has-abstractors))
+                                    (not (abstractor-is-applicable? ?ab
+                                                                    ?observables)))))))
+
+;(not (= ?ob1 ?ob2))
+
+(my-generalised-abstract-link ?ob2 ?ob1)
+
+(my-generalised-abstract-link ?ob1 ?ob2))))))
+@end smallexample
+
+but remove (not (= ?ob1 ?ob2 ) ) to other position as follows
+
+@example
+(not (exists (?ob1 ?ob2)
+        (member ?ob1
+                (the ?observables
+                  (and
+                   (generalized-abstract-from
+                    ?observables
+                    (role-value ?psm has-observables)
+                    (role-value ?psm has-abstractors))
+                   (forall ?ab
+                           (=> (member ?ab
+                                  (role-value ?psm has-abstractors))
+                               (not (abstractor-is-applicable? ?ab
+                                                               ?observables)))))))
+        (member ?ob2 (the ?observables
+                       (and (generalized-abstract-from ?observables
+                               (role-value ?psm has-observables)
+                               (role-value ?psm has-abstractors))
+                            (forall ?ab (=> (member ?ab
+                                               (role-value ?psm has-abstractors))
+                                            (not (abstractor-is-applicable? ?ab ?observables)))))))
+        (not (= ?ob1 ?ob2))
+        (my-generalised-abstract-link ?ob2 ?ob1)
+        (my-generalised-abstract-link ?ob1 ?ob2))))))
+@end example
+
+Evaluate this expression it returns false.
+
+@node Bibliography, Function Index, Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Top
 @chapter Bibliography
 
 @noindent
