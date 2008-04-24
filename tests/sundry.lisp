@@ -1,6 +1,6 @@
 (in-package :ocml.tests)
 
-(eval-when (:compile-toplevel :execute :load-toplevel)
+(eval-when (:execute :load-toplevel)
   (ocml:initialize-ocml)
   ;; XXX Should really be a test, but it makes a mess of the output.
   (ocml:load-ontology-by-name :apple-heuristic-classify-redux))
