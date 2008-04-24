@@ -415,15 +415,15 @@
     (propagate-new-def-to-sub-ontologies name rule 'bc-rule)
     rule))
 
-
-
-
-
 (defun make-bc-rule-clause (clause &optional (type 'bc-clause))
+  "Create a backward chaining clause from the form CLAUSE."
+  ;; Check clause has correct form.
+  (unless (or (= 1 (length clause))     ; Head with no body.
+              (eq 'if (second clause))) ; Head, ‘if’, body...
+    (error "Backward rule clause ‘~A’ does not use ‘if’." clause))
   (make-instance type
                  :consequent (car clause)
                  :antecedents (cddr clause)))
-;;;                 :variables (collect-variables clause)))
 
 (defun remove-all-bc-rules (&optional no-sweat?)
   (unless no-sweat?

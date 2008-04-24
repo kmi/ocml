@@ -2,22 +2,8 @@
 
 (def-suite xml-to-ocml-suite)
 
-(defun repackage (tree package)
-  (labels ((repackage-thing (thing package)
-	     (if (and (symbolp thing) (not (keywordp thing)))
-		 (intern (symbol-name thing) package)
-		 thing))
-	   (tree-map (fn tree)
-	     (if (consp tree)
-		 (cons (tree-map fn (car tree))
-		       (tree-map fn (cdr tree)))
-		 (funcall fn tree))))
-   (tree-map #'(lambda (x)
-		 (repackage-thing x package))
-	     tree)))
-
 (defun ocml-equal? (ocml xml)
-  (equal (repackage ocml :ocml)
+  (equal (ocml:repackage ocml :ocml)
 	 (let ((*package* (find-package :ocml)))
 	   (ocml:translate :xml :ocml xml))))
 

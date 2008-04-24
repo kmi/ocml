@@ -1,11 +1,9 @@
-;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: OCML;   -*-
+;;; Copyright (C) 2008 The Open University
 
+(in-package #:ocml)
 
-
-(in-package "OCML")
-
-(def-ontology base-ontology 
-  "This is the basic building block of the OCML library. It contains the 
+(def-ontology base-ontology
+  "This is the basic building block of the OCML library. It contains the
    definitions required to do basic number, list and string manipulation.
    It also includes ontologies of sets, relations, functions, frames, tasks
    and problem solving methods"
@@ -14,9 +12,6 @@
   :type :basic
   :pathname "ocml:library;basic;"
   :author "enrico"
-  :files ("foundation" "meta7" "sets2" "rels2" "strings" "nums"
-                       "list2" "infer" "env" "funs2"
-		       ;; "ops2"
-		       "frames4" "task6" "mapping" "acquire"))
-
-
+  :files ("foundation" "meta" "sets" "relations" "strings" "numbers"
+                       "lists" "infer" "env" "functions"
+		       "frames" "tasks" "mapping" "acquire" "time"))

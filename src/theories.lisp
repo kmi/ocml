@@ -315,6 +315,7 @@ changed by john domingue 6/2/03
 			       (pathname (default-ontology-pathname name type))
 			       author allowed-editors
 			       (files (default-ontology-files name))
+                               (namespaces)
 			       (select-this-ontology? t)
 			       ;; rdf-namespace-label 
 			       rdf-namespace-url
@@ -323,6 +324,9 @@ changed by john domingue 6/2/03
     (when (and (eq includes nil)
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))
+    (mapcar #'ensure-ontology-internal includes)
+    (dolist (namespace-pair namespaces)
+      (register-namespace (first namespace-pair) (second namespace-pair)))
     (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
     (with-muffled-warnings ()
       (if ontology
@@ -461,8 +465,7 @@ changed by john domingue 6/2/03
         do
         (copy-ontology from-onto ontology))
   #-:lispworks(record-source-file name 'ocml-ontology)
-  #+(or allegro lispworks)(ocml-record-source-file name 'def-ontology name)
-  ;;#+:lispworks(record-source-file name 'def-ontology)
+  #+(or :allegro :lispworks) (ocml-record-source-file name 'def-ontology name)
   (when new?
     (add-ontology name ontology))
   (load-ontology-files-new  ontology files pathname select-this-ontology?)
@@ -643,13 +646,13 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
 ;;;;                               (string-downcase (string name))
 ;;;;                               ";")))
 
-;;;ENSURE-ONTOLOGY-INTERNAL ---Ensures that the ontology <name> has been loaded.
-(defun ensure-ontology-internal(name type load-file)
-  (unless (get-ontology name)
-    (unless load-file
-      (Setf load-file (default-ontology-load-file name type)))
-            ;;;;;;(make-ontology-pathname name type)))
-    (ocml-load load-file)))
+(defun ensure-ontology-internal (ontology-name &optional type load-file)
+  "If ONTOLOGY-NAME is not already loaded, load it now."
+  (declare (ignore type))
+  (unless (get-ontology ontology-name)
+    (if load-file
+        (ocml-load load-file)
+        (load-ontology-by-name ontology-name))))
 
 (defun load-ontology (name type &optional load-file)
   (unless load-file

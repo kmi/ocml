@@ -1,6 +1,6 @@
 ;;; Namespace support for OCML.
 ;;;
-;;; Copyright (C) 2007 The Open University.
+;;; Copyright (C) 2007, 2008 The Open University.
 ;;;
 ;;; Authored by Dave Lambert
 
@@ -15,11 +15,15 @@
 
 (in-package :ocml)
 
+
+;;; Should be the chars acecptable in a an XML/RDF/OWL token.
 (define-constant +token-chars+
-  (concatenate 'list
-	       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-")
-  "Should be the chars acecptable in a an XML/RDF/OWL token...
-  Perhaps more.  i don't know :-(")
+    (concatenate 'list "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")
+  "Legal characters in a namespaced symbol's 'local name'.")
+
+(define-constant +valid-whitespace+
+    (list #\space #\return #\linefeed #\tab #\( #\) #\' #\` #\")
+  "Characters which can legitimately follow a valid token.")
 
 (define-constant +namespace-separator+ #\:)
 
@@ -58,7 +62,10 @@
 		(setf prefix (concatenate 'string (reverse chars)))
 		(setf chars '())
 		(read-char stream))
-	       ((not (ocml-token-char? char)) (return))
+               ((member char +valid-whitespace+) (return))
+	       ((not (ocml-token-char? char))
+                (error "Illegal character '~S' in OCML token '~A'."
+                       char (concatenate 'string (reverse chars))))
 	       (t (push char chars)
 		  (read-char stream))))
       ;; If there's a prefix, check it's valid, map it to an ontology.

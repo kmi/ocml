@@ -1,5 +1,34 @@
 (in-package #:ocml)
 
+;;; {{{ Symbol repackaging tool
+
+;;; OCML wants to see OCML expressions using symbols in the OCML Lisp
+;;; package.  This entails gratuitous rebinding of *package* or
+;;; sprinkling hundreds and thousands of 'ocml::' bits everywhere.
+;;; Instead, we can use this to move an expression into the OCML
+;;; package.
+(defmacro in-ocml (form)
+  "Copy FORM, re-interning all symbols in the OCML package."
+  (ocml:repackage form (find-package '#:ocml)))
+
+(defun as-ocml (form)
+  (ocml:repackage form (find-package '#:ocml)))
+
+(defun repackage (tree package)
+  (labels ((repackage-thing (thing package)
+             (if (and (symbolp thing) (not (keywordp thing)))
+                 (intern (symbol-name thing) package)
+                 thing))
+           (tree-map (fn tree)
+             (if (consp tree)
+                 (cons (tree-map fn (car tree))
+                       (tree-map fn (cdr tree)))
+                 (funcall fn tree))))
+    (tree-map #'(lambda (x)
+                  (repackage-thing x package))
+              tree)))
+;;; }}}
+
 ;;;EQUAL* --- Checks that all elements of a list are equal
 (defun equal* (l)
   (every #'(lambda (el)

@@ -30,6 +30,10 @@
 
 ;;; Since we're testing the reader, we shouldn't do the thing we're
 ;;; testing at read time.  Instead, read from strings at run-time.
+
+(defun namespaced-symbol-ending-with (char)
+  (format nil "#_foo~A" char))
+
 (test (namespace-reader-test :depends-on namespace-registration-test)
   (is (eq (read-from-string "#_one:alpha")
 	  (read-from-string "#_\"http://www.example.com/ontology/One#alpha\"")))
@@ -39,7 +43,19 @@
 	  (intern (format nil "~A~A" *test-namespace-uri1* "Alpha") :ocml)))
   (is (not (eq (read-from-string "#_one:Alpha") (read-from-string "#_one:alpha"))))
   (is (not (eq (read-from-string "#_one:Alpha") (read-from-string "#_two:Alpha"))))
-  (is (eq (read-from-string "#_one:alpha") (read-from-string "#_uno:alpha"))))
+  (is (eq (read-from-string "#_one:alpha") (read-from-string "#_uno:alpha")))
+  ;; Test correct handling of terminating characters.
+  (signals error (read-from-string (namespaced-symbol-ending-with #\?)))
+  (signals error (read-from-string (namespaced-symbol-ending-with #\!)))
+  (signals error (read-from-string (namespaced-symbol-ending-with #\|)))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\space))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\return))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\tab))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\( ))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\) ))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\' ))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\` ))))
+  (is (symbolp (read-from-string (namespaced-symbol-ending-with #\" )))))
 
 (test (namespace-ontologies-test :depends-on namespace-reader-test)
   (finishes (handler-bind ((warning #'muffle-warning))

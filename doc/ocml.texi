@@ -28,6 +28,8 @@
 * Reference::                   
 * Interpreters and Proof System::  
 * Bibliography::                
+* Function Index::              
+* Concept Index::               
 @end menu
 
 @node Introduction, Installation, Top, Top
@@ -66,58 +68,58 @@ SBCL.
 You can obtain the development version of OCML using
 Git@footnote{@url{http://git.or.cz/}}.
 
-@example
+@smallexample
 git clone http://kmi-forge.open.ac.uk/git/ocml.git
-@end example
+@end smallexample
 
-This should leave you with a directory called @samp{ocml}.
+This should leave you with a directory called @file{ocml}.
 
 @node Setup, Library locations, Obtaining OCML, Installation
 @section Setup
 
 OCML uses the ASDF system definition package.  You can find out more
 about ASDF at @uref{http://www.cliki.net/asdf}.  If you have ASDF
-installed, make sure the @samp{ocml.asd} file is accessible from
-@samp{asdf:*central-registry*}, and then load it:
+installed, make sure the @file{ocml.asd} file is accessible from
+@code{asdf:*central-registry*}, and then load it:
 
-@example
+@smallexample
 CL-USER > (asdf:operate 'asdf:load-op :ocml)
-@end example
+@end smallexample
 
 or, if you're using a Lisp which integrates ASDF with @code{require},
 just do:
 
-@example
+@smallexample
 CL-USER> (require :ocml)
-@end example
+@end smallexample
 
 You then need to initialize OCML:
 
-@example
+@smallexample
 CL-USER> (ocml:initialize-ocml)
-@end example
+@end smallexample
 
 @node Library locations,  , Setup, Installation
 @section Library locations
 
 OCML finds its libraries (the ontologies) via logical pathnames.
-The logical host @samp{ocml} holds the translations.
+The logical host @code{ocml} holds the translations.
 Immediately after loading OCML, this will be set to include the basic
 OCML library:
 
-@example
+@smallexample
 CL-USER> (logical-pathname-translations "ocml")
 (("ocml:library;basic;**;*" "/home/djl/dev/ocml/library/basic/"))
-@end example
+@end smallexample
 
 Additional translations can be added, for instance in the IRS,
 the translations look like this:
 
-@example
+@smallexample
 CL-USER> (logical-pathname-translations "ocml")
 (("ocml:library;basic;**;*" "/home/djl/dev/ocml/documentation//library/basic/")
  ("ocml:library;**;*" "/home/djl/dev/irs/live/code/ocml/library/v5-0/**/*"))
-@end example
+@end smallexample
 
 Translations earlier in the list take precedence.
 
@@ -126,18 +128,18 @@ Translations earlier in the list take precedence.
 
 @menu
 * Overview::                    
+* Ontologies::                  
 * Classes::                     
 * Instances::                   
 * Relations::                   
 * Functions::                   
-* Ontologies::                  
-* Namespaces::                  
 * Procedures::                  
+* Namespaces::                  
 * Translation between representation languages::  
 * The ask-tell interface::      
 @end menu
 
-@node Overview, Classes, Domain Modelling in OCML, Domain Modelling in OCML
+@node Overview, Ontologies, Domain Modelling in OCML, Domain Modelling in OCML
 @section Overview
 
 OCML provides mechanisms for defining relations, functions,
@@ -164,7 +166,7 @@ in-environment7 - see appendix 1 for a description of the semantics of
 these terms.  Variables are represented as Lisp symbols beginning with
 a question mark, e.g. ?x is a variable.  Strings are sequences of
 characters enclosed in double quotes, e.g. "string".  A function
-application is a term such as @samp{(fun @{fun-term@}*)},
+application is a term such as @code{(fun @{fun-term@}*)},
 where fun is the name of a function and fun-term a functional term.
 Functions are defined by means of the Lisp macro def-function, which
 is described in @ref{Functions}.
@@ -191,397 +193,27 @@ means of a control interpreter.  This is described in appendix
 
 OCML also provides the usual machinery for specifying logical
 expressions.  The simplest kind of logical expression is a relation
-expression, which has the form @samp{(rel @{fun-term@}*)},
+expression, which has the form @code{(rel @{fun-term@}*)},
 where rel is the name of a relation and fun-term is a functional term.
 More complex expressions can be constructed by using the logical
 operators
-@samp{and}, @samp{or}, @samp{not}, @samp{=>}, @samp{<=>}
+@code{and}, @code{or}, @code{not}, @code{=>}, @code{<=>}
 and quantifiers - forall and exists.  Operational semantics is
 provided for all operators and quantifiers.  Relations are defined by
-means of the Lisp macro @samp{def-relation}.
+means of the Lisp macro @code{def-relation}.
 
-@node Classes, Instances, Overview, Domain Modelling in OCML
-@section Classes
-
-OCML also supports the specification of classes and instances
-and the inheritance of slots and values through isa
-hierarchies.
-
-Classes are defined by means of a Lisp
-macro, @samp{def-class}, which takes as arguments the name
-of the class, a list (possibly empty) of superclasses, optional
-documentation, and a list of slot specifications, as illustrated by
-the definitions in the next box.  These show a number of classes taken
-from the domain model for the Sisyphus-I office allocation problem
-(Linster, 1994; Chapter 9).  This problem consists of allocating
-members of the YQT laboratory to the appropriate offices, according to
-a number of constraints.
-
-@example
-(def-class YQT-member ()
-  ((has-project :type project)
-   (smoker :type boolean :cardinality 1)
-   (hacker :type boolean :cardinality 1)
-   (works-with :type YQT-member)
-   (belongs-to-group :type research-group :value yqt)))
-
-(def-class researcher (YQT-member))
-
-(def-class secretary (YQT-member))
-
-(def-class manager (YQT-member))
-@end example
-
-OCML provides support for the usual slot specification machinery
-which is found in frame-based languages.  Specifically, it provides
-the following slot options.
-
-@multitable @columnfractions 0.5 0.5
-@item
-@samp{value}@tab A value which is
-inherited by all instances of a class.
-@item
-@samp{default-value}@tab A value
-which is inherited by all instances of a class, unless
-overridden by other values.
-@item
-@samp{type}@tab The value of this
-option should be a class, say C.  This option specifies that all
-values of the associated slot should be instances of C.  It is also
-possible to specify that a slot value must belong to one or more
-classes, say C1,...., Cn, by using the notation (or C1
-C2..Cn).
-@item
-@samp{max-cardinality}@tab The maximum numbers of slot values allowed for a slot.
-@item
-@samp{min-cardinality}@tab The minimum numbers of slot values required for a slot.
-@item
-@samp{cardinality}@tab The numbers
-of slot values required for a slot.  This option subsumes
-both @samp{:min-cardinality}
-and @samp{:max-cardinality}.
-@item
-@samp{documentation}@tab The value
-of this option is a string providing documentation for a
-slot.
-@item
-@samp{inheritance}@tab 
-The inheritance mechanism used for dealing with default values.  If
-@samp{:merge} is used, then all default values inherited
-from different ancestors are collected.
-If @samp{:supersede} is used, then default values
-inherited from more specific ancestors override those inherited from
-more generic ones.
-@end multitable
-
-@node Instances, Relations, Classes, Domain Modelling in OCML
-@section Instances
-
-Instances are simply members of a class.  An instance is defined
-by means of def-instance, which takes as arguments the name of the
-instance, the parent of the instance (i.e. the most specific class the
-instance belongs to), optional documentation and a number of
-slot-value pairs.  An example of instance definition, taken from the
-Sisyphus-I domain model, is shown in the box below.
-
-@example
-(def-instance harry_c researcher
-  ((has-project babylon)
-   (smoker no)
-   (hacker yes)
-   (works-with jurgen_l thomas_d)))
-@end example
-
-In particular the above definition shows that a slot can have
-multiple values.  In this case @samp{harry_c} works both
-with
-@samp{jurgen_l} and @samp{thomas_d}.
-
-@node Relations, Functions, Instances, Domain Modelling in OCML
-@section Relations
-
-Relations allow the OCML user to define labelled n-ary
-relationships between OCML entities.  Relations are defined by means
-of a Lisp macro, def-relation, which takes as arguments the name of a
-relation, its argument schema, optional documentation and a number of
-relation options.  An argument schema is a list (possibly empty) of
-variables.  Relation options play two roles, one related to the formal
-semantics of a relation, the other to the operational nature of OCML.
-These roles are discussed in the next two sections.
-
-@menu
-* Relation specification options::  
-* Operationally-relevant relation options::  
-* Summing up::                  
-@end menu
-
-@node Relation specification options, Operationally-relevant relation options, Relations, Relations
-@subsection Relation specification options
-
-From a formal semantics point of view the purpose of a relation
-option is to help characterize the extension of a relation.  The table
-below shows the relation options which can be used to provide formal
-relation specifications and, for each option, informally describes its
-semantics.  A formal semantics to these options can be given in terms
-of the homonymous Ontolingua constructs.
-
-@multitable @columnfractions 0.5 0.5
-@item
-Relation option@tab Role in specification
-@item
-@samp{:iff-def}@tab Specifies
-both sufficient and necessary conditions for the relation to hold for
-a given set of arguments.
-@item
-@samp{:sufficient}@tab Specifies a sufficient condition for the relation to hold for a given
-set of arguments.
-@item
-@samp{:constraint}@tab Specifies
-an expression which follows from the definition of the relation and
-must be true for each instance of the relation.
-@item
-@samp{:def}@tab This is for compatibility with
-Ontolingua: it specifies a constraint which is also meant to provide a
-partial definition of a relation.
-@item
-@samp{:axiom-def}@tab A statement which mentions the relation to which it is
-associated.  It provides a mechanism to associate theory axioms with
-specific relations.
-@end multitable
-
-@node Operationally-relevant relation options, Summing up, Relation specification options, Relations
-@subsection Operationally-relevant relation options
-
-Relation options also play an operational role.  Specifically,
-some relation options support constraint checking over relation
-instances while others provide proof mechanisms which can be used to
-find out whether or not a relation holds for some arguments.  The
-table below lists the relation options which are meaningful from an
-operational point of view and informally describes their relevance to
-constraint checking and theorem proving.
-
-@multitable @columnfractions 0.333333333333333 0.333333333333333 0.333333333333333
-@item
-Relation option@tab Supports constraint checking @tab Provides proof mechanism
-@item
-@code{:sufficient}@tab No@tab Yes
-@item
-@code{:prove-by}@tab No@tab Yes
-@item
-@code{:lisp-fun}@tab No@tab Yes
-@item
-@code{:iff-def}@tab Yes@tab Yes
-@item
-@code{:constraint}@tab Yes@tab No
-@item
-@code{:def}@tab Yes@tab No
-@end multitable
-
-As shown in the table, constraint checking is supported by the
-following
-keywords: @samp{:constraint}, @samp{:def} and
-@samp{:iff-def}.  While these have different
-model-theoretic semantics, from a constraint checking point of view
-they are equivalent.  They all specify an expression which has to be
-satisfied by each known instance of the relevant relation.
-
-The relation
-options @samp{:iff-def}, @samp{:sufficient},
-@samp{:prove-by} and @samp{:lisp-fun} provide
-mechanisms for verifying whether or not a relation holds for some
-arguments.  The first two---@samp{:iff-def}
-and @samp{:sufficient}---also play a specification role.
-The others---@samp{:prove-by} and
-@samp{:lisp-fun}---only play an operational role.
-
-Both @samp{:iff-def}
-and @samp{:sufficient} indicate logical expressions which
-can be used to prove whether some tuple is an instance of a relation.
-From a theorem proving point of view there is an important difference
-between them.  Let's suppose we are trying to prove that a tuple, say
-T, satisfies a relation, say R.  If a
-@samp{:sufficient} condition is tried and failed, the OCML
-proof system will then search for alternative ways of proving that T
-satisfies R.  If an @samp{:iff-def} condition is tried and
-failed, then no alternative proof mechanism will be attempted.
-
-The relation options @samp{:prove-by}
-and @samp{:lisp-fun} are meant to support rapid
-prototyping and early validation by providing efficient mechanisms for
-checking whether a tuple satisfies a relation.  The difference between
-:prove-by and :lisp-fun has to do with the expressions which are used
-as values to the two options:
-@samp{:prove-by} points to a logical
-expression, @samp{:lisp-fun} to a non-logical one
-(specifically a Lisp expression).
-
-The box below provides an example of how the various types of
-relation options can be used concurrently to specify a relation and to
-support constraint checking and efficient proofs.  The relation
-has-value, shown below, associates a design parameter to its value in
-a design model.  The definition specifies that @samp{?v}
-is the value of a parameter, @samp{?p}, in a design
-model, @samp{?dm}, if and only if the pair @samp{(?p
-. ?v)} is an element of @samp{?dm}.  In addition,
-it also specifies the constraint that the value of a parameter has to
-be a member of its value range, if this has been specified.  Finally,
-the definition includes a @samp{:prove-by} option whose
-value is an expression which can be used for verifying whether the
-relation is satisfied for a triple, @samp{(?p ?v ?dm)}.
-This expression provides an efficient proof method (by weakening the
-:iff-def statement which formally defines
-relation @samp{has-value}) but does not contribute to the
-specification.
-
-@example
-(def-relation HAS-VALUE (?p ?v ?dm)
-  "Parameters have values w.r.t a particular design model"
-  :iff-def (and (parameter ?p)
-                (design-model ?dm)
-                (element-of (?p . ?v) ?dm))
-  :constraint (or (and (exists ?vr 
-                               (has-value-range ?p ?vr))
-                       (element-of ?v ?vr))
-                  (not (exists ?vr 
-                               (has-value-range ?p ?vr))))
-  :prove-by (element-of (?p . ?v) ?dm))
-@end example
-
-A meta-option for non-operational specifications
-
-As shown above, OCML provides a number of relation options,
-which play both a specification and an operational role.  However, in
-some cases we might want to use a keyword only for specification and
-not operationally, for instance when we know that the value of the
-keyword in question is a non-operational expression.  To cater for
-these situations, OCML provides a special
-meta-keyword, @samp{:no-op}, which can be used to indicate
-that the enclosed relation option only plays a specification role.  An
-example of its use is shown by the definition of relation range, which
-is shown below.  In the example the keyword @samp{:no-op}
-is used to indicate that the @samp{:iff-def} specification
-of the relation is not operational - in particular it is not normally
-feasible to test the range of a function on all its possible
-inputs!
-
-@example
-(def-relation RANGE (?f-r ?relation)
-  "The range of a function or a binary relation is a relation which is 
-   true for any possible output of the function or second argument of 
-   the binary relation"
-  :no-op (:iff-def (or
-                    (and (function ?f-r)
-                         (forall (?args ?result)
-                                 (=> (= (apply ?f-r ?args) ?result)
-                                     (holds ?relation ?result))))
-                    (and (binary-relation ?f-r)
-                         (forall (?x ?y)
-                                 (=> (holds ?f-r ?x ?y))
-                                     (holds ?relation ?y))))))
-@end example
-
-In the above definition it is worth highlighting the use of the
-special meta-relation holds.  An expression such as @samp{(holds
-<r> <arg1>....<argn>)} is satisfied if and
-only if the expression @samp{(<r>
-<arg1>....<argn>)} is satisfied.  Thus holds has
-variable arity: it can take one or more arguments.  In particular the
-number of additional arguments in a holds statement reflects the arity
-of the relation passed as first argument.  The relation holds has a
-`special status' because it is the only relation with variable arity
-supported by OCML.
-
-@node Summing up,  , Operationally-relevant relation options, Relations
-@subsection Summing up
-
-The set of relation options discussed here aims to provide a
-flexible and versatile range of modelling constructs supporting
-various styles of modelling.  While the emphasis is on operational
-modelling, OCML also supports formal specification.  Moreover, it
-provides facilities for integrating a specification with efficient
-proof mechanisms.
-
-@node Functions, Ontologies, Relations, Domain Modelling in OCML
-@section Functions
-
-A function defines a mapping between a list of input arguments
-and its output argument.  Formally functions can be characterized as a
-special class of relations, as in KIF (Genesereth and Fikes, 1992).
-However, in operational terms there is a significant difference
-between a function and a relation: functions are applied to ground
-terms to generate function values; relation expressions can be
-asserted or queried.  Thus, in accordance with the operational nature
-of OCML, functions are distinguished from relations.
-
-Functions are defined by means of a Lisp macro, def-function.
-This takes as argument the name of a function, its argument list, an
-optional variable indicating the output argument (as in Ontolingua
-this is preceded by an arrow, ->), optional documentation and zero
-or more function specification options.  These
-are @samp{:def},
-@samp{:constraint}, @samp{:body}
-and @samp{:lisp-fun}.
-
-The option :constraint provides a way to constrain the domain
-(i.e. the set of possible inputs) of a function.  It specifies a
-logical expression which must be satisfied by the input arguments of
-the function.  The @samp{:def} option indicates a logical
-expression which `defines' the function.  This expression should be
-predicated over both (some) input arguments and the output variable.
-Operationally, the expression denoted by
-the @samp{:constraint} option provides a mechanism for
-testing the feasibility of applying a function to a set of arguments.
-The expression denoted by :def provides a mechanism for verifying that
-the output produced by a function application is consistent with the
-formal definition of the function.
-
-Finally, the options @samp{:body}
-and @samp{:lisp-fun} provide effective mechanisms for
-computing the value of a function.  The former specify a functional
-term which is evaluated in an environment in which the variables in
-the function schema are bound to the actual arguments.  The latter
-makes it possible to evaluate an OCML function by means of a
-procedural attachment, expressed as a Lisp function.  The arity of
-this Lisp function should be the same as that of the associated OCML
-function.
-
-@example
-(def-function filter (?l ?rel) -> ?sub-l
-  "Returns all the elements in ?l which satisfy ?rel"
-  :def (and (unary-relation ?rel)
-            (list ?l))
-            (list ?sub-l)
-            (=> (and (member ?x ?sub-l)
-                     (holds ?rel ?x))
-                (member ?x ?l)))
-  :body (if (null ?l)
-          ?l
-          (if (holds ?rel (first ?l)) 
-            (cons (first ?l)
-                  (filter (rest ?l) ?rel))
-            (filter (rest ?l) ?rel))))
-@end example
-
-The above definition shows an example of the use of
-@samp{def-function}.  The OCML function filter takes as
-arguments a list, @samp{?l}, and a unary
-relation, @samp{?rel}, and returns the elements
-of @samp{?l} which satisfy @samp{?rel}.  As
-illustrated by the definition, the @samp{:def} option
-provides a declarative way of specifying a function; the
-option @samp{:body} an effective way of computing its
-value, for a given set of input arguments.
-
-@node Ontologies, Namespaces, Functions, Domain Modelling in OCML
+@node Ontologies, Classes, Overview, Domain Modelling in OCML
 @section Ontologies
+@cindex ontology
+@findex def-ontology
 
-OCML also provides support for defining ontologies.  When an
-ontology is defined, say O, it is possible to specify which ontologies
-are included in O and as a result O will include all the definitions
-from its parent ontologies.  When conflicts are detected (e.g., the
-same concept is defined in two different parent ontologies), a warning
-is issued.  Primitives for loading and selecting ontologies are also
-provided.
+OCML organises its knowledge models using ontologies.  When an
+ontology is defined, say @samp{O}, it is possible to specify which
+ontologies are included in @samp{O} and as a result @samp{O} will
+include all the definitions from its parent ontologies.  When
+conflicts are detected (e.g., the same concept is defined in two
+different parent ontologies), a warning is issued.  Primitives for
+loading and selecting ontologies are also provided.
 
 By default all ontologies are built on top of the OCML base
 ontology.  This comprises twelve sub-ontologies which include the
@@ -696,8 +328,419 @@ the requirements imposed by the TMDA framework, the OCML base ontology
 provides support also for specifying tasks and problem solving
 methods.
 
-@node Namespaces, Procedures, Ontologies, Domain Modelling in OCML
+@node Classes, Instances, Ontologies, Domain Modelling in OCML
+@section Classes
+@cindex class
+@findex def-class
+
+OCML also supports the specification of classes and instances
+and the inheritance of slots and values through isa
+hierarchies.
+
+Classes are defined by means of a Lisp
+macro, @code{def-class}, which takes as arguments the name
+of the class, a list (possibly empty) of superclasses, optional
+documentation, and a list of slot specifications, as illustrated by
+the definitions in the next box.  These show a number of classes taken
+from the domain model for the Sisyphus-I office allocation problem
+(Linster, 1994; Chapter 9).  This problem consists of allocating
+members of the YQT laboratory to the appropriate offices, according to
+a number of constraints.
+
+@smallexample
+(def-class YQT-member ()
+  ((has-project :type project)
+   (smoker :type boolean :cardinality 1)
+   (hacker :type boolean :cardinality 1)
+   (works-with :type YQT-member)
+   (belongs-to-group :type research-group :value yqt)))
+
+(def-class researcher (YQT-member))
+
+(def-class secretary (YQT-member))
+
+(def-class manager (YQT-member))
+@end smallexample
+
+OCML provides support for the usual slot specification machinery
+which is found in frame-based languages.  Specifically, it provides
+the following slot options.
+
+@multitable @columnfractions 0.5 0.5
+@item
+@code{value}@tab A value which is
+inherited by all instances of a class.
+@item
+@code{default-value}@tab A value
+which is inherited by all instances of a class, unless
+overridden by other values.
+@item
+@code{type}@tab The value of this
+option should be a class, say C.  This option specifies that all
+values of the associated slot should be instances of C.  It is also
+possible to specify that a slot value must belong to one or more
+classes, say C1,...., Cn, by using the notation (or C1
+C2..Cn).
+@item
+@code{max-cardinality}@tab The maximum numbers of slot values allowed for a slot.
+@item
+@code{min-cardinality}@tab The minimum numbers of slot values required for a slot.
+@item
+@code{cardinality}@tab The numbers
+of slot values required for a slot.  This option subsumes
+both @code{:min-cardinality}
+and @code{:max-cardinality}.
+@item
+@code{documentation}@tab The value
+of this option is a string providing documentation for a
+slot.
+@item
+@code{inheritance}@tab 
+The inheritance mechanism used for dealing with default values.  If
+@code{:merge} is used, then all default values inherited
+from different ancestors are collected.
+If @code{:supersede} is used, then default values
+inherited from more specific ancestors override those inherited from
+more generic ones.
+@end multitable
+
+@node Instances, Relations, Classes, Domain Modelling in OCML
+@section Instances
+@cindex instance
+@findex def-instance
+
+Instances are simply members of a class.  An instance is defined
+by means of def-instance, which takes as arguments the name of the
+instance, the parent of the instance (i.e. the most specific class the
+instance belongs to), optional documentation and a number of
+slot-value pairs.  An example of instance definition, taken from the
+Sisyphus-I domain model, is shown in the box below.
+
+@smallexample
+(def-instance harry_c researcher
+  ((has-project babylon)
+   (smoker no)
+   (hacker yes)
+   (works-with jurgen_l thomas_d)))
+@end smallexample
+
+In particular the above definition shows that a slot can have
+multiple values.  In this case @code{harry_c} works both
+with
+@code{jurgen_l} and @code{thomas_d}.
+
+@node Relations, Functions, Instances, Domain Modelling in OCML
+@section Relations
+@cindex relation
+@findex def-relation
+
+Relations allow the OCML user to define labelled n-ary relationships
+between OCML entities.  Relations are defined by means of a Lisp
+macro, @code{def-relation}, which takes as arguments the name of a
+relation, its argument schema, optional documentation and a number of
+relation options.  An argument schema is a list (possibly empty) of
+variables.  Relation options play two roles, one related to the formal
+semantics of a relation, the other to the operational nature of OCML.
+These roles are discussed in the next two sections.
+
+@menu
+* Relation specification options::  
+* Operationally-relevant relation options::  
+* Summing up::                  
+@end menu
+
+@node Relation specification options, Operationally-relevant relation options, Relations, Relations
+@subsection Relation specification options
+@cindex relation options
+
+From a formal semantics point of view the purpose of a relation
+option is to help characterize the extension of a relation.  The table
+below shows the relation options which can be used to provide formal
+relation specifications and, for each option, informally describes its
+semantics.  A formal semantics to these options can be given in terms
+of the homonymous Ontolingua constructs.
+
+@multitable @columnfractions 0.2 0.8
+@item
+@strong{Relation option}@tab @strong{Role in specification}
+@item
+@code{:iff-def}@tab Specifies
+both sufficient and necessary conditions for the relation to hold for
+a given set of arguments.
+@item
+@code{:sufficient}@tab Specifies a sufficient condition for the relation to hold for a given
+set of arguments.
+@item
+@code{:constraint}@tab Specifies
+an expression which follows from the definition of the relation and
+must be true for each instance of the relation.
+@item
+@code{:def}@tab This is for compatibility with
+Ontolingua: it specifies a constraint which is also meant to provide a
+partial definition of a relation.
+@item
+@code{:axiom-def}@tab A statement which mentions the relation to which it is
+associated.  It provides a mechanism to associate theory axioms with
+specific relations.
+@end multitable
+
+@node Operationally-relevant relation options, Summing up, Relation specification options, Relations
+@subsection Operationally-relevant relation options
+@cindex relation options
+
+Relation options also play an operational role.  Specifically,
+some relation options support constraint checking over relation
+instances while others provide proof mechanisms which can be used to
+find out whether or not a relation holds for some arguments.  The
+table below lists the relation options which are meaningful from an
+operational point of view and informally describes their relevance to
+constraint checking and theorem proving.
+
+@need 3000
+@multitable @columnfractions 0.2 0.4 0.4
+@item
+@strong{Relation option}@tab @strong{Supports constraint checking}@tab@strong{Provides proof mechanism}
+@item
+@code{:sufficient}@tab No@tab Yes
+@item
+@code{:prove-by}@tab No@tab Yes
+@item
+@code{:lisp-fun}@tab No@tab Yes
+@item
+@code{:iff-def}@tab Yes@tab Yes
+@item
+@code{:constraint}@tab Yes@tab No
+@item
+@code{:def}@tab Yes@tab No
+@end multitable
+
+As shown in the table, constraint checking is supported by the
+following
+keywords: @code{:constraint}, @code{:def} and
+@code{:iff-def}.  While these have different
+model-theoretic semantics, from a constraint checking point of view
+they are equivalent.  They all specify an expression which has to be
+satisfied by each known instance of the relevant relation.
+
+The relation
+options @code{:iff-def}, @code{:sufficient},
+@code{:prove-by} and @code{:lisp-fun} provide
+mechanisms for verifying whether or not a relation holds for some
+arguments.  The first two---@code{:iff-def}
+and @code{:sufficient}---also play a specification role.
+The others---@code{:prove-by} and
+@code{:lisp-fun}---only play an operational role.
+
+Both @code{:iff-def}
+and @code{:sufficient} indicate logical expressions which
+can be used to prove whether some tuple is an instance of a relation.
+From a theorem proving point of view there is an important difference
+between them.  Let's suppose we are trying to prove that a tuple, say
+T, satisfies a relation, say R.  If a
+@code{:sufficient} condition is tried and failed, the OCML
+proof system will then search for alternative ways of proving that T
+satisfies R.  If an @code{:iff-def} condition is tried and
+failed, then no alternative proof mechanism will be attempted.
+
+The relation options @code{:prove-by}
+and @code{:lisp-fun} are meant to support rapid
+prototyping and early validation by providing efficient mechanisms for
+checking whether a tuple satisfies a relation.  The difference between
+:prove-by and :lisp-fun has to do with the expressions which are used
+as values to the two options:
+@code{:prove-by} points to a logical
+expression, @code{:lisp-fun} to a non-logical one
+(specifically a Lisp expression).
+
+The box below provides an example of how the various types of
+relation options can be used concurrently to specify a relation and to
+support constraint checking and efficient proofs.  The relation
+has-value, shown below, associates a design parameter to its value in
+a design model.  The definition specifies that @code{?v}
+is the value of a parameter, @code{?p}, in a design
+model, @code{?dm}, if and only if the pair @code{(?p
+. ?v)} is an element of @code{?dm}.  In addition,
+it also specifies the constraint that the value of a parameter has to
+be a member of its value range, if this has been specified.  Finally,
+the definition includes a @code{:prove-by} option whose
+value is an expression which can be used for verifying whether the
+relation is satisfied for a triple, @code{(?p ?v ?dm)}.
+This expression provides an efficient proof method (by weakening the
+:iff-def statement which formally defines
+relation @code{has-value}) but does not contribute to the
+specification.
+
+@smallexample
+(def-relation HAS-VALUE (?p ?v ?dm)
+  "Parameters have values w.r.t a particular design model"
+  :iff-def (and (parameter ?p)
+                (design-model ?dm)
+                (element-of (?p . ?v) ?dm))
+  :constraint (or (and (exists ?vr 
+                               (has-value-range ?p ?vr))
+                       (element-of ?v ?vr))
+                  (not (exists ?vr 
+                               (has-value-range ?p ?vr))))
+  :prove-by (element-of (?p . ?v) ?dm))
+@end smallexample
+
+A meta-option for non-operational specifications
+
+As shown above, OCML provides a number of relation options,
+which play both a specification and an operational role.  However, in
+some cases we might want to use a keyword only for specification and
+not operationally, for instance when we know that the value of the
+keyword in question is a non-operational expression.  To cater for
+these situations, OCML provides a special
+meta-keyword, @code{:no-op}, which can be used to indicate
+that the enclosed relation option only plays a specification role.  An
+example of its use is shown by the definition of relation range, which
+is shown below.  In the example the keyword @code{:no-op}
+is used to indicate that the @code{:iff-def} specification
+of the relation is not operational - in particular it is not normally
+feasible to test the range of a function on all its possible
+inputs!
+
+@smallexample
+(def-relation RANGE (?f-r ?relation)
+  "The range of a function or a binary relation is a relation which is 
+   true for any possible output of the function or second argument of 
+   the binary relation"
+  :no-op (:iff-def (or
+                    (and (function ?f-r)
+                         (forall (?args ?result)
+                                 (=> (= (apply ?f-r ?args) ?result)
+                                     (holds ?relation ?result))))
+                    (and (binary-relation ?f-r)
+                         (forall (?x ?y)
+                                 (=> (holds ?f-r ?x ?y))
+                                     (holds ?relation ?y))))))
+@end smallexample
+
+In the above definition it is worth highlighting the use of the
+special meta-relation holds.  An expression such as @code{(holds
+<r> <arg1>....<argn>)} is satisfied if and
+only if the expression @code{(<r>
+<arg1>....<argn>)} is satisfied.  Thus holds has
+variable arity: it can take one or more arguments.  In particular the
+number of additional arguments in a holds statement reflects the arity
+of the relation passed as first argument.  The relation holds has a
+`special status' because it is the only relation with variable arity
+supported by OCML.
+
+@node Summing up,  , Operationally-relevant relation options, Relations
+@subsection Summing up
+
+The set of relation options discussed here aims to provide a
+flexible and versatile range of modelling constructs supporting
+various styles of modelling.  While the emphasis is on operational
+modelling, OCML also supports formal specification.  Moreover, it
+provides facilities for integrating a specification with efficient
+proof mechanisms.
+
+@node Functions, Procedures, Relations, Domain Modelling in OCML
+@section Functions
+@cindex function
+@findex def-function
+
+A function defines a mapping between a list of input arguments
+and its output argument.  Formally functions can be characterized as a
+special class of relations, as in KIF (Genesereth and Fikes, 1992).
+However, in operational terms there is a significant difference
+between a function and a relation: functions are applied to ground
+terms to generate function values; relation expressions can be
+asserted or queried.  Thus, in accordance with the operational nature
+of OCML, functions are distinguished from relations.
+
+Functions are defined by means of a Lisp macro, def-function.
+This takes as argument the name of a function, its argument list, an
+optional variable indicating the output argument (as in Ontolingua
+this is preceded by an arrow, ->), optional documentation and zero
+or more function specification options.  These
+are @code{:def},
+@code{:constraint}, @code{:body}
+and @code{:lisp-fun}.
+
+The option :constraint provides a way to constrain the domain
+(i.e. the set of possible inputs) of a function.  It specifies a
+logical expression which must be satisfied by the input arguments of
+the function.  The @code{:def} option indicates a logical
+expression which `defines' the function.  This expression should be
+predicated over both (some) input arguments and the output variable.
+Operationally, the expression denoted by
+the @code{:constraint} option provides a mechanism for
+testing the feasibility of applying a function to a set of arguments.
+The expression denoted by :def provides a mechanism for verifying that
+the output produced by a function application is consistent with the
+formal definition of the function.
+
+Finally, the options @code{:body}
+and @code{:lisp-fun} provide effective mechanisms for
+computing the value of a function.  The former specify a functional
+term which is evaluated in an environment in which the variables in
+the function schema are bound to the actual arguments.  The latter
+makes it possible to evaluate an OCML function by means of a
+procedural attachment, expressed as a Lisp function.  The arity of
+this Lisp function should be the same as that of the associated OCML
+function.
+
+@smallexample
+(def-function filter (?l ?rel) -> ?sub-l
+  "Returns all the elements in ?l which satisfy ?rel"
+  :def (and (unary-relation ?rel)
+            (list ?l))
+            (list ?sub-l)
+            (=> (and (member ?x ?sub-l)
+                     (holds ?rel ?x))
+                (member ?x ?l)))
+  :body (if (null ?l)
+          ?l
+          (if (holds ?rel (first ?l)) 
+            (cons (first ?l)
+                  (filter (rest ?l) ?rel))
+            (filter (rest ?l) ?rel))))
+@end smallexample
+
+The above definition shows an example of the use of
+@code{def-function}.  The OCML function filter takes as
+arguments a list, @code{?l}, and a unary
+relation, @code{?rel}, and returns the elements
+of @code{?l} which satisfy @code{?rel}.  As
+illustrated by the definition, the @code{:def} option
+provides a declarative way of specifying a function; the
+option @code{:body} an effective way of computing its
+value, for a given set of input arguments.
+
+@node Procedures, Namespaces, Functions, Domain Modelling in OCML
+@section Procedures
+@cindex procedure
+@findex def-procedure
+
+Procedures define actions or sequences of actions which cannot
+be characterized as functions between input and output arguments.  For
+example, the procedure below defines the sequence of actions needed to
+set the value of a slot.  These include a unassert statement, which
+removes any existing value from the slot, and a tell statement, which
+adds the new value.  Both tell and unassert are procedures.  The
+former takes a ground logical expression and adds it to the current
+model.  The latter takes a relation expression and removes from the
+current model all assertions which match it.  Note that in accordance
+with the uniform view of a knowledge model, slot changes are carried
+out by means of generic assertion and deletion operations (i.e. in
+terms of tell and unassert).
+
+@smallexample
+(def-procedure SET-SLOT-VALUE (?i ?s ?v)
+  :constraint (and (instance-of ?i ?c)
+                   (slot-of ?s ?c))
+  :body (do
+          (unassert (list-of ?s ?i ?any))
+          (tell (list-of ?s ?i ?v))))
+@end smallexample
+
+@node Namespaces, Translation between representation languages, Procedures, Domain Modelling in OCML
 @section Namespaces
+@cindex namespace
 
 OCML uses Lisp symbols to name things.  This is convenient, but
 awkward when dealing with ontologies on a global scale.  OCML now
@@ -716,15 +759,15 @@ before use.
 
 @item
 Namespaced symbols are prefixed
-with @samp{#_}.
+with @code{#_}.
 @end enumerate
 
-Ontology definitions should include a @samp{:namespace-uri}
+Ontology definitions should include a @code{:namespace-uri}
 initialization argument, which is a string holding the URI identifying
 the ontology.  If you do not supply a namespace URI, OCML will assign
 one based on the ontology's name.
 
-@example
+@smallexample
 (def-ontology colours
     :author "dave"
     :namespace-uri "http://www.kmi.open.ac.uk/colours#"
@@ -734,21 +777,21 @@ one based on the ontology's name.
     :author "dave"
     :namespace-uri "http://www.kmi.open.ac.uk/fruits#"
     :files ())
-@end example
+@end smallexample
 
 @noindent
 Next, we tell OCML which prefixes we intend to use:
 
-@example
+@smallexample
 (register-namespace "colours" 'colours)
 (register-namespace "fruit" 'fruits)
-@end example
+@end smallexample
 
 We can then use these prefixes in ontologies, using a Lisp
-reader macro, @samp{#_}.  Classes, instances, and
+reader macro, @code{#_}.  Classes, instances, and
 relations can all be named in this way.  Viz:
 
-@example
+@smallexample
 (in-ontology colours)
 
 (def-class #_colour ())
@@ -765,30 +808,30 @@ relations can all be named in this way.  Viz:
 
 (def-class #_orange (#_fruit)
  (#_colors:has-colour #_colours:orange))
-@end example
+@end smallexample
 
-Here, @samp{#_colours:orange}
-and @samp{#_fruit:orange} are different symbols, from
+Here, @code{#_colours:orange}
+and @code{#_fruit:orange} are different symbols, from
 different namespaces and ontologies, used together in one
 ontology.
 
 When Lisp reads a namespaced symbol, it converts it to a symbol
 by concatenating the value of the referenced
-ontology's @samp{namespace-uri} slot with the symbol.
-Thus, @samp{#_fruit:orange}
-becomes @samp{OCML::|http://www.kmi.open.ac.uk/fruits#orange|}.
-It is important to remember that the @samp{#_} syntax is
+ontology's @code{namespace-uri} slot with the symbol.
+Thus, @code{#_fruit:orange}
+becomes @code{OCML::|http://www.kmi.open.ac.uk/fruits#orange|}.
+It is important to remember that the @code{#_} syntax is
 merely a shorthand for the long, quoted Lisp symbol.  If you so wish,
 you can enter the long form directly, as a normal Lisp symbol.  Given
 this, namespaced variables interoperate fully with non-namespaced
 ones.  The prefixes themselves are discarded after they have been read
 in by the Lisp reader.  Namespaced symbols are case
-sensitive: @samp{#_foo} is distinct
-from @samp{#_Foo}.
+sensitive: @code{#_foo} is distinct
+from @code{#_Foo}.
 
 Further examples from a Lisp listener session:
 
-@example
+@smallexample
 OCML> (in-ontology fruits)
 #<OCML-ONTOLOGY FRUITS>
 OCML> '#_colours:orange
@@ -809,37 +852,12 @@ OCML> (eq '#_colors:orange 'ocml::|http://www.kmi.open.ac.uk/colours#orange|)
 T
 OCML> (eq '#_colours:orange '#_colours:Orange)
 NIL
-@end example
+@end smallexample
 
-The notation @samp{#_} is modelled after the WSML
-syntax for IRIs, @samp{_"http://www.deri.org/foo"}.
+The notation @code{#_} is modelled after the WSML
+syntax for IRIs, @code{_"http://www.deri.org/foo"}.
 
-@node Procedures, Translation between representation languages, Namespaces, Domain Modelling in OCML
-@section Procedures
-
-Procedures define actions or sequences of actions which cannot
-be characterized as functions between input and output arguments.  For
-example, the procedure below defines the sequence of actions needed to
-set the value of a slot.  These include a unassert statement, which
-removes any existing value from the slot, and a tell statement, which
-adds the new value.  Both tell and unassert are procedures.  The
-former takes a ground logical expression and adds it to the current
-model.  The latter takes a relation expression and removes from the
-current model all assertions which match it.  Note that in accordance
-with the uniform view of a knowledge model, slot changes are carried
-out by means of generic assertion and deletion operations (i.e. in
-terms of tell and unassert).
-
-@example
-(def-procedure SET-SLOT-VALUE (?i ?s ?v)
-  :constraint (and (instance-of ?i ?c)
-                   (slot-of ?s ?c))
-  :body (do
-          (unassert (list-of ?s ?i ?any))
-          (tell (list-of ?s ?i ?v))))
-@end example
-
-@node Translation between representation languages, The ask-tell interface, Procedures, Domain Modelling in OCML
+@node Translation between representation languages, The ask-tell interface, Namespaces, Domain Modelling in OCML
 @section Translation between representation languages
 
 While OCML is an excellent language for knowledge modelling,
@@ -850,9 +868,9 @@ function.  @code{translate} takes 4 required arguments:
 keywords indicating source and destination lanuages, an object in the
 source language, and a stream to write the output to.
 
-@example
+@smallexample
 (translate :ocml :rdf 'colours *standard-output*)
-@end example
+@end smallexample
 
 XXX At present, not all translations are available through this
 interface, and the methods of returning the result are
@@ -875,12 +893,12 @@ and slots.  In particular, because these are relations, it is possible
 to characterize them by means of the relation options discussed in
 section @ref{Relations}.  For instance, the definition
 below specifies the class of empty sets in terms of
-an @samp{:iff-def} relation option.
+an @code{:iff-def} relation option.
 
-@example
+@smallexample
 (def-class EMPTY-SET (set) ?set
    :iff-def (not (exists ?x (element-of ?x ?set))))
-@end example
+@end smallexample
 
 @noindent
 The generic Tell-Ask interface
@@ -893,19 +911,19 @@ or simply relation instances.  For example I can use tell to add a new
 value to the list of projects carried out by harry_c as
 follows.
 
-@example
+@smallexample
 ? (tell (has-project harry_c mlt))
 (HAS-PROJECT HARRY_C MLT)
-@end example
+@end smallexample
 
 @noindent
 Analogously I can add a new instance of class researcher simply by
 stating:
 
-@example
+@smallexample
 ? (tell (researcher mickey_m))
 (RESEARCHER MICKEY_M)
-@end example
+@end smallexample
 
 The relation-centred view makes it possible to examine the
 contents of an OCML model simply by asking whether a logical statement
@@ -919,14 +937,14 @@ Lisp macro ask to pose the query (has-project harry_c ?c).  The
 resulting interaction with the OCML proof system is shown
 below.
 
-@example
+@smallexample
 ? (ask (has-project harry_c ?c))
 Solution: ((HAS-PROJECT HARRY_C BABYLON))  
 More solutions?  (y or n)  y
 Solution: ((HAS-PROJECT HARRY_C MLT))  
 More solutions?  (y or n)  y
 No more solutions
-@end example
+@end smallexample
 
 This uniform, relation-centred view over OCML models also
 provides a way to index inferences.  For instance, when answering the
@@ -939,32 +957,60 @@ the query.
 
 @node Rule-based reasoning, Modelling issues, Domain Modelling in OCML, Top
 @chapter Rule-based reasoning
+@cindex rule
+@findex def-rule
 
 @menu
 * Backward-chaining rules::     
 * Forward-chaining rules::      
 @end menu
 
+OCML can reason with backward and forward chaining rules.
+
+@deffn Macro def-rule name &optional documenation &body clauses
+Defines a forward or backward chaining rule.  Each of the
+@var{clauses} should be a list with the relation name and schema at
+its head.  The rule's @var{name} need not be the same as the relation
+name in the clause head.  This allows multiple, concurrently active
+definitions to be supplied for the same relation by different rules.
+
+@smallexample
+(def-rule collaborates-with-by-proximity
+   ((collaborates-with ?x ?y)
+     if
+     (shares-office ?x ?y)))
+
+(def-rule collaborates-by-coauthoring
+   ((collaborates-with ?x ?y)
+     if
+     (person ?x)
+     (person ?y)
+     (not (= ?x ?y))
+     (has-authored ?x ?p)
+     (has-authored ?y ?p)))
+@end smallexample
+@end deffn
+
 @node Backward-chaining rules, Forward-chaining rules, Rule-based reasoning, Rule-based reasoning
 @section Backward-chaining rules
+@cindex backward chaining
 
-OCML also supports the specification of backward and forward
-rules.  A backward rule consists of a number of backward clauses, each
-of which is defined according to the following syntax:
+A backward rule consists of a number of backward clauses, each of
+which is defined according to the following syntax:
 
-@example
+@smallexample
 backward-clause	::= (relation-expression @{if @{logical-expression@}+@})
-@end example
+@end smallexample
 
-Each backward clause specifies a different goal-subgoal
-decomposition.  When carrying out a proof by means of a backward rule
-the OCML interpreter will try to prove the relevant goal by firing the
-clauses in the order in which these are listed in the rule definition.
-As in Prolog, depth-first search with chronological backtracking is
-used to control the proof process.
+Each backward clause specifies a different goal-subgoal decomposition.
+When carrying out a proof by means of a backward rule the OCML
+interpreter will try to prove the relevant goal by firing the clauses
+in the order in which these are listed in the rule definition.  As in
+Prolog, depth-first search with chronological backtracking is used to
+control the proof process.
 
-Both semantically and operationally a backward chaining rule is
-the same as a :sufficient relation option: they both provide an
+Both semantically and operationally a backward chaining rule is the
+same as a @code{:sufficient} relation option: they both provide an
 expression which is sufficient to verify that a tuple holds for a
 relation.  Thus, one might wonder whether rules are needed at all.  In
 practice the advantage of including backward rules in the language is
@@ -972,23 +1018,22 @@ that these provide a modular mechanism for refining existing (possibly
 generic) relation specifications, for instance in cases where
 application-specific knowledge is needed to complete the specification
 of a relation.  To clarify this point let's consider an example taken
-from the KMI office allocation problem (see chapter 9 for an extensive
-analysis of this application).
+from the KMI office allocation problem.
 
-The relation has-value-range is defined in the parametric design
-task ontology to characterize the set of possible values which can be
-assigned to a design parameter - see chapter 6.  When building an
-application model the generic has-value-range specification is usually
-refined, so that the space of possible values that can be assigned to
-a particular parameter is precisely defined.  A modular way to achieve
-this is to refine the definition of the relation by means of the
-appropriate backward chaining rules.  The rules shown below fulfil
-this purpose for two of the classes of parameters present in the KMI
-office allocation domain: professors and secretaries.  In this example
-the former can only go into a double room; the latter into a large
-room next to the entrance.
+The relation @code{has-value-range} is defined in the parametric
+design task ontology to characterize the set of possible values which
+can be assigned to a design parameter - see chapter 6.  When building
+an application model the generic @code{has-value-range} specification
+is usually refined, so that the space of possible values that can be
+assigned to a particular parameter is precisely defined.  A modular
+way to achieve this is to refine the definition of the relation by
+means of the appropriate backward chaining rules.  The rules shown
+below fulfil this purpose for two of the classes of parameters present
+in the KMI office allocation domain: professors and secretaries.  In
+this example the former can only go into a double room; the latter
+into a large room next to the entrance.
 
-@example
+@smallexample
 (def-rule has-value-range-1 
   ((has-value-range-gen ?m ?l)
    if
@@ -1003,10 +1048,11 @@ room next to the entrance.
                    (and (room ?r size ?n usable yes)
                         (> ?n 1)
                         (close-to ?r kmi-entrance))))))
-@end example
+@end smallexample
 
 @node Forward-chaining rules,  , Backward-chaining rules, Rule-based reasoning
 @section Forward-chaining rules
+@cindex forward chaining
 
 OCML also allows the user to define forward rules.  A forward
 rule comprises zero or more antecedents and one or more consequents.
@@ -1017,20 +1063,30 @@ them, until one fails.  This mechanism makes it possible to integrate
 data-driven and goal-driven reasoning and to specify arbitrarily
 complex right hand sides.
 
-A special operator, exec, is provided to allow OCML users to
+A special operator, @code{exec}, is provided to allow OCML users to
 introduce control (and therefore functional) terms in the right hand
 side of a rule.  In particular, two useful procedures are tell, to
 assert new facts, and output, to produce output.  A simple example
-showing how to use these in a forward chaining rule is given
-below.
+showing how to use these in a forward chaining rule is given below.
 
-@example
-(def-rule foo 
-  (has-project ?x ?y) 
-  then 
-   (exec (tell (project-covered-by ?y ?x)))
-   (exec (output "has project ~S ~S" ?x ?y)))
-@end example
+@smallexample
+(def-rule has-project-cond
+    (has-project ?x ?y)
+  then
+  (exec (tell (project-covered-by ?y ?x)))
+  (exec (output "has-project-cond rule deduced (project-covered-by ~S ~S)~%" ?y ?x)))
+
+(enable-fc-watcher-mode)
+
+(def-instance larry-e researcher
+  ((has-project tigris)
+   (smoker no)
+   (hacker yes)
+   (works-with harry_d)))
+@end smallexample
+
+This produces the output @samp{has-project-cond rule deduced
+(project-covered-by TIGRIS LARRY-E)}.
 
 While forward rules can be useful in a number of situations when
 building application models (e.g. to define watchers, which are
@@ -1039,8 +1095,22 @@ are not essential to the model building process.  The reason for this
 is that knowledge-level modelling is mainly about constructing
 definitions, while forward-chaining rules are about behaviour.  Thus
 they can be used in place of procedures to describe behaviour but they
-cannot replace constructs for relation or function
-specification.
+cannot replace constructs for relation or function specification.
+
+@deffn Function run-fc-rules
+@deffnx Function run
+Explicitly run forward-chaining rules in the current ontology.
+@end deffn
+
+@deffn Function enable-fc-watcher-mode &optional packets
+@deffnx Function disable-fc-watcher-mode
+Enable and disable the automatic triggering of forward chaining rules.
+@end deffn
+
+@deffn Function trace-fc
+@deffnx Function untrace-fc
+Turn on and off the tracing of forward chaining rules.
+@end deffn
 
 @node Modelling issues, Functional View of OCML, Rule-based reasoning, Top
 @chapter Modelling issues
@@ -1163,9 +1233,9 @@ level one.
 
 In the Sisyphus-I application model we should then state:
 
-@example
+@smallexample
 (def-upward-class-mapping yqt-member yqt-parameter)
-@end example
+@end smallexample
 
 The above form iterates over each instance of class yqt-member,
 say I, creating a new instance of class yqt-parameter, say Meta-I, and
@@ -1173,7 +1243,7 @@ associating this to I, i.e., asserting (maps-to Meta-I I).  Hence, if
 we now ask for the mapping between parameters and YQT members we get
 the following results.
 
-@example
+@smallexample
 ? (ask (maps-to ?z ?x)t)
 
 Solution: ((MAPS-TO YQT-PARAMETER-EVA_I EVA_I))  
@@ -1191,13 +1261,13 @@ Solution: ((MAPS-TO YQT-PARAMETER-HARRY_C HARRY_C))
 Solution: ((MAPS-TO YQT-PARAMETER-ANDY_L ANDY_L))  
 Solution: ((MAPS-TO YQT-PARAMETER-MARC_M MARC_M))  
 Solution: ((MAPS-TO YQT-PARAMETER-WERNER_L WERNER_L))  
-@end example
+@end smallexample
 
 The advantage of this solution is that parameters and YQT
 members maintain their separate identities, as shown in the next
 box.
 
-@example
+@smallexample
 ? (describe-instance 'YQT-PARAMETER-WERNER_L)
 
 Instance YQT-PARAMETER-WERNER_L of class YQT-PARAMETER
@@ -1217,7 +1287,7 @@ HACKER: YES
 WORKS-WITH: ANGY_W, MARC_M
 
 GROUP: YQT
-@end example
+@end smallexample
 
 Formally, a mapping can be characterized as an association
 between an object, say o, and its meta-object, m-o, so that the entity
@@ -1225,13 +1295,13 @@ denoted by the entity denoted by m-o is the same as the entity denoted
 by o (Genesereth and Nilsson, 1988).  This notion can be formalized in
 OCML by means of the following definition.
 
-@example
+@smallexample
  (def-relation maps-to (?x ?y)
   "This relation allows the user to specify an association between
    an object at the task layer and one at the domain layer.
    Formally ?y denotes the object denoted by the object denoted by ?x"
   :no-op (:iff-def (= ?y (denotation ?x))))
-@end example
+@end smallexample
 
 @node Relation mapping,  , Instance mapping, Functional View of OCML
 @section Relation mapping
@@ -1268,14 +1338,14 @@ assertions present in the current snapshot of the domain knowledge
 base.  The relation maps-to is used to retrieve the parameter
 associated with each particular YQT member.
 
-@example
+@smallexample
 (def-relation-mapping current-design-model :up
    ((current-design-model ?dm)
     if
     (= ?dm (setofall (?p . ?v)
                     (and (in-room ?x ?v)
                          (maps-to ?p ?x))))))
-@end example
+@end smallexample
 
 An upward relation mapping ensures that when a task/method level
 relation is needed the relevant information is obtained from the
@@ -1290,7 +1360,7 @@ mappings are needed to ensure that when the design model considered by
 the problem solver is modified, the relevant changes are reflected
 onto the domain model - see definition below.
 
-@example
+@smallexample
 (def-relation-mapping current-design-model (:down :add)
   (lambda (?x)
     (do
@@ -1299,21 +1369,21 @@ onto the domain model - see definition below.
             do
             (if (maps-to (first ?pair) ?z)
               (tell (in-room ?z (rest ?pair))))))))
-@end example
+@end smallexample
 
 Finally, the definition below shows the :remove downward mapping
 associated with relation current-design-model: it simply removes the
 domain level assertions associated with the design model which is
 passed as argument to the relation instance being retracted.
 
-@example
+@smallexample
 (def-relation-mapping current-design-model (:down :remove)
    (lambda (?x)
      (loop for ?pair in ?x
             do
             (if (maps-to (first ?pair) ?z)
               (unassert (in-room ?z (rest ?pair)))))))
-@end example
+@end smallexample
 
 @node Reference, Interpreters and Proof System, Functional View of OCML, Top
 @chapter Reference
@@ -1342,7 +1412,7 @@ passed as argument to the relation instance being retracted.
 @subsection setofall
 
 @noindent
-@samp{setofall} finds all solutions (i.e. environments)
+@code{setofall} finds all solutions (i.e. environments)
 to basic-log-expression and then returns the list obtained by
 instantiating template in all the returned environments, ensuring that
 the list contains no duplicates.  If no solutions are found then the
@@ -1352,7 +1422,7 @@ empty list is returned.
 @subsection findall
 
 @noindent
-@samp{findall} is the same as setofall except that it does
+@code{findall} is the same as setofall except that it does
 not remove duplicate solutions.
 
 @node the, in-environment, findall, Functional Term Constructors
@@ -1485,7 +1555,7 @@ is returned.
 @node Grammar, Inheritance and Default Values, Control Term Constructors, Reference
 @section Grammar
 
-@example
+@smallexample
 loop-control-term	::=	(loop for variable in term do @{control-term@}+)
 do-control-term 	::=	(do-actions @{control-term@}+)
 repeat-control-term 	::=	(repeat-actions @{end-test@} @{control-term@}+ ) |
@@ -1550,7 +1620,7 @@ return-control-term	::=	(return term)
 if-control-term	::=	(if log-expression then-control-term
 @{else-control-term@})
 return-control-term	::=	(return term)
-@end example
+@end smallexample
 
 @node Inheritance and Default Values,  , Grammar, Reference
 @section Inheritance and Default Values
@@ -1562,38 +1632,38 @@ default value is operationalized as follows.
 Instances inherit values and default values from their
 superclasses down the inheritance hierarchy specified by instance-of
 and subclass-of links.  For a given slot, say s, of a sample instance,
-say @samp{I}, the following scenarios can arise:
+say @code{I}, the following scenarios can arise:
 
 @enumerate 
 
 @item
-@samp{I} has not inherited any default value.  In this
-case the value of s in @samp{I} is given by all the
-values @samp{I} has inherited from its superclasses, plus
+@code{I} has not inherited any default value.  In this
+case the value of s in @code{I} is given by all the
+values @code{I} has inherited from its superclasses, plus
 any value locally specified for slot s of
-@samp{I}.
+@code{I}.
 
 @item
-@samp{I} has inherited some default values as well as
+@code{I} has inherited some default values as well as
 non-default ones.  In this case the default values are ignored and
 rule (i) is applied.  We say that the default values are overridden by
 the non-default ones.
 
 @item
-@samp{I} has inherited only default values and local
+@code{I} has inherited only default values and local
 values have been specified.  As in the previous case, the default
 values are ignored and only the local values are considered.
 
 @item
-@samp{I} has inherited only default values and no local
+@code{I} has inherited only default values and no local
 values have been specified.  In this case there are two possibilities.
 If the :inheritance facet has not been specified, or it has been
 specified and it is :merge, all default values apply.  If the
 :inheritance facet has been specified and it is :supersede, then the
 value of s in
-@samp{I} is obtained by (i) ranking the ancestors
-of @samp{I} according to the class precedence order of the
-parent of @samp{I}, and (ii) retrieving the default value
+@code{I} is obtained by (i) ranking the ancestors
+of @code{I} according to the class precedence order of the
+parent of @code{I}, and (ii) retrieving the default value
 of the first class in the class precedence order which specifies a
 (default) value for s.  The details of the algorithm used to compute
 the class precedence order are given at pp. 782-786 of the Common Lisp
@@ -1618,7 +1688,7 @@ list of direct superclasses of C.
 @section Functional term interpreter
 
 The OCML interpreter is implemented by means of a Lisp macro,
-@samp{ocml-eval}.  This evaluates a functional term, term,
+@code{ocml-eval}.  This evaluates a functional term, term,
 in an environment, env, according to the following rules.
 
 @enumerate 
@@ -1803,12 +1873,20 @@ respect to first-order logic statements.  In particular, disjunctions
 can only be proved by proving each clause separately and negated
 expressions are only proved by default.
 
-@node Bibliography,  , Interpreters and Proof System, Top
+@node Bibliography, Function Index, Interpreters and Proof System, Top
 @chapter Bibliography
 
 @noindent
 @anchor{Reusable Components for Knowledge Modelling}
 
-[Motta99] Enrico Motta. @i{Reusable Components for Knowledge Modelling}. IOS Press. 1-58603-003-5. 
+[Motta99] Enrico Motta. @i{Reusable Components for Knowledge Modelling}. IOS Press. 1-58603-003-5.
+
+@node Function Index, Concept Index, Bibliography, Top
+@unnumbered Function Index
+@printindex fn
+
+@node Concept Index,  , Function Index, Top
+@unnumbered Concept Index
+@printindex cp
 
 @bye

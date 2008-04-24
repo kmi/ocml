@@ -194,30 +194,26 @@
                                            (some #'variable? args)))))))
 
 
-;;;COMPILE-RULE-PACKETS ---Compiles the forward chaining rules in the specifies packets.
-;;;By default it compiles all rules in all packets
 (defun compile-rule-packets (&optional (packets :all))
-  (compile-fc-rules  (if (eq packets :all)
-                       (merge-rules (all-rule-packets))
-                       (merge-rules (mapcar #'get-rule-packet packets)))))
+  "Compile forward chaining rules in the specified PACKETS.
 
-;;;;(defun COMPILE-ALL-FUNCTIONS-&-PROCEDURES (&optional verbose force-p)
-;;;;  (compile-all-funs&procs verbose force-p))
+By default, compile all rules in all packets."
+  (compile-fc-rules (if (eq packets :all)
+                        (merge-rules (all-rule-packets))
+                        (merge-rules (mapcar #'get-rule-packet packets)))))
 
-
-;;;RUN ---Invokes the forward chainer
 (defun run (&optional (packets :all))
+  "Invoke the forward chainer.
+
+By default, run all rule packets."
   (run-fc-rules packets))
 
-
-;;;ENABLE-FC-WATCHER-MODE
-;;;Top level function to enable 'watcher mode'.  All packets 
-;;;given as input are declared 'active', rules are compiled
-;;;and instantiations are fired.  In addition, the flag 
-;;;*fc-in-watcher-mode* is set to T, so that  new instantiations 
-;;;will be fired as soon as they are created
-
 (defun enable-fc-watcher-mode (&optional (packets :all))
+  "Enable foward chainer's 'watcher mode'.
+
+All packets given as input are declared 'active', rules are compiled
+and instantiations are fired.  New instantiations will be fired as
+soon as they are created."
   (let* ((packets (if (eq packets :all)
                     (all-rule-packets)
                     (mapcar #'get-or-create-packet packets)))
@@ -229,13 +225,9 @@
     (setf *fc-in-watcher-mode* t)
     (do-interpreter-cycle rules)))
 
-
-;;;DISABLE-FC-WATCHER-MODE
-;;;Disables 'watcher mode'
-
 (defun disable-fc-watcher-mode ()
+  "Disable 'watcher mode'."
   (setf *fc-in-watcher-mode* nil))
-
 
 ;;;EXECUTE-APPLICATION
 (defun execute-application (appl)
@@ -251,13 +243,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;Simple Tracing
 
-
-;;;FORWARD CHAINING
+;;; Forward chaining
 (defun trace-fc ()
+  "Trace forward-chaining rules."
   ;; (trace-assertions)
   (setf *trace-fc* t))
 
 (defun untrace-fc ()
+  "Stop tracing forward-chaining rules."
   (setf *trace-fc* nil))
 
 ;;;;;;;;;;;;;;;;;;;;;
