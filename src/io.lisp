@@ -174,4 +174,9 @@ if it can be found, or NIL."
                                         :from-end t))))
     (string-trim (list +directory-separator+) base)))
 
+(defun rm-file (name)
+  "Remove file NAME."
+  (when (probe-file name)
+    (delete-file name)))
+
 ;;; }}}

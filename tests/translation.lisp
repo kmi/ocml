@@ -11,7 +11,7 @@
   (format nil "~Aontolingua/load.onto" (ocml:find-ontology-directory ontology-name)))
 
 (test translate-to-ontolingua-test
-  (delete-file (ontolingua-load-file 'ocml::apples2))
+  (ocml::rm-file (ontolingua-load-file 'ocml::apples2))
   (finishes (ocml:translate :ocml :ontolingua 'ocml::apples2
                             :top-class 'ocml::apple))
   ;; Check the files have been written

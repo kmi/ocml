@@ -106,9 +106,6 @@ maclisp and lispworks - now pass the directory
     ;;added by johnd 6/2/03
     (create-directory
      (make-pathname :directory (pathname-directory target-directory)))
-    ;;added by johnd 6/2/03
-    (when (probe-file target-pathname)
-      (delete-file target-pathname))
     (with-open-file (ifile source-pathname
                            :direction :input)
       (with-open-file (ofile target-pathname
