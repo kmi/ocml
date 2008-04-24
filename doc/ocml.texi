@@ -405,6 +405,56 @@ inherited from more specific ancestors override those inherited from
 more generic ones.
 @end multitable
 
+@menu
+* Remedial classes::            
+@end menu
+
+@node Remedial classes,  , Classes, Classes
+@subsection Remedial classes
+
+Sometimes, one wishes to explicitly subclass an class for the purpose
+of structuring the hierarchy, but wish to add a more restrictive
+subclass relation.  One can do this directly in OCML, viz:
+
+@smallexample
+(def-class class-b (class-a) ?q
+  :iff-def (and (instance-of ?q class-a)
+                (= (length (the-slot-value ?q has-output-type)) 1)))
+@end smallexample
+
+However, if you just write the definition as above, the proof system
+goes into an endless loop.  The reason is the following:
+
+@enumerate
+@item
+You ask @code{(instance-of ?x class-a)}
+
+@item
+The system checks whether @code{?x} is an instance of @code{class-b}
+(because if this is true, it can then conclude that @code{?x} is an instance
+of @code{class-a}.
+
+@item
+To prove whether @code{?x} is an instance of @code{class-b} it uses
+the @code{:iff-def} clause.
+
+@item
+So it tries to find out whether @code{?x} is an instance of
+@code{class-a}, which means it goes into an endless loop
+@end enumerate
+
+Luckily, there is a class option in OCML that allows you to have this
+kind of definitions, without the endless loop.  Pass the keyword
+@code{:avoid-infinite-loop}, as shown in the definition below and you
+will be alright:
+
+@smallexample
+(def-class class-b (class-a) ?q
+  :iff-def (and (instance-of ?q classa)
+                (= (length (the-slot-value ?q has-output-type)) 1))
+  :avoid-infinite-loop t)
+@end smallexample
+
 @node Instances, Relations, Classes, Domain Modelling in OCML
 @section Instances
 @cindex instance
