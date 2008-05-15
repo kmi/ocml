@@ -239,170 +239,55 @@
           (when unbound-slots
             (format t "~%The following slots have no value: ~S~{, ~S~}~%"
                     (car unbound-slots)(cdr unbound-slots))))
-    
     (values)))
 
+(defun describe-class (name &optional local-only? (stream *standard-output*))
+  "Prints out all the currently applicable information about a class.
 
-(defun describe-class (name &optional local-defs-only?)
-  (if local-defs-only?
-    (describe-class-local-info name)
-    (describe-class-info name)))
-
-
-;;;DESCRIBE-CLASS-INFO -  Prints out all the currently applicable
-;;;information about a class.  By 'currently applicable' I mean
-;;;that superseded slot values are not displayed.
-;(defun describe-class-info (name)
-;  (Let* ((class (get-ocml-class name))
-;         (supers (mapcar #'name (domain-superclasses class))))
-;    (when class
-;      (format t "~%Class ~S~%" name)
-;      (format t "~% Superclasses: ~S~{, ~S~}"
-;              (car supers)
-;              (cdr supers))
-;      (loop for slot in (domain-slots class)
-;            do 
-;            (format t "~2% ~s"slot)
-;            (multiple-value-bind (values defaults)
-;                                 (get-slot-values-from-class-structure 
-;                                  class slot )
-;              (if values
-;                (format t "~%  ~S: ~S~{, ~S~}"
-;                          :value
-;                          (car values)
-;                          (cdr values))
-;                (when defaults
-;                  (format t "~%  ~S: ~S~{, ~S~}"
-;                          :default-value
-;                          (car defaults)
-;                          (cdr defaults)))))
-;            (let ((type-info (find-option-value class slot :type)))
-;              (when type-info
-;                (format t "~%  ~S: ~S~{, ~S~}"
-;                          :type
-;                          (car type-info)
-;                          (cdr type-info))))
-;            (loop for option in '(:min-cardinality 
-;                                  :max-cardinality
-;                                  :inheritance)
-;                  for value = (find-option-value class slot option)
-;                  when value
-;                  do
-;                  (format t "~%  ~S: ~S"
-;                          option value))
-;            (let ((doc (find-slot-documentation class slot)))
-;              (when doc
-;                (format t "~%  ~S: ~S"
-;                          :documentation doc)))))))
-;
-;(defun describe-class-local-info (name)
-;    
-;  (Let* ((class (get-ocml-class name))
-;         (supers (mapcar #'name (domain-superclasses class))))
-;    (when class
-;      
-;      (format t "~%Class ~S~%" name)
-;      (format t "~% Superclasses: ~S~{, ~S~}"
-;              (car supers)
-;              (cdr supers))
-;      
-;      (loop 
-;            for slot-info in (ocml-options class)
-;            do 
-;            (format t "~2% ~s"(car slot-info))
-;            (loop 
-;                  for pair in (cdr slot-info)
-;                  do
-;                  (format t "~%  ~S: ~S"
-;                          (car pair)
-;(second pair)))))))
-
-
-;;;DESCRIBE-CLASS-INFO -  Prints out all the currently applicable
-;;;information about a class.  By 'currently applicable' I mean
-;;;that superseded slot values are not displayed.
-(defun describe-class-info (name)
-  (Let* ((class (get-ocml-class name))
+`Currently applicable' means superseded slot values are not
+displayed."
+  (let* ((class (or (get-ocml-class name)
+                    (error "No class named `~A' in ontology ~A."
+                           name (name *current-ontology*))))
          (supers (mapcar #'name (domain-superclasses class)))
          (subs (mapcar #'name (current-subclasses class))))
-    (when class
-      (format t "~%Class ~S~%" name)
-      (format t "~% Ontology: ~s~%" (name (home-ontology class)))
-      
-      (format t "~% Superclasses: ~S~{, ~S~}"
-              (car supers)
-              (cdr supers))
-      (format t "~2% Subclasses: ~S~{, ~S~}"
-              (car subs)
-              (cdr subs))
-      (loop with chains = (renaming-chains class)
-            for slot in (domain-slots class)
-            do
-            (unless (slot-renamed? slot chains)
-              (format t "~2% ~s"slot)
-              (multiple-value-bind (values defaults)
-                                   (get-slot-values-from-class-structure
-                                    class slot )
-                (if values
-                  (format t "~%  ~S: ~S~{, ~S~}"
-                          :value
-                          (car values)
-                          (cdr values))
-                  (when defaults
-                    (format t "~%  ~S: ~S~{, ~S~}"
-                            :default-value
-                            (car defaults)
-                            (cdr defaults)))))
-              (let ((type-info (remove-duplicates 
-                                (find-option-value class slot :type))))
-                (when type-info
-                  (format t "~%  ~S: ~S~{, ~S~}"
-                          :type
-                          (car type-info)
-                          (cdr type-info))))
-              (loop for option in '(:min-cardinality
-                                    :max-cardinality
-                                    :inheritance)
-                    for value = (find-option-value class slot option)
-                    when value
-                    do
-                    (format t "~%  ~S: ~S"
-                            option value))
-              (let ((doc (find-slot-documentation class slot)))
-                (when doc
-                  (format t "~%  ~S: ~S"
-                          :documentation doc))))
-            finally
-            (when chains
-              (format t "~2%The following renaming chains apply: ~2%~{ ~s ~%~}~%"
-                      chains))))))
-              
-(defun describe-class-local-info (name)
-
-  (Let* ((class (get-ocml-class name))
-         (supers (mapcar #'name (domain-superclasses class)))
-         (subs (mapcar #'name (current-subclasses class))))
-    (when class
-
-      (format t "~%Class ~S~%" name)
-      (format t "~% Ontology: ~s~%" (name (home-ontology class)))
-      (format t "~% Superclasses: ~S~{, ~S~}"
-              (car supers)
-              (cdr supers))
-      (format t "~2% Subclasses: ~S~{, ~S~}"
-              (car subs)
-              (cdr subs))
-
-      (loop
-            for slot-info in (ocml-options class)
-            do
-            (format t "~2% ~s"(car slot-info))
-            (loop
-                  for pair in (cdr slot-info)
-                  do
-                  (format t "~%  ~S: ~S"
-                          (car pair)
-                          (second pair)))))))
+    (labels ((print-slot-options (class slot)
+               (format stream "    ~S~%" slot)
+               (let ((type-info (remove-duplicates
+                                 (find-option-value class slot :type))))
+                 (when type-info
+                   (format stream "        type: ~S~{, ~A~}~%"
+                           (car type-info)
+                           (cdr type-info))))
+               (dolist (option '(:min-cardinality :max-cardinality
+                                 :inheritance))
+                 (let ((val (find-option-value class slot option)))
+                   (when val
+                     (format stream "        ~(~A~): ~A~%" option val))))
+               (let ((doc (find-slot-documentation class slot)))
+                 (when doc
+                   (format stream "        documentation: ~S~%" doc)))
+               ;; Print values
+               (multiple-value-bind (values defaults)
+                   (get-slot-values-from-class-structure class slot)
+                 (dolist (value values)
+                   (format stream "        value: ~A~%" value))
+                 (dolist (default defaults)
+                   (format stream "        default: ~A~%" default)))))
+      (format stream "Name:~15,0:T~A~%" name)
+      (format stream "Home ontology:~15,0:T~A~%" (name (home-ontology class)))
+      (format stream "Superclasses:~15,0:T~{~A ~}~%" supers)
+      (format stream "Subclasses:~15,0:T~{~A ~}~%" subs)
+      (format stream "Slots:~%")
+      (let ((chains (renaming-chains class)))
+        (when chains
+          (format stream "~2%The following renaming chains apply: ~2%~{ ~s ~%~}~%"
+                  chains))
+        (dolist (slot (if local-only?
+                          (local-slots class)
+                          (domain-slots class)))
+          (when (not (slot-renamed? slot chains))
+            (print-slot-options class slot)))))))
 
 (defun describe-relation (name)
   (Let* ((rel (get-relation name)))
