@@ -21,12 +21,9 @@
   (finishes (ocml:register-namespace "one" 'ocml::ontology-one))
   (finishes (ocml:register-namespace "uno" 'ocml::ontology-one))
   (finishes (ocml:register-namespace "two" 'ocml::ontology-two))
-  (is (string= *test-namespace-uri1*
-	       (ocml::namespace-uri-of (ocml::prefix->ontology "one"))))
-  (is (string= *test-namespace-uri1*
-	       (ocml::namespace-uri-of (ocml::prefix->ontology "uno"))))
-  (is (string= *test-namespace-uri2*
-	       (ocml::namespace-uri-of (ocml::prefix->ontology "two")))))
+  (is (string= *test-namespace-uri1* (ocml::prefix->uri "one")))
+  (is (string= *test-namespace-uri1* (ocml::prefix->uri "uno")))
+  (is (string= *test-namespace-uri2* (ocml::prefix->uri "two"))))
 
 ;;; Since we're testing the reader, we shouldn't do the thing we're
 ;;; testing at read time.  Instead, read from strings at run-time.

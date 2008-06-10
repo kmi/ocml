@@ -27,10 +27,14 @@
 
 (define-constant +namespace-separator+ #\:)
 
-(defun register-namespace (prefix ontology)
-  (when (symbolp ontology)
-    (setf ontology (get-ontology ontology)))
-  (setf (prefix->ontology prefix) ontology))
+(defun register-namespace (prefix namespace)
+  (check-type prefix string)
+  (check-type namespace (or string symbol))
+  (setf (prefix->uri prefix)
+        (if (symbolp namespace)
+            (namespace-uri-of
+             (get-ontology namespace :error-if-not-found t))
+            namespace)))
 
 (defun assumed-namespace-uri (ontology-name)
   "Generate a unique namespace for ontologies which don't explicitly declare one."
@@ -70,28 +74,27 @@
 		  (read-char stream))))
       ;; If there's a prefix, check it's valid, map it to an ontology.
       ;; If there's no prefix, use *CURRENT-ONTOLOGY*.
-      (let ((ontology (if prefix
-			  (or (prefix->ontology prefix)
-			      (error "Unrecognised namespace prefix \"~A\"."
-				     prefix))
-			  *current-ontology*))
+      (let ((namespace (if prefix
+                           (or (prefix->uri prefix)
+                               (error "Unrecognised namespace prefix \"~A\"."
+                                      prefix))
+                           (namespace-uri-of *current-ontology*)))
 	    (symbol (concatenate 'string (reverse chars))))
-	(assert (namespace-uri-of ontology))
-	(format nil "~A~A" (namespace-uri-of ontology) symbol)))))
+	(format nil "~A~A" namespace symbol)))))
 
 (defun ocml-token-char? (char)
   (member char +token-chars+))
 
-(defun prefix->ontology (prefix)
-  "Lookup the ontology PREFIX currently maps to." 
+(defun prefix->uri (prefix)
+  "Lookup the namespace IRI that PREFIX currently maps to."
   (cdr (assoc prefix *namespace-prefixes* :test #'string=)))
 
-(defun (setf prefix->ontology) (ontology prefix)
+(defun (setf prefix->uri) (iri prefix)
   (let ((pair (assoc prefix *namespace-prefixes* :test #'string=)))
     (if pair
-	(setf (cdr pair) ontology)
-	(push (cons prefix ontology) *namespace-prefixes*)))
-  ontology)
+	(setf (cdr pair) iri)
+	(push (cons prefix iri) *namespace-prefixes*)))
+  prefix)
 
 (eval-when (:load-toplevel :execute)
   (set-dispatch-macro-character #\# #\_ #'read-wsml-identifier))

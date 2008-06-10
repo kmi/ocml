@@ -326,7 +326,8 @@ changed by john domingue 6/2/03
       (setf includes (List *base-ontology-name*)))
     (mapcar #'ensure-ontology-internal includes)
     (dolist (namespace-pair namespaces)
-      (register-namespace (first namespace-pair) (second namespace-pair)))
+      (register-namespace (first namespace-pair)
+                          (namespace-uri-of (get-ontology (second namespace-pair)))))
     (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
     (with-muffled-warnings ()
       (if ontology

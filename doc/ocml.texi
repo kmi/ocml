@@ -835,12 +835,12 @@ Next, we tell OCML which prefixes we intend to use:
 
 @smallexample
 (register-namespace "colours" 'colours)
-(register-namespace "fruit" 'fruits)
+(register-namespace "fruit" "http://www.kmi.open.ac.uk/fruits#")
 @end smallexample
 
-We can then use these prefixes in ontologies, using a Lisp
-reader macro, @code{#_}.  Classes, instances, and
-relations can all be named in this way.  Viz:
+We can then use these prefixes in ontologies, using a Lisp reader
+macro, @code{#_}.  Classes, instances, and relations can all be named
+in this way.  Viz:
 
 @smallexample
 (in-ontology colours)
@@ -866,19 +866,24 @@ and @code{#_fruit:orange} are different symbols, from
 different namespaces and ontologies, used together in one
 ontology.
 
-When Lisp reads a namespaced symbol, it converts it to a symbol
-by concatenating the value of the referenced
+When Lisp reads a namespaced symbol, it converts it to a symbol by
+concatenating the value of the referenced
 ontology's @code{namespace-uri} slot with the symbol.
 Thus, @code{#_fruit:orange}
-becomes @code{OCML::|http://www.kmi.open.ac.uk/fruits#orange|}.
-It is important to remember that the @code{#_} syntax is
-merely a shorthand for the long, quoted Lisp symbol.  If you so wish,
-you can enter the long form directly, as a normal Lisp symbol.  Given
-this, namespaced variables interoperate fully with non-namespaced
-ones.  The prefixes themselves are discarded after they have been read
-in by the Lisp reader.  Namespaced symbols are case
-sensitive: @code{#_foo} is distinct
-from @code{#_Foo}.
+becomes @code{OCML::|http://www.kmi.open.ac.uk/fruits#orange|}.  It is
+important to remember that the @code{#_} syntax is merely a shorthand
+for the long, quoted Lisp symbol.  If you so wish, you can enter the
+long form directly, as a normal Lisp symbol.  Given this, namespaced
+variables interoperate fully with non-namespaced ones.  The prefixes
+themselves are discarded after they have been read in by the Lisp
+reader.  Namespaced symbols are case sensitive: @code{#_foo} is
+distinct from @code{#_Foo}.  Note that in the call
+to @code{register-namespace}, the use of the ontology name or its
+prefix are equivalent.  The direct use of the URI is important when
+writing Lisp code which references namespaced ontologies.  Since the
+mapping to the ontology cannot happen before OCML is initialised and
+the ontologies loaded, we must offer the ability to directly indicate
+the URI so that the reader can correctly expand the symbols.
 
 Further examples from a Lisp listener session:
 
