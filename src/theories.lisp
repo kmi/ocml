@@ -129,6 +129,15 @@ signal an error if NAME does not designate an ontology."
    ;; anything real, or even look like a URI :-) It should be unique.
    (namespace-uri :accessor namespace-uri-of :type string
 		  :initarg :namespace-uri :initform nil)
+   ;; This is the list of namespace mappings as specified in the
+   ;; DEF-ONTOLOGY form.
+   (namespaces :accessor namespaces-of :type list
+               :initarg :namespaces :initform nil)
+   ;; This is the namespace mappings after REGISTER-NAMESPACE has been
+   ;; called on the namespaces.  We use this to bind
+   ;; *namespace-prefixes* at ontology read and selection time.
+   (namespace-prefixes :accessor namespace-prefixes-of
+                       :initarg :namespace-prefixes :initform nil)
    ;;(rdf-namespace-label :accessor ontology-rdf-namespace-label
    ;;                     :initform nil
    ;;                     :initarg :rdf-namespace-label)
@@ -275,38 +284,6 @@ changed by john domingue 6/2/03
                  "load."
                  *lisp-suffix*))
 
-;(defun def-ontology-internal2 (name documentation 
-;                                    &key (includes (List *base-ontology-name* ))
-;                                    (type :domain)
-;                                    (pathname (default-ontology-pathname name type))
-;                                    author allowed-editors
-;                                    (files (default-ontology-files name))
-;                                    (select-this-ontology? t))
-;  (when (get-ontology name)
-;    (warn "Redefining ontology ~S" name)
-;    (delete-ontology name))
-;  (new-ontology name documentation includes type pathname author allowed-editors
-;                files select-this-ontology?))
-
-;(defun def-ontology-internal2 (name documentation 
-;                                    &key (includes (List *base-ontology-name* ))
-;                                    (type :domain)
-;                                    (pathname (default-ontology-pathname name type))
-;                                    author allowed-editors
-;                                    (files (default-ontology-files name))
-;                                    (select-this-ontology? t))
-;  (let ((ontology (get-ontology name)))
-;    (when ontology
-;      (cond ((ontology-included-by ontology)
-;             (error 
-;              "Cannot redefine ontology ~s, which is used by ontologies ~{~S ~}"
-;              name (mapcar #'name (ontology-included-by ontology))))
-;            (t
-;             (warn "Redefining ontology ~S" name)
-;             (delete-ontology name))))
-;    (new-ontology name documentation includes  type pathname author allowed-editors
-;                  files select-this-ontology?)))
-
 (defun def-ontology-internal2 (name documentation &key
 			       includes 
 			       (type :domain)
@@ -325,34 +302,35 @@ changed by john domingue 6/2/03
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))
     (mapcar #'ensure-ontology-internal includes)
-    (dolist (namespace-pair namespaces)
-      (register-namespace (first namespace-pair)
-                          (namespace-uri-of (get-ontology (second namespace-pair)))))
-    (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
-    (with-muffled-warnings ()
-      (if ontology
-	  (redefine-ontology name ontology documentation includes  type 
-			     version pathname 
-			     author allowed-editors
-			     files select-this-ontology?
-			     ;; rdf-namespace-label 
-			     rdf-namespace-url
-			     :namespace-uri namespace-uri)
-	  (new-ontology name documentation includes type version pathname
-			author allowed-editors files select-this-ontology?
-			;; rdf-namespace-label 
-			rdf-namespace-url :namespace-uri namespace-uri)))))
-
-
-
-
+    (let ((*namespace-prefixes* '()))
+      (dolist (namespace-pair namespaces)
+        (register-namespace (first namespace-pair) (second namespace-pair)))
+      (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
+      (with-muffled-warnings ()
+        (if ontology
+            (redefine-ontology name ontology documentation includes  type 
+                               version pathname 
+                               author allowed-editors
+                               files select-this-ontology?
+                               ;; rdf-namespace-label 
+                               rdf-namespace-url
+                               :namespace-uri namespace-uri
+                               :namespaces namespaces
+                               :namespace-prefixes *namespace-prefixes*)
+            (new-ontology name documentation includes type version pathname
+                          author allowed-editors files select-this-ontology?
+                          ;; rdf-namespace-label 
+                          rdf-namespace-url :namespace-uri namespace-uri
+                          :namespaces namespaces
+                          :namespace-prefixes *namespace-prefixes*))))))
 
 (defun new-ontology (name  documentation includes  type version
                            pathname author allowed-editors
                            files select-this-ontology?
                           ;;; rdf-namespace-label 
                            rdf-namespace-url
-		     &key namespace-uri)
+		     &key namespace-uri
+                     namespaces namespace-prefixes)
   (let* ((ontology (make-instance 'ocml-ontology
                      :name name
                      :documentation documentation
@@ -360,6 +338,8 @@ changed by john domingue 6/2/03
                      :author author
                      :allowed-editors allowed-editors
                      :files files
+                     :namespaces namespaces
+                     :namespace-prefixes namespace-prefixes
                     ;;; :rdf-namespace-label rdf-namespace-label 
                      :rdf-namespace-url rdf-namespace-url
                      :version version
@@ -368,35 +348,6 @@ changed by john domingue 6/2/03
 		     :namespace-uri namespace-uri)))
     (finalize-ontology name ontology includes files pathname select-this-ontology? t)))
 
-;(defun redefine-ontology (name ontology  new-documentation new-includes  new-type
-;                               new-pathname new-author new-allowed-editors
-;                               new-files select-this-ontology?)
-;  (with-slots (includes documentation
-;                        included-by ontology-type author allowed-editors pathname 
-;                        ontology-files
-;                        directory)
-;              ontology
-;    (cond ((set-equal new-includes includes)
-;           ;;the ontology has the same structure as before
-;           ;;we simply reset its properties and reload its files
-;           (setf documentation new-documentation
-;                 ontology-type new-type
-;                 pathname new-pathname
-;                 author new-author
-;                 allowed-editors new-allowed-editors
-;                 ontology-files new-files
-;                 directory (make-ontology-directory))
-;           (finalize-ontology name ontology  new-includes new-files new-pathname 
-;                              select-this-ontology? nil))
-;          (t
-;           ;;We need to fully redefine this ontology and all his dependent
-;           (delete-ontology name)
-;           (new-ontology name new-documentation new-includes new-type new-pathname
-;                         new-author new-allowed-editors new-files select-this-ontology?)
-;           (loop for dep-onto in included-by
-;                 do
-;                 (reload-this-ontology-and-its-dependents dep-onto))))))
-                
 (defun redefine-ontology (name ontology  new-documentation new-includes
 			  new-type new-version
 			  new-pathname new-author new-allowed-editors
@@ -404,7 +355,8 @@ changed by john domingue 6/2/03
 			  ;; new-rdf-namespace-label 
 			  new-rdf-namespace-url
 			  &key
-			  namespace-uri)
+			  namespace-uri
+                          namespaces namespace-prefixes)
   (with-slots (includes documentation version
                         ontology-type author allowed-editors pathname 
                         ontology-files
@@ -429,6 +381,8 @@ changed by john domingue 6/2/03
           directory (make-ontology-directory)
 ;;;  rdf-namespace-label new-rdf-namespace-label
           rdf-namespace-url new-rdf-namespace-url)
+    (setf (namespaces-of ontology) namespaces)
+    (setf (namespace-prefixes-of ontology) namespace-prefixes)
     (finalize-ontology name ontology  new-includes new-files new-pathname 
                        select-this-ontology? nil)
     (reload-dependent-ontologies  
@@ -581,7 +535,6 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
       (switch-to-ontology ontology))))
 
 (defun switch-to-ontology (ontology)
-  ;;;(save-current-ontology)
   (Let ((dir (ontology-directory ontology)))
     (setf *current-ontology* ontology
           *current-ontologies* (cons *current-ontology*
@@ -589,9 +542,9 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
           *defined-relations* (ontology-relations dir)
           *axioms* (ontology-axioms dir)
           *defined-functions* (ontology-functions dir)
-          ;;;;(setf *operators* (ontology-operators dir)
           *bc-rules* (ontology-bc-rules dir)
-          *domain-classes* (ontology-classes dir))
+          *domain-classes* (ontology-classes dir)
+          *namespace-prefixes* (namespace-prefixes-of ontology))
     ontology))
 
 (defun ocml-load (file &key (verbose t) if-does-not-exist)

@@ -11,6 +11,7 @@
     :author "dave"
     :namespace-uri "http://example.open.ac.uk/ontologies/oncology#"
     :includes (pathology)
+    :namespaces (("path" pathology))
     :files ())
 
 (def-ontology zodiac
@@ -22,11 +23,9 @@
     :author "dave"
     :namespace-uri "http://example.open.ac.uk/ontologies/dave#"
     :includes (oncology zodiac)
+    :namespaces (("onco" oncology)
+                 ("zodiac" zodiac))
     :files ())
-
-(register-namespace "path" 'pathology)
-(register-namespace "onco" 'oncology)
-(register-namespace "zodiac" 'zodiac)
 
 ;;; Upper-level ways to be ill
 
