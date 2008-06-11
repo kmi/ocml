@@ -304,7 +304,10 @@ changed by john domingue 6/2/03
     (mapcar #'ensure-ontology-internal includes)
     (let ((*namespace-prefixes* '()))
       (dolist (namespace-pair namespaces)
-        (register-namespace (first namespace-pair) (second namespace-pair)))
+        (register-namespace (first namespace-pair)
+                            (if (eq (second namespace-pair) name)
+                                namespace-uri
+                                (second namespace-pair))))
       (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
       (with-muffled-warnings ()
         (if ontology
