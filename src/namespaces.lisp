@@ -96,5 +96,28 @@
 	(push (cons prefix iri) *namespace-prefixes*)))
   prefix)
 
+(defun merge-included-namespaces (ontologies)
+  "Calculate the prefixes to be used in an ontology including
+ONTOLOGIES."
+  ;; If a namespace has more than one prefix, we just choose the first
+  ;; one.  If a prefix refers to more than one namespace, we alter the
+  ;; prefixes to be unique.
+  (let ((unique-number 0)
+        (*namespace-prefixes* '())
+        (mappings (apply #'append (mapcar (lambda (o) (namespaces-of (get-ontology o)))
+                                          ontologies))))
+    (format t "mappings: ~A~%" mappings)
+    (dolist (map mappings)
+      (let ((prefix (first map))
+            (namespace (let ((ns (second map)))
+                         (if (symbolp ns)
+                             (namespace-uri-of (get-ontology ns))
+                             ns))))
+        (unless (member namespace *namespace-prefixes* :key #'cdr)
+          (when (member prefix *namespace-prefixes* :key #'car)
+            (setf prefix (format nil "~A~A" prefix (incf unique-number))))
+          (register-namespace prefix namespace))))
+    *namespace-prefixes*))
+
 (eval-when (:load-toplevel :execute)
   (set-dispatch-macro-character #\# #\_ #'read-wsml-identifier))

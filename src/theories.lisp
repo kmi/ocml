@@ -302,7 +302,8 @@ changed by john domingue 6/2/03
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))
     (mapcar #'ensure-ontology-internal includes)
-    (let ((*namespace-prefixes* '()))
+    ;; Compute namespace prefix information.
+    (let ((*namespace-prefixes* (merge-included-namespaces includes)))
       (dolist (namespace-pair namespaces)
         (register-namespace (first namespace-pair)
                             (if (eq (second namespace-pair) name)
