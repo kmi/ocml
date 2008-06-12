@@ -28,7 +28,7 @@ ONTOLOGY may be an ontology value, or the name of one.  If
 ONTOLOGY is NIL, then restore current ontology on completion of
 CLOSURE."
   (with-ocml-thread-safety
-      (let ((original-ontology (ocml::name ocml::*current-ontology*)))
+      (let ((original-ontology *current-ontology*))
 	(unwind-protect
 	     (progn
 	       (when ontology
@@ -36,7 +36,8 @@ CLOSURE."
 					    ontology
 					    (ocml::name ontology))))
 	       (funcall closure))
-	  (ocml::select-ontology original-ontology)))))
+	  (when original-ontology
+            (ocml::select-ontology (name original-ontology)))))))
 
 ;;; LOADing OCML ontologies generates reams of warnings about
 ;;; redefining classes and such.  Almost all of these are harmless,
