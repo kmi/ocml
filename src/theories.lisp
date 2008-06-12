@@ -428,11 +428,11 @@ changed by john domingue 6/2/03
   #+(or :allegro :lispworks) (ocml-record-source-file name 'def-ontology name)
   (when new?
     (add-ontology name ontology))
-  (load-ontology-files-new  ontology files pathname select-this-ontology?)
+  (load-ontology-files ontology files pathname)
   (finalise-ontology ontology)
-  ;;;;;;(maybe-set-rdf-related-information name ontology)
+  (when select-this-ontology?
+    (switch-to-ontology ontology))
   ontology)
-
 
 ;(defun maybe-set-rdf-related-information (name ontology)
 ;  (let ((rdf-namespace-label (ontology-rdf-namespace-label ontology)))
@@ -619,31 +619,14 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
   ;;;;;(make-ontology-pathname name type)))
   (ocml-load load-file))
 
-;;(defun load-ontology-files (name type files &optional (dir (string name)) (library "LIBRARY"))
-;;  (Loop with dir = (make-ontology-folder dir type library)
-;;	for file in files
-;;	do
-;;	(ocml-load (make-pathname :directory (pathname-directory dir)
-;;                                  :type *lisp-suffix*
-;;                                  :name file))))
-
-
-;;;Redefined - Enrico 25/10/00 - to handle constraint checking properly
-(defun load-ontology-files-new (ontology files pathname select-this-ontology?)
-  (let ((current-ontology *current-ontology*))
-    (switch-to-ontology ontology)
-    (let ((*pending-constraints*))
-      (unwind-protect 
-        (Loop for file in files
-	   do (ocml-load
-	       (merge-pathnames pathname (string-append
-					  file "." *lisp-suffix*)))
-          finally
-          (loop for c in *pending-constraints*
-                do
-                (check-pending-constraints c)))
-        (unless select-this-ontology?
-          (switch-to-ontology current-ontology))))))
+(defun load-ontology-files (ontology files pathname)
+  (with-ontology (ontology)
+    (let ((*pending-constraints* '()))
+      (dolist (file files)
+        (ocml-load (merge-pathnames pathname
+                                    (string-append file "." *lisp-suffix*))))
+      (dolist (c *pending-constraints*)
+        (check-pending-constraints c)))))
 
 
 ;;;CHECK-PENDING-CONSTRAINTS -  Checks the constraint pending from the ontology loading time
