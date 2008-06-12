@@ -18,11 +18,12 @@
       :namespace-uri "http://www.acme.com/ontology/Two#" :files ()))
 
 (test namespace-registration-test
-  (finishes (ocml:register-namespace "one" 'ocml::ontology-one))
   (finishes (ocml:register-namespace "uno" 'ocml::ontology-one))
-  (finishes (ocml:register-namespace "two" 'ocml::ontology-two))
-  (is (string= *test-namespace-uri1* (ocml::prefix->uri "one")))
   (is (string= *test-namespace-uri1* (ocml::prefix->uri "uno")))
+  (finishes (ocml:register-namespace "one" 'ocml::ontology-one))
+  (finishes (ocml:register-namespace "two" 'ocml::ontology-two))
+  (is (eq nil (ocml::prefix->uri "uno")))
+  (is (string= *test-namespace-uri1* (ocml::prefix->uri "one")))
   (is (string= *test-namespace-uri2* (ocml::prefix->uri "two"))))
 
 ;;; Since we're testing the reader, we shouldn't do the thing we're
@@ -40,7 +41,6 @@
 	  (intern (format nil "~A~A" *test-namespace-uri1* "Alpha") :ocml)))
   (is (not (eq (read-from-string "#_one:Alpha") (read-from-string "#_one:alpha"))))
   (is (not (eq (read-from-string "#_one:Alpha") (read-from-string "#_two:Alpha"))))
-  (is (eq (read-from-string "#_one:alpha") (read-from-string "#_uno:alpha")))
   ;; Test correct handling of terminating characters.
   (signals error (read-from-string (namespaced-symbol-ending-with #\?)))
   (signals error (read-from-string (namespaced-symbol-ending-with #\!)))

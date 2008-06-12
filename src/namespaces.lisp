@@ -90,6 +90,10 @@
   (cdr (assoc prefix *namespace-prefixes* :test #'string=)))
 
 (defun (setf prefix->uri) (iri prefix)
+  ;; We don't allow a URL to have more than one prefix defined for it,
+  ;; so remove any such mapping first.
+  (setf *namespace-prefixes* (remove-if (lambda (x) (string= iri (cdr x)))
+                                        *namespace-prefixes*))
   (let ((pair (assoc prefix *namespace-prefixes* :test #'string=)))
     (if pair
 	(setf (cdr pair) iri)
@@ -106,7 +110,6 @@ ONTOLOGIES."
         (*namespace-prefixes* '())
         (mappings (apply #'append (mapcar (lambda (o) (namespaces-of (get-ontology o)))
                                           ontologies))))
-    (format t "mappings: ~A~%" mappings)
     (dolist (map mappings)
       (let ((prefix (first map))
             (namespace (let ((ns (second map)))
