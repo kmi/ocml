@@ -298,36 +298,41 @@ changed by john domingue 6/2/03
 			       ;; rdf-namespace-label 
 			       rdf-namespace-url
 			       namespace-uri)
-  (let ((ontology (get-ontology name)))
+  (let ((ontology (get-ontology name))
+        namespace-prefixes)
     (when (and (eq includes nil)
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))
     (mapcar #'ensure-ontology-internal includes)
-    ;; Compute namespace prefix information.
+    ;; Compute namespace prefix information.  We must not leave this
+    ;; *namespace-prefixes* binding in place because redefine-ontology
+    ;; and new-ontology may call select-ontology, which needs to set
+    ;; the globally visible binding.
     (let ((*namespace-prefixes* (merge-included-namespaces includes)))
       (dolist (namespace-pair namespaces)
         (register-namespace (first namespace-pair)
                             (if (eq (second namespace-pair) name)
                                 namespace-uri
                                 (second namespace-pair))))
-      (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
-      (with-muffled-warnings ()
-        (if ontology
-            (redefine-ontology name ontology documentation includes  type 
-                               version pathname 
-                               author allowed-editors
-                               files select-this-ontology?
-                               ;; rdf-namespace-label 
-                               rdf-namespace-url
-                               :namespace-uri namespace-uri
-                               :namespaces namespaces
-                               :namespace-prefixes *namespace-prefixes*)
-            (new-ontology name documentation includes type version pathname
-                          author allowed-editors files select-this-ontology?
-                          ;; rdf-namespace-label 
-                          rdf-namespace-url :namespace-uri namespace-uri
-                          :namespaces namespaces
-                          :namespace-prefixes *namespace-prefixes*))))))
+      (setf namespace-prefixes *namespace-prefixes*))
+    (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
+    (with-muffled-warnings ()
+      (if ontology
+          (redefine-ontology name ontology documentation includes  type 
+                             version pathname 
+                             author allowed-editors
+                             files select-this-ontology?
+                             ;; rdf-namespace-label 
+                             rdf-namespace-url
+                             :namespace-uri namespace-uri
+                             :namespaces namespaces
+                             :namespace-prefixes namespace-prefixes)
+          (new-ontology name documentation includes type version pathname
+                        author allowed-editors files select-this-ontology?
+                        ;; rdf-namespace-label 
+                        rdf-namespace-url :namespace-uri namespace-uri
+                        :namespaces namespaces
+                        :namespace-prefixes namespace-prefixes)))))
 
 (defun new-ontology (name  documentation includes  type version
                            pathname author allowed-editors
