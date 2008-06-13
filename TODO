@@ -22,17 +22,13 @@ sense.
 
 * ensure-vanilla-class/2 can be merged
 
-*  check with-thread-variables handles namespace-prefixes properly.
-
-general fix here, anyway.
-
 * webonto goodies
 
 Steal any general purpose OCML utilities from WebOnto.
 
 * call-with-ocml-thread-safety
 
-Make sure we get all the important variables!  globals.lisp has
+Make sure we get all the important variables!  globals.lisp is
 a *lot* longer than this function...  We can also introduce a
 special, *with-thread-safety*, which would indicate the prior
 invocation of call-with-ocml-thread-safety and warn about it.
@@ -78,7 +74,7 @@ may not end up in the ocml package, where they belong.
 
 I think we need a three-layer org.  The OCML engine (ocml), the
 general purpose OCML library (ocml-library), and the applications
-(irs, kmi-impact) etc.  webonto should be a seperate project, too.
+(irs, kmi-impact) etc.
 
 ** Basic
 
@@ -92,7 +88,7 @@ makes test cases a bit tricky, perhaps...
 Wouldn't it be nice if OCML could find its libraries in multiple
 places?  So, the basic library would come from the OCML src directory,
 core IRS libraries would be somewhere else, and IRS applications would
-be application specific!  
+be application specific!
 
 ** Uncompiled files
 
@@ -114,6 +110,13 @@ They *should* just work, as long as I don't stomp on the #\? naming
 convetion...  Where *does* the #\? go???
 
 The home ontology can be added to the symbol's plist.
+
+** Merging old and new
+
+At present, if an ontology declares a prefix which overrides an
+inherited one, we lose a prefix for that namespace.  This is
+unacceptable: some kind of disambiguation must happen, by uniquifying
+the inherited prefix.
 
 ** with-namespaces
 

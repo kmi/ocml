@@ -1,0 +1,10 @@
+This is OCML, the Operational Conceptual Modelling Language.  OCML
+combines logical reasoning in a frame-based language with the
+flexibility of extra-logical facilities like procedural attachment.
+
+OCML was originally conceived, designed, and implemented by Enrico
+Motta.
+
+It is implemented in Common Lisp, and has been tested with Lispworks,
+SBCL, and Allegro implementations.
+
