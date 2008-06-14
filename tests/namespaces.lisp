@@ -69,3 +69,12 @@
 	     (with-ontology ('ocml::dave-in-another-dimension)
 	       (ocml::ocml-eval-gen
 		'(ocml::findall ?x (ocml::symbols-of-sickness ?x)))))))
+
+(test (namespace-intern/extern-test :depends-on namespace-ontologies-test)
+  (is (string= "onco:cancer"
+               (with-ontology ('ocml::dave-in-another-dimension)
+                 (extern-ocml-symbol
+                  '|http://example.open.ac.uk/ontologies/oncology#cancer|))))
+  (is (eq 'ocml::|http://example.open.ac.uk/ontologies/oncology#cancer|
+          (with-ontology ('ocml::dave-in-another-dimension)
+            (intern-ocml-symbol "onco:cancer")))))

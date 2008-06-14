@@ -1,6 +1,6 @@
 ;;; Namespace support for OCML.
 ;;;
-;;; Copyright (C) 2007, 2008 The Open University.
+;;; Copyright © 2007, 2008 The Open University.
 ;;;
 ;;; Authored by Dave Lambert
 
@@ -124,3 +124,36 @@ ONTOLOGIES."
 
 (eval-when (:load-toplevel :execute)
   (set-dispatch-macro-character #\# #\_ #'read-wsml-identifier))
+
+;;; This is a preview of correctly handling OCML namespaces.  I'm
+;;; mainly using it to mark places we need to check.
+(defun extern-ocml-symbol (ocml-symbol)
+  "Generate the external representation for an OCML symbol."
+  (let* ((symname (symbol-name ocml-symbol))
+         (hash (position #\# symname)))
+    (if hash
+        (let* ((prefix (subseq symname 0 (+ 1 hash)))
+               (localname (subseq symname (+ 1 hash)))
+               (ns (namespace->prefix prefix)))
+          (if ns
+              (format nil "~A:~A" ns localname)
+              (progn
+                (warn "No namespace prefix for symbol `~A' in ontology `~A' ~A~%."
+                      ocml-symbol ocml::*current-ontology*
+                      (ocml::namespace-prefixes-of ocml::*current-ontology*))
+                symname)))
+        symname)))
+
+(defun intern-ocml-symbol (ocml-external-string)
+  "Generate the internal representation for an externalised OCML
+symbol representation."
+  (if (symbolp ocml-external-string)
+      (setf ocml-external-string (symbol-name ocml-external-string)))
+  (let ((colon (position #\: ocml-external-string))
+        (*package* (find-package :ocml)))
+    (if colon
+        (read-from-string (format nil "#_~A" ocml-external-string))
+        (intern ocml-external-string))))
+
+(defun namespace->prefix (namespace)
+  (car (rassoc namespace ocml::*namespace-prefixes* :test #'string=)))

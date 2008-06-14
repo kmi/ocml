@@ -3,16 +3,18 @@
   (:export #:*load-filename*
            #:as-ocml
            #:call-with-ocml-thread-safety
-	   #:call-with-ontology
-	   #:find-ontology-directory
+           #:call-with-ontology
+           #:find-ontology-directory
+           #:initialize-ocml
+           #:extern-ocml-symbol
            #:in-ocml
-	   #:initialize-ocml
+           #:intern-ocml-symbol
            #:load-ontology-by-name
-	   #:register-namespace
+           #:register-namespace
            #:repackage
-	   #:translate
-	   #:with-ocml-thread-safety
-	   #:with-ontology))
+           #:translate
+           #:with-ocml-thread-safety
+           #:with-ontology))
 
 (eval-when (:load-toplevel)
  (pushnew :ocml cl:*features*)
