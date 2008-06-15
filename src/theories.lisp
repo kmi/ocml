@@ -314,7 +314,11 @@ changed by john domingue 6/2/03
                             (if (eq (second namespace-pair) name)
                                 namespace-uri
                                 (second namespace-pair))))
-      (setf namespace-prefixes *namespace-prefixes*))
+      (setf namespace-prefixes *namespace-prefixes*)
+      (when (and namespace-uri
+                 (not (find-if (lambda (pair) (eq name (second pair)))
+                               namespaces)))
+        (ocml-warn "No namespace prefix given for ontology ~A.  This may cause problems later." name)))
     (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
     (with-muffled-warnings ()
       (if ontology
