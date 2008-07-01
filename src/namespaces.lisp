@@ -149,11 +149,10 @@ ONTOLOGIES."
 symbol representation."
   (if (symbolp ocml-external-string)
       (setf ocml-external-string (symbol-name ocml-external-string)))
-  (let ((colon (position #\: ocml-external-string))
-        (*package* (find-package :ocml)))
-    (if colon
-        (read-from-string (format nil "#_~A" ocml-external-string))
-        (intern ocml-external-string))))
+    (if (or (position #\# ocml-external-string)
+            (not (position #\: ocml-external-string)))
+        (intern ocml-external-string :ocml)
+        (read-from-string (format nil "#_~A" ocml-external-string))))
 
 (defun namespace->prefix (namespace)
   (car (rassoc namespace ocml::*namespace-prefixes* :test #'string=)))

@@ -54,6 +54,18 @@
   (is (symbolp (read-from-string (namespaced-symbol-ending-with #\` ))))
   (is (symbolp (read-from-string (namespaced-symbol-ending-with #\" )))))
 
+(test (intern-extern-symbols :depends-on namespace-reader-test)
+  ;; Test intern-ocml-symbol and extern-ocml-symbol.
+  (is-true (with-ontology ('ocml::pathology)
+        (eq (read-from-string "#_path:disease")
+            (intern-ocml-symbol "http://example.open.ac.uk/ontologies/pathology#disease"))))
+  (is-true (with-ontology ('ocml::pathology)
+             (eq (read-from-string "#_path:disease")
+                 (intern-ocml-symbol "path:disease"))))
+  (is-true (with-ontology ('ocml::pathology)
+             (string= (extern-ocml-symbol (read-from-string "#_path:disease"))
+                      "path:disease"))))
+
 (test (namespace-ontologies-test :depends-on namespace-reader-test)
   (finishes (handler-bind ((warning #'muffle-warning))
 	      ;; Suppress compiler warnings when we load the ontologies.
