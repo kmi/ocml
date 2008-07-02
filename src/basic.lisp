@@ -1357,9 +1357,8 @@ relevant slot values"
 ;; interactive entry of an ontology cannot be done, because certain
 ;; operations (such as recomputing slot type specifiers) can be done
 ;; only after the ontology's contents have been seen.
-(defun finalise-ontology (ontology)
-  (with-ontology (ontology)
-    (compute-slot-type-specifiers *current-ontology*)))
+(defun finalise-ontology ()
+  (compute-slot-type-specifiers *current-ontology*))
 
 (defun compute-slot-type-specifiers (ontology)
   "Once the ontology is loaded, compute slot types from the slot type specifiers."

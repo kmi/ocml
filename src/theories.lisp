@@ -437,10 +437,15 @@ changed by john domingue 6/2/03
   #+(or :allegro :lispworks) (ocml-record-source-file name 'def-ontology name)
   (when new?
     (add-ontology name ontology))
-  (load-ontology-files ontology files pathname)
-  (finalise-ontology ontology)
+  (with-ontology (ontology)
+    ;; Because the ontology-directory of ONTOLOGY has been set to a
+    ;; new one, we must call SWITCH-TO-ONTOLOGY to force the special
+    ;; variables to be rebound to the new values.
+    (switch-to-ontology ontology)
+    (load-ontology-files files pathname)
+    (finalise-ontology))
   (when select-this-ontology?
-    (switch-to-ontology ontology))
+    (select-ontology name))
   ontology)
 
 ;(defun maybe-set-rdf-related-information (name ontology)
@@ -628,15 +633,13 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
   ;;;;;(make-ontology-pathname name type)))
   (ocml-load load-file))
 
-(defun load-ontology-files (ontology files pathname)
-  (with-ontology (ontology)
-    (let ((*pending-constraints* '()))
-      (dolist (file files)
-        (ocml-load (merge-pathnames pathname
-                                    (string-append file "." *lisp-suffix*))))
-      (dolist (c *pending-constraints*)
-        (check-pending-constraints c)))))
-
+(defun load-ontology-files (files pathname)
+  (let ((*pending-constraints* '()))
+    (dolist (file files)
+      (ocml-load (merge-pathnames pathname
+                                  (string-append file "." *lisp-suffix*))))
+    (dolist (c *pending-constraints*)
+      (check-pending-constraints c))))
 
 ;;;CHECK-PENDING-CONSTRAINTS -  Checks the constraint pending from the ontology loading time
 ;;;That is, it delays checking instance constraints to avoid unnecessary warning - e.g.,
