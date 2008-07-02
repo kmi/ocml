@@ -1,24 +1,24 @@
 Roxana Belecheanu <roxana.belecheanu@googlemail.com>
 
-    XML and XSD to OCML translators.
+    - XML and XSD to OCML translators.
 
-John Domingue <j.domingue@open.ac.uk>
+John Domingue <j.b.domingue@open.ac.uk>
 
 Mauro Gaspari <gaspari@cs.unibo.it>
 
-    Backward chaining rules.
+    - Backward chaining rules.
 
 Dave Lambert <d.j.lambert@open.ac.uk>
 
-    ASDFification.
-    Automated testing.
-    Namespaces.
-    Ports to Allegro and SBCL.
+    - ASDFification.
+    - Automated testing.
+    - OCML manual qua manual (much text originally from Enrico Motta).
+    - Namespaces.  Ports to Allegro and SBCL.
 
 Enrico Motta <e.motta@open.ac.uk>
 
-    Everything else.
+    - Everything else.
 
 Michele Pasin <m.pasin@open.ac.uk>
 
-    OCML to OWL translator.
+    - OCML to OWL translator.
