@@ -1,3 +1,5 @@
+;;; Copyright © 2008 The Open University
+
 (in-package :ocml)
 
 ;;; {{{ Constants
@@ -115,6 +117,7 @@
 
 
 (defvar *default-fc-rule-priority* :normal)
+
 (defvar *fc-priorities* '(:normal :high :low))
 
 
@@ -230,6 +233,12 @@
 
 (defvar *namespace-prefixes* '()
   "Active namespace prefixes for reading OCML namespace sensitive symbols.")
+
+(defvar *printing-namespaced-symbol* nil
+  "True when print-object on symbol is currently on the stack.")
+
+(defvar *pretty-print-namespaces* t
+  "Print namespaced symbols using their shorthand form.")
 
 ;;; {{{ Interface to OCML
 

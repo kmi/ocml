@@ -15,7 +15,6 @@
 
 (in-package :ocml)
 
-
 ;;; Should be the chars acecptable in a an XML/RDF/OWL token.
 (define-constant +token-chars+
     (concatenate 'list "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")
@@ -128,7 +127,9 @@ ONTOLOGIES."
 ;;; This is a preview of correctly handling OCML namespaces.  I'm
 ;;; mainly using it to mark places we need to check.
 (defun extern-ocml-symbol (ocml-symbol)
-  "Generate the external representation for an OCML symbol."
+  "Generate the external representation for an OCML symbol.
+
+Second return value is true if a prefixed version was found."
   (let* ((symname (symbol-name ocml-symbol))
          (hash (position #\# symname)))
     (if hash
@@ -136,13 +137,16 @@ ONTOLOGIES."
                (localname (subseq symname (+ 1 hash)))
                (ns (namespace->prefix prefix)))
           (if ns
-              (format nil "~A:~A" ns localname)
+              (values (format nil "~A:~A" ns localname) t)
               (progn
-                (warn "No namespace prefix for symbol `~A' in ontology `~A' ~A~%."
-                      ocml-symbol ocml::*current-ontology*
-                      (ocml::namespace-prefixes-of ocml::*current-ontology*))
-                symname)))
-        symname)))
+                (unless *printing-namespaced-symbol*
+                  ;; If we're *printing-namespaced-symbol**, then we
+                  ;; don't want to bother the user with warnings.
+                  ;; They can see immediately that there's no prefix.
+                  (warn "No namespace prefix for symbol `~A' in ontology `~A'~%."
+                        (symbol-name ocml-symbol) ocml::*current-ontology*))
+                (values symname nil))))
+        (values symname nil))))
 
 (defun intern-ocml-symbol (ocml-external-string)
   "Generate the internal representation for an externalised OCML
@@ -156,3 +160,21 @@ symbol representation."
 
 (defun namespace->prefix (namespace)
   (car (rassoc namespace ocml::*namespace-prefixes* :test #'string=)))
+
+(defun looks-like-namepaced-symbol? (symbol)
+  "Returns true if SYMBOL looks like it's an OCML namespaced symbol."
+  (let ((chars (symbol-name symbol))
+        (prefix "http://"))
+    (and (> (length chars) (length prefix))
+         (string= "http://" (subseq chars 0 (length prefix))))))
+
+#+:lispworks
+(sys::without-warning-on-redefinition
+  (defmethod print-object :around ((ocml-symbol symbol) stream)
+    (if (and *pretty-print-namespaces*
+             (looks-like-namepaced-symbol? ocml-symbol))
+        (let ((*printing-namespaced-symbol* t))
+          (multiple-value-bind (text prefixed?)
+              (extern-ocml-symbol ocml-symbol)
+            (format stream (if prefixed? "#_~A" "|~A|") text)))
+        (call-next-method))))

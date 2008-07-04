@@ -90,3 +90,16 @@
   (is (eq 'ocml::|http://example.open.ac.uk/ontologies/oncology#cancer|
           (with-ontology ('ocml::dave-in-another-dimension)
             (intern-ocml-symbol "onco:cancer")))))
+
+#+lispworks
+(test pretty-print-test
+  (is (string= "#_onco:cancer"
+               (format nil "~A" (read-from-string "#_onco:cancer"))))
+  (is (string= "http://example.open.ac.uk/ontologies/oncology#cancer"
+               (let ((ocml:*pretty-print-namespaces* nil))
+                 (format nil "~A" (read-from-string "#_onco:cancer")))))
+  (is (string= "|http://example.open.ac.uk/ontologies/oncology#cancer|"
+               (ocml:with-ontology ('ocml::base-ontology)
+                 (format nil "~A" (ocml:with-ontology ('ocml::oncology)
+                                    (read-from-string "#_onco:cancer")))))))
+
