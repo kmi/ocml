@@ -54,7 +54,7 @@
   (is (symbolp (read-from-string (namespaced-symbol-ending-with #\` ))))
   (is (symbolp (read-from-string (namespaced-symbol-ending-with #\" )))))
 
-(test (intern-extern-symbols :depends-on namespace-reader-test)
+(test (intern-extern-symbols :depends-on namespace-ontologies-test)
   ;; Test intern-ocml-symbol and extern-ocml-symbol.
   (is-true (with-ontology ('ocml::pathology)
         (eq (read-from-string "#_path:disease")
@@ -92,7 +92,7 @@
             (intern-ocml-symbol "onco:cancer")))))
 
 #+lispworks
-(test pretty-print-test
+(test (pretty-print-test :depends-on namespace-ontologies-test)
   (is (string= "#_onco:cancer"
                (format nil "~A" (read-from-string "#_onco:cancer"))))
   (is (string= "http://example.open.ac.uk/ontologies/oncology#cancer"
