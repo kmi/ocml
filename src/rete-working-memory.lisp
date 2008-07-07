@@ -156,28 +156,22 @@
 (defmethod new-alpha-input ((node end-node) args)
   (new-beta-inputs node (list args)))
 
-
-
-
-;;;NEW-BETA-INPUTS BETA-NODE ---This is called when new winners have been propagated down the network,
-;;;to filter them using the beta test.
-(defmethod new-beta-inputs ((node beta-node)new-beta-inputs)
-  (with-slots (beta-inputs successor alpha-inputs  not-nodep) node
-    (setf beta-inputs
-          (append  beta-inputs new-beta-inputs))
-    (let ((winners
-           (if not-nodep
-               (apply-negative-beta-filter node new-beta-inputs alpha-inputs)
-               (apply-positive-beta-filter node new-beta-inputs alpha-inputs))))
+;;; Called when new winners have been propagated down the network, to
+;;; filter them using the beta test.
+(defmethod new-beta-inputs ((node beta-node) new-beta-inputs)
+  (with-slots (beta-inputs successor alpha-inputs not-nodep) node
+    (setf beta-inputs (append new-beta-inputs beta-inputs))
+    (let ((winners (funcall (if not-nodep
+                                #'apply-negative-beta-filter
+                                #'apply-positive-beta-filter)
+                            node new-beta-inputs alpha-inputs)))
       (when winners
 	(new-beta-inputs successor winners)))))
 
-
 ;;;NEW-BETA-INPUTS END-NODE
-(defmethod new-beta-inputs ((node end-node)inputs)
+(defmethod new-beta-inputs ((node end-node) inputs)
   (with-slots (beta-inputs rule) node
-    (setf beta-inputs
-          (nconc  beta-inputs inputs))
+    (setf beta-inputs (append inputs beta-inputs))
 ;;;    (when *interpreter-running*
     (unless *compiling-fc-rule*
       (new-instantiations rule inputs))))
@@ -355,8 +349,3 @@
                                                        partial-support-sets)))))
       (when to-be-removed
         (remove-beta-inputs node to-be-removed)))))
-
-
-
-
-
