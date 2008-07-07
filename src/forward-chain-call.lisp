@@ -76,45 +76,16 @@
             do
             (match-alpha-node-against-possible-instance node name slot values :remove)))))
 
-  ;;;;(maybe-trigger-downward-remove-exp slot name values))
-
-
-
-;;;TELL-FC-NEW-INSTANCE  ---This is called when a new instance is created
-(defun tell-fc-new-instance (instance parent &aux (name (name instance)))
-  (loop with relation = (get-relation parent)
-            with fc-nodes = (fc-nodes relation)
-	    for node in fc-nodes
-            do
-            (match-alpha-node-against-instance node instance)
-            
-            ;(Push (cons (alpha-node-relation node) (list name))
-;                  pairs)
-            )
-      (loop for slot in (domain-slots instance)
-            do
-            (loop for value in (get-slot-values instance slot)
-                  do
-                  (loop for node in (fc-nodes (get-relation slot))
-                        do
-			(run-alpha-test node  (List name value))
-                        
-                        ;(push (cons (alpha-node-relation node) (List name value))
-;                              pairs)
-                        ))))
-      
-      ;(loop for pair in pairs
-;            do
-;	    (maybe-trigger-downward-add-exp
-;             (car pair)
-;             (cdr pair))))
-
-      ;(loop for rel in rels
-;            do
-;            (maybe-trigger-downward-mapping-rule rel)))
-      ;;;(maybe-trigger-reflection-rules))
-
-
+;;; Called when a new instance is created.
+(defun tell-fc-new-instance (instance parent)
+  (let ((name (name instance))
+        (fc-nodes (fc-nodes (get-relation parent))))
+    (dolist (node fc-nodes)
+      (match-alpha-node-against-instance node instance))
+    (dolist (slot (domain-slots instance))
+      (dolist (value (get-slot-values instance slot))
+        (dolist (node (fc-nodes (get-relation slot)))
+          (run-alpha-test node (list name value)))))))
 
 ;;;REMOVE-ALL-INSTANCE-INFO-FROM-FC-RULES ---Called when an instance is deleted.
 (defmethod remove-all-instance-info-from-fc-rules ((instance basic-domain-class)parent)
