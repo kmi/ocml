@@ -289,19 +289,17 @@ is the external, rather than internal, name of the class."
           (filter (class-precedence-list class)
                   #'domain-class?)))
 
+(defun current-class? (class)
+  "Is CLASS live in the current ontology?"
+  (and (eq class (get-domain-class (name class)))))
+
 (defun current-direct-subclasses (class)
-   (filter (direct-subclasses  class)
-           #'(lambda (sub)
-               (member  (home-ontology sub)
-                          *current-ontologies*))))
+   (filter (direct-subclasses class) #'current-class?))
 
 (defun current-subclasses (class)
-   ;;returns all subclasses of class which 
-  ;;are in a currently selected ontology
-   (filter  (subclasses  class)
-           #'(lambda (sub)
-               (member  (home-ontology sub)
-                          *current-ontologies*))))
+  "All subclasses of CLASS which are in a currently selected
+ontology."
+  (filter (subclasses class) #'current-class?))
 
 (defun superclass-of* (class classes)
   (let ((subs (subclasses class)))
