@@ -446,7 +446,10 @@ signal an error if NAME does not designate an ontology."
     (load-ontology-files files pathname)
     (finalise-ontology))
   (when select-this-ontology?
-    (select-ontology name))
+    ;; And again, because the ontology may already have been selected,
+    ;; we must SWITCH-TO-ONTOLOGY, to force the special variables to
+    ;; be updated.
+    (switch-to-ontology ontology))
   ontology)
 
 ;(defun maybe-set-rdf-related-information (name ontology)
