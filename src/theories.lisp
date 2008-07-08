@@ -264,18 +264,19 @@ signal an error if NAME does not designate an ontology."
           documentation nil))
   (apply #'def-ontology-internal2 (append (list name documentation)options)))
 
-#|
-changed by john domingue 6/2/03
 (defun default-ontology-pathname (name type)
-  (string-append *library-pathname*
-                 (format nil "~AS;~A;" type name)))
-|#
-
-(defun default-ontology-pathname (name type)
-  (string-append *library-pathname*
-		 (if (eq type :basic)
-		     (format nil "~A;" type)
-		     (format nil "~AS;~A;" type name))))
+  ;; If *LOAD-TRUENAME* is non-nil, then we're being loaded from a
+  ;; file.  Use the true name to find out where that is.  This allows
+  ;; us to load from *ONTOLOGY-LOAD-PATH*, instead of the fixed OCML
+  ;; logical host.
+  (if *load-truename*
+      (let ((pathname (format nil "~A" *load-truename*)))
+        (subseq pathname 0 (- (length pathname)
+                              (length *load-filename*))))
+      (string-append *library-pathname*
+                     (if (eq type :basic)
+                         (format nil "~A;" type)
+                         (format nil "~AS;~A;" type name)))))
 
 (defun default-ontology-files (name)
   (list (format nil "~(~A~)" name) "new"))

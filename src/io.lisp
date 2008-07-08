@@ -129,13 +129,18 @@
 
 ;;; {{{ Ontology file search and loading
 
+(defun setup-ontology-load-path ()
+  (dolist (type +ontology-types+)
+    (push (logical-pathname
+           (format nil "~A~A;" ocml::*library-pathname* type))
+          *ontology-load-path*)))
+
 (defun load-ontology-by-name (ontology-name)
   "Search for and load the ontology called ONTOLOGY-NAME."
   (let ((dir (find-ontology-directory ontology-name)))
     (if dir
         (load (format nil "~A~A" dir *load-filename*))
         (error "Cannot find ontology called ~A." ontology-name))))
-
 
 (ocml::define-constant +directory-separator+
     #+:win32 #\\
@@ -146,9 +151,8 @@
 (defun find-ontology-directory (ontology-name)
   "Return true pathname of the directory holding ONTOLOGY-NAME files
 if it can be found, or NIL."
-   (dolist (type ocml::+ontology-types+)
-     (let* ((base (logical-pathname (format nil "~A~A;" ocml::*library-pathname* type)))
-            (dir (find-truename-ci base ontology-name)))
+   (dolist (path *ontology-load-path*)
+     (let ((dir (find-truename-ci path ontology-name)))
        (when dir
          (return dir)))))
 
@@ -174,9 +178,9 @@ if it can be found, or NIL."
                                         :from-end t))))
     (string-trim (list +directory-separator+) base)))
 
+;;; }}}
+
 (defun rm-file (name)
   "Remove file NAME."
   (when (probe-file name)
     (delete-file name)))
-
-;;; }}}

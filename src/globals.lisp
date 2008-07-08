@@ -184,12 +184,17 @@
 
 (defvar *base-ontology-name* 'base-ontology)
 
-(defvar *base-ontology-directory* 
+;;; {{{ Ontology load particulars
+(defvar *ontology-load-path* nil
+  "List of paths to search for ontologies.")
+
+(defvar *base-ontology-directory*
   (logical-pathname (string-append *library-pathname* "basic;")))
 
 (defvar *base-ontology-load-file* "load")
 
 (defvar *load-filename* "load.lisp")
+;;; }}}
 
 (defvar *all-ontologies* nil "All currently defined ontologies")
 

@@ -5,6 +5,7 @@
 (defun initialize-ocml (&optional (load-base-ontology? t))
   (ocml-output "~%Initializing OCML " +ocml-version+)
   (setf *all-ontologies* nil)
+  (setup-ontology-load-path)
   (setf *ocml-initialized* t)
   (when load-base-ontology?
     (load-base-ontology)))
