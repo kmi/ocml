@@ -22,8 +22,9 @@
                (:file "base" :depends-on ("defpackage"))
                (:file "basic" :depends-on ("defpackage" "globals" "theories"))
                (:file "constraints" :depends-on ("defpackage"))
-               (:file "control" :depends-on ("defpackage" "basic" "parser" "io"
-                                                          "slot-renaming" "top"))
+               (:file "control" :depends-on
+                      ("defpackage" "basic" "domain" "io" "parser"
+                                    "slot-renaming" "top"))
                (:file "delete-things" :depends-on ("defpackage" "relations"))
                (:file "describe" :depends-on ("defpackage"))
                (:file "domain" :depends-on ("defpackage" "globals"))
