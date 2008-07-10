@@ -4,6 +4,11 @@ This is OCML version 7.5.  It is a development branch of OCML.
 
 ** Support for namespaces.
 
+** Ontologies can be loaded from arbitrary places.
+
+The new variable *ontology-load-path* contains a list of directories
+to be searched for ontologies.
+
 ** Language translation
 
 *** Unified KR lanaguage translation interface.
@@ -14,8 +19,8 @@ This is OCML version 7.5.  It is a development branch of OCML.
 
 ** New user manual.
 
-Based on Enrico Motta’s book ‘Reusable Components for Knowledge
-Modelling’, IOS Press, ISBN 1-58603-003-5.
+Based on material from Enrico Motta’s book ‘Reusable Components for
+Knowledge Modelling’, IOS Press, ISBN 1-58603-003-5.
 
 ** API.
 

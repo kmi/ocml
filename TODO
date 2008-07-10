@@ -1,6 +1,16 @@
 * Translation
 
-OWL species needs to be specifiable.
+** OWL
+
+*** OWL species needs to be specifiable.
+
+*** Support XSD types.
+
+Claudio wants them.
+
+** XML
+
+*** Use Closure XML.
 
 * Bugs
 
@@ -14,45 +24,13 @@ fundamental ontology?!
 Constraint checking, like slot type computation, must be done *after*
 the whole ontology is loaded.
 
-* remove get-domain-class or get-ocml-class, as per basic21 comment.  
+* Features
 
-I prefer deleting get-ocml-class.  It's in the OCML package, we're
-dealing with OCML, so it's pretty redundant.  ‘domain’ makes more
-sense.
+** Forward chaining performance
 
-* ensure-vanilla-class/2 can be merged
+The Rete system should be indexed.
 
-* webonto goodies
-
-Steal any general purpose OCML utilities from WebOnto.
-
-* call-with-ocml-thread-safety
-
-Make sure we get all the important variables!  globals.lisp is
-a *lot* longer than this function...  We can also introduce a
-special, *with-thread-safety*, which would indicate the prior
-invocation of call-with-ocml-thread-safety and warn about it.
-
-* ocml-load
-
-generalize the muffled warnings for all ocml loads.  new variable:
-(defvar *ontology-warnings* nil).  Might want to check (by looking at
-the message string) what kind of warnings to ignore.
-http://www.lisp.org/HyperSpec/Body/res_muffle-warning.html
-
-* 
-
-the def-ontology form does not evaluate the :namespace-uri initarg.
-this is problematic.  we should fix this, and any other cases for
-which it makes sense.
-
-* in theories5
-
-when redefining an ontology, we do a lot of setf'ing.  Shouldn't we
-use a shared-initialize instead?  That'd save typing, and make sure
-other things happen right (if they need to happen at all).
-
-* asktell
+** asktell
 
 OCML> (ask (and (person ?x) (prone-to-cancer ?x))) =>
 
@@ -65,30 +43,80 @@ Solution:
 
 Shouldn't the *variables* be mentioned?
 
-* Package hygiene
+* Clean up
 
-Less ::, more (export foo)  On the other hand, if we do that, symbols
-may not end up in the ocml package, where they belong.
+** Package hygiene
 
-* Package organization
+*** Less ::, more (export foo)
+
+On the other hand, if we do that, symbols may not end up in the ocml
+package, where they belong.
+
+*** Move the internals to a new ocml-internal package.
+
+The important bits could then be re-exported through the #:ocml
+package, which would become the user's package.
+
+** Specific code issues.
+
+*** Remove get-domain-class or get-ocml-class, as per basic.lisp comment.
+
+I prefer deleting get-ocml-class.  It's in the OCML package, we're
+dealing with OCML, so it's pretty redundant.  ‘domain’ makes more
+sense.
+
+*** Use a flag to decide if finlise-ontology gets called
+
+I.e. set the flag during ontology loading, but otherwise call
+finlise-ontology after every def-class, def-foo, whatever.
+
+Enrico requested this because interactive work is one of OCML's
+strengths.
+
+*** ensure-vanilla-class/2 can be merged
+
+*** webonto goodies
+
+Steal any general purpose OCML utilities from WebOnto.
+
+*** call-with-ocml-thread-safety
+
+Make sure we get all the important variables!  globals.lisp is
+a *lot* longer than this function...  We can also introduce a
+special, *with-thread-safety*, which would indicate the prior
+invocation of call-with-ocml-thread-safety and warn about it.
+
+*** ocml-load
+
+generalize the muffled warnings for all ocml loads.  new variable:
+(defvar *ontology-warnings* nil).  Might want to check (by looking at
+the message string) what kind of warnings to ignore.
+http://www.lisp.org/HyperSpec/Body/res_muffle-warning.html
+
+***
+
+the def-ontology form does not evaluate the :namespace-uri initarg.
+this is problematic.  we should fix this, and any other cases for
+which it makes sense.
+
+*** in theories5
+
+when redefining an ontology, we do a lot of setf'ing.  Shouldn't we
+use a shared-initialize instead?  That'd save typing, and make sure
+other things happen right (if they need to happen at all).
+
+** Ontology packaging
 
 I think we need a three-layer org.  The OCML engine (ocml), the
 general purpose OCML library (ocml-library), and the applications
 (irs, kmi-impact) etc.
 
-** Basic
+*** Basic
 
 Add the basic stuff from the library?  Or keep it separate?  I think
 we should add the basic elements, although if we go to the three-layer
 model above, the basic stuff should move to the library, too.  That
 makes test cases a bit tricky, perhaps...
-
-** Multiple libraries
-
-Wouldn't it be nice if OCML could find its libraries in multiple
-places?  So, the basic library would come from the OCML src directory,
-core IRS libraries would be somewhere else, and IRS applications would
-be application specific!
 
 ** Uncompiled files
 
@@ -98,18 +126,14 @@ be rm'd?
 
 * Namespaces
 
-Do we want to have prefixes independant of ontologies?  I.e., would we
-want to talk about symbols that aren't in a loaded ontology?!
-Probably not, because one couldn't reason about them...  What about
-circular deps?  That would be ok, as long as the referenced ontology
-is declared before being referenced.
-
 Variables: how do swrl etc deal with it?  What about variables?  Do we
 need to bother about these?  I'm ignoring them at the moment...
 They *should* just work, as long as I don't stomp on the #\? naming
 convetion...  Where *does* the #\? go???
 
 The home ontology can be added to the symbol's plist.
+
+** Namespaces and ontologies
 
 ** Merging old and new
 
@@ -124,11 +148,6 @@ This mutates current lookups.  A putative WITH-NAMESPACES form would
 push and pop them.  But WITH-NAMESPACES has limited use, because the
 reader does its thing before the form gets evaluated.  It could be
 used around (load)s, or when printing using a modified symbol printer.
-
-** printing
-
-might want to override the symbol printing method for namespaced ocml
-symbols...
 
 
 Local variables:
