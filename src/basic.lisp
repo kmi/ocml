@@ -291,7 +291,7 @@ is the external, rather than internal, name of the class."
 
 (defun current-class? (class)
   "Is CLASS live in the current ontology?"
-  (and (eq class (get-domain-class (name class)))))
+  (eq class (get-domain-class (name class))))
 
 (defun current-direct-subclasses (class)
    (filter (direct-subclasses class) #'current-class?))
