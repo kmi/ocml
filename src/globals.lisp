@@ -185,7 +185,7 @@
 (defvar *base-ontology-name* 'base-ontology)
 
 ;;; {{{ Ontology load particulars
-(defvar *ontology-load-path* nil
+(defvar *ontology-path* nil
   "List of paths to search for ontologies.")
 
 (defvar *base-ontology-directory*

@@ -6,7 +6,7 @@ This is OCML version 7.5.  It is a development branch of OCML.
 
 ** Ontologies can be loaded from arbitrary places.
 
-The new variable *ontology-load-path* contains a list of directories
+The new variable *ontology-path* contains a list of directories
 to be searched for ontologies.
 
 ** Language translation

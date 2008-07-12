@@ -129,11 +129,11 @@
 
 ;;; {{{ Ontology file search and loading
 
-(defun setup-ontology-load-path ()
+(defun setup-ontology-path ()
   (dolist (type +ontology-types+)
     (push (logical-pathname
            (format nil "~A~A;" ocml::*library-pathname* type))
-          *ontology-load-path*)))
+          *ontology-path*)))
 
 (defun load-ontology-by-name (ontology-name)
   "Search for and load the ontology called ONTOLOGY-NAME."
@@ -151,7 +151,7 @@
 (defun find-ontology-directory (ontology-name)
   "Return true pathname of the directory holding ONTOLOGY-NAME files
 if it can be found, or NIL."
-   (dolist (path *ontology-load-path*)
+   (dolist (path *ontology-path*)
      (let ((dir (find-truename-ci path ontology-name)))
        (when dir
          (return dir)))))

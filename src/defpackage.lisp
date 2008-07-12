@@ -1,7 +1,7 @@
 (defpackage #:ocml
   (:use #:common-lisp)
   (:export #:*load-filename*
-           #:*ontology-load-path*
+           #:*ontology-path*
            #:*pretty-print-namespaces*
            #:as-ocml
            #:call-with-ocml-thread-safety
