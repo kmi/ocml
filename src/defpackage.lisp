@@ -12,6 +12,7 @@
            #:in-ocml
            #:intern-ocml-symbol
            #:load-ontology-by-name
+           #:nothing?
            #:register-namespace
            #:repackage
            #:translate

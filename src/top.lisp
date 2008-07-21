@@ -120,6 +120,9 @@
     "-"
     (string domain-name))))
 
+(defun nothing? (x)
+  (eq x ocml::*nothing*))
+
 ;;;DEF-UPWARD-CLASS-MAPPING ---This creates instances of method-class corresponding
 ;;;to instances of domain class
 (defmacro def-upward-class-mapping (domain-class 
