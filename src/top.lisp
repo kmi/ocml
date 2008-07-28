@@ -50,7 +50,7 @@
 #+:lispworks 
 (editor::setup-indent 'def-relation 0 2)
 
-(defmacro def-relation-instances (&optional  documentation &rest instances)
+(defmacro def-relation-instances (&optional documentation &rest instances)
   `(def-relation-instances-internal ',documentation ',instances))
 
 #+:lispworks 

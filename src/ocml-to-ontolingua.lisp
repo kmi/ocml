@@ -11,7 +11,7 @@
       (translate-ocml-ontology-to-ontolingua ontology-name ))))
 
 ;;;  STILL TO DO:   <:OWN-SLOTS>, forward chaining rules, 
-;;;relation instances (def-relation-instance and tell)
+;;;relation instances (def-relation-instances and tell)
 
 (defvar *list-constructor* 'list-of)
 

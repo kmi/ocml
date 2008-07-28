@@ -903,18 +903,11 @@ non-nil."
 
 (defun def-relation-instances-internal (documentation exps)
   (unless (stringp documentation)
-    (setf
-     exps (cons documentation exps)
-     documentation ""))
-  ;;;john has changed the buffer reader for def-relation-instances
-  ;;in the same way as i changed the buffer reader for def-instance
-  ;;The new reader copes with the fact that the first form may be a documentation string
-  ;;which we want to ignore
-  #+(or :allegro :lispworks)
-  (loop for exp in exps
-     do
-       (ocml-record-source-file exp 'def-relation-instance)
-       (tell1 exp documentation)))
+    (setf exps (cons documentation exps)
+          documentation ""))
+  (dolist (exp exps)
+    (ocml-record-source-file exp 'def-relation-instances)
+    (tell1 exp documentation)))
 
 ;;relation-instance 'name' is in fact the expression
 (defun get-relation-instance (name)

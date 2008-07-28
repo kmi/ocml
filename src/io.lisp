@@ -119,10 +119,11 @@
 
 
 #+:lispworks-dspec
-(dspec:define-dspec-class def-relation-instances nil "OCML def-relation-instances"
-  :pretty-name "Def-Relation-Instances"
+(dspec:define-dspec-class def-relation-instances nil
+  "OCML def-relation-instances"
+  :pretty-name "def-relation-instances"
   :canonicalize #'(lambda (dspec)
-		    (let ((name (cadr dspec))
+		    (let ((name (second dspec))
                           (ontology (third dspec)))
                       `(def-relation-instances ,name ,ontology)))
   :definedp #'(lambda (x) (and (listp x) (get-relation-instance x))))
