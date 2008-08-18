@@ -19,6 +19,10 @@
 
 (defvar *library-pathname* "ocml:library;")
 
+#+:ocml-with-drakma
+(defvar *web-library-pathname* "ocml:library;web;"
+  "Directory where ontologies downloaded over HTTP are kept.")
+
 (defvar *lisp-suffix* "lisp")
 
 (defvar *ocml-top-class* 'ocml-thing)

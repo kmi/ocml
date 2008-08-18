@@ -6,10 +6,15 @@
 ;; Enable source location recording in Lispworks 5.
 #+:lispworks5  (pushnew :lispworks-dspec *features*)
 
+;;; Check for availablility of the Drakma HTTP client.
+(when (asdf:find-system :drakma nil)
+  (push :ocml-with-drakma *features*))
+
 (defsystem :ocml
     :description "Operational Concept Modelling Language."
     :version "7.5"
     :author "Enrico Motta <e.motta@open.ac.uk> et al at the Open University."
+    :depends-on (#+:ocml-with-drakma :drakma)
     :components
     ((:module :src
               :components

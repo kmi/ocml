@@ -6,6 +6,7 @@
            #:as-ocml
            #:call-with-ocml-thread-safety
            #:call-with-ontology
+           #+:ocml-with-drakma #:download-ontology-by-url
            #:find-ontology-directory
            #:initialize-ocml
            #:extern-ocml-symbol

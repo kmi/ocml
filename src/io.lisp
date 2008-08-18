@@ -134,7 +134,8 @@
   (dolist (type +ontology-types+)
     (push (logical-pathname
            (format nil "~A~A;" ocml::*library-pathname* type))
-          *ontology-path*)))
+          *ontology-path*))
+  (push *web-library-pathname* *ontology-path*))
 
 (defun load-ontology-by-name (ontology-name)
   "Search for and load the ontology called ONTOLOGY-NAME."
@@ -142,6 +143,48 @@
     (if dir
         (load (format nil "~A~A" dir *load-filename*))
         (error "Cannot find ontology called ~A." ontology-name))))
+
+#+:ocml-with-drakma
+(defun download-ontology-by-url (url)
+  "URL is the directory containing the ontology, with trailing '/'."
+  ;; Idea here is to grab the load file, figure out the ontology name
+  ;; and files, and then create a local copy of the load.lisp and
+  ;; those files.
+  (multiple-value-bind (content response-code)
+      (drakma:http-request (format nil "~A~A" url *load-filename*))
+    (unless (= 200 response-code)
+      (error "Cannot read from URL ~A." url))
+    (let* ((*package* (find-package :ocml))
+           (offset 0)
+           def-ontology-form)
+      (loop for (form read) = (multiple-value-list (read-from-string content t nil :start offset))
+         do (setf offset (+ offset read))
+           (when (eq (first form) 'ocml::def-ontology)
+             (setf def-ontology-form form)
+             (return)))
+      (let ((ontology-name (second def-ontology-form))
+            (files (second (member :files def-ontology-form))))
+        (download-ontology url (string-downcase ontology-name) files)))))
+
+#+:ocml-with-drakma
+(defun download-ontology (url ontology-name files)
+  (create-directory (format nil "~A~A;" *web-library-pathname* ontology-name))
+  (dolist (file (cons *load-filename*
+                      (mapcar #'(lambda (f)
+                                  (format nil "~A.~A" f *lisp-suffix*))
+                              files)))
+    (download-file (format nil "~A~A" url file)
+                   (format nil "~A~A;~A" *web-library-pathname* ontology-name file))))
+
+#+:ocml-with-drakma
+(defun download-file (url filename)
+  (with-open-file (stream filename :direction :output :if-exists :supersede)
+    (multiple-value-bind (content response-code)
+        (drakma:http-request url)
+      (when (not (= 200 response-code))
+        (error "Unable to get URL ~A." url))
+      (write-sequence content stream)
+      (values))))
 
 (ocml::define-constant +directory-separator+
     #+:win32 #\\
