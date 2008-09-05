@@ -1,4 +1,5 @@
 \input texinfo
+@documentencoding UTF-8
 @setfilename ocml.info
 @settitle Operational Concept Modelling Language
 
@@ -910,8 +911,21 @@ OCML> (eq '#_colours:orange '#_colours:Orange)
 NIL
 @end smallexample
 
-The notation @code{#_} is modelled after the WSML
-syntax for IRIs, @code{_"http://www.deri.org/foo"}.
+@menu
+* Reading and printing::        
+@end menu
+
+@node Reading and printing,  , Namespaces, Namespaces
+@subsection Reading and printing
+
+The notation @code{#_} is modelled after the WSML syntax for IRIs,
+documented at @code{http://www.wsmo.org/wsml/wsml-syntax}.
+
+On Lispworks, namespaced symbols will be printed in the
+@code{#_foo:bar} format.  If you want the ‘real’ long form (as shown
+by @code{symbol-name}), you can set the variable
+@code{*pretty-print-namespaces*} to @code{nil}.
+
 
 @node Translation between representation languages, The ask-tell interface, Namespaces, Domain Modelling in OCML
 @section Translation between representation languages
