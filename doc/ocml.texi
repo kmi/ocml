@@ -28,7 +28,7 @@
 * Functional View of OCML::     
 * Reference::                   
 * Interpreters and Proof System::  
-* Task Is Enough: Some Comments on Logic Reasoning Power of OCML::  
+* The Logic Reasoning Power of OCML::  
 * Bibliography::                
 * Function Index::              
 * Concept Index::               
@@ -551,7 +551,7 @@ constraint checking and theorem proving.
 @need 3000
 @multitable @columnfractions 0.2 0.4 0.4
 @item
-@strong{Relation option}@tab @strong{Supports constraint checking}@tab@strong{Provides proof mechanism}
+@strong{Relation option} @tab @strong{Supports constraint checking} @tab @strong{Provides proof mechanism}
 @item
 @code{:sufficient}@tab No@tab Yes
 @item
@@ -1744,7 +1744,7 @@ C precedes the direct superclasses of C specified to its right in the
 list of direct superclasses of C.
 @end enumerate
 
-@node Interpreters and Proof System, Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Reference, Top
+@node Interpreters and Proof System, The Logic Reasoning Power of OCML, Reference, Top
 @chapter Interpreters and Proof System
 
 @menu
@@ -1943,8 +1943,8 @@ respect to first-order logic statements.  In particular, disjunctions
 can only be proved by proving each clause separately and negated
 expressions are only proved by default.
 
-@node Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Bibliography, Interpreters and Proof System, Top
-@chapter Task Is Enough: Some Comments on Logic Reasoning Power of OCML
+@node The Logic Reasoning Power of OCML, Bibliography, Interpreters and Proof System, Top
+@chapter The Logic Reasoning Power of OCML
 
 Note: This chapter is a reformatting the IBrow project deliverable D1,
 as found in the IRS source.
@@ -1953,7 +1953,7 @@ as found in the IRS source.
 * Background::                  
 @end menu
 
-@node Background,  , Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Task Is Enough: Some Comments on Logic Reasoning Power of OCML
+@node Background,  , The Logic Reasoning Power of OCML, The Logic Reasoning Power of OCML
 @section Background
 
 Task specification is based on a task ontology. The task ontology
@@ -1970,7 +1970,7 @@ Recall that how a task is specified in the OCML. Essentially a task is
 characterised by its goal expression. Assume that a task has
 
 @itemize
-@item input roles @math{i_{1},i_{2},\dots,i_{k}}
+@item input roles @math{i_1,i_2,\dots,i_k}
 @item output role @math{o}
 @item assumptions (or pre-condition) @math{P}
 @item goal expression @math{G}
@@ -1978,22 +1978,20 @@ characterised by its goal expression. Assume that a task has
 
 then the task specification can be expressed by the following formula:
 
-@math{\forall i_{1},i_{2},{\dots},i_{k} \exists o . P(i_{1},
-i_{2}, \dots,i_{k}) \rightarrow G(i_{1},i_{2}, \dots,
-i_{k}, o)}
+@math{\forall i_1,i_2,\dots,i_k \exists o . P(i_1, i_2, \dots,i_k)
+\rightarrow G(i_1,i_2, \dots, i_k, o)}
 
 where @math{P, G} are first order formula.  Now for given input
-@math{I_{1},I_{2},{\dots},I_{k}}, further, we assume that the
-pre-condition is trivial satisfied, then we get the following formula:
+@math{I_1,I_2,\dots,I_k}, further, we assume that the pre-condition is
+trivial satisfied, then we get the following formula:
 
-@math{\exists o G(I_{1},I_{2},{\dots},I_{k}, o)}
+@math{\exists o G(I_1,I_2,\dots,I_k, o)}
 
 A PSM is then to find an output @math{o} procedurally such that
-@math{G(I_{1}, I_{2}, {\dots}, I_{k}, O)} holds.  Because every
-relation and function occurring in @math{G(I_{1}, I_{2}, {\dots},
-I_{k}, O)} are defined in the task ontology and they are all
-implemented in OCML, therefore the following functions would be
-executable in OCML,
+@math{G(I_1, I_2, \dots, I_k, O)} holds.  Because every relation and
+function occurring in @math{G(I_1, I_2,\dots, I_k, O)} are defined in
+the task ontology and they are all implemented in OCML, therefore the
+following functions would be executable in OCML,
 
 @code{(the ?o (G I1 I2 ... Ik ?o))}
 
@@ -2183,7 +2181,7 @@ but remove (not (= ?ob1 ?ob2 ) ) to other position as follows
 
 Evaluate this expression it returns false.
 
-@node Bibliography, Function Index, Task Is Enough: Some Comments on Logic Reasoning Power of OCML, Top
+@node Bibliography, Function Index, The Logic Reasoning Power of OCML, Top
 @chapter Bibliography
 
 @noindent
