@@ -26,6 +26,24 @@ the whole ontology is loaded.
 
 * Features
 
+** Java-Lisp interop
+
+carlos would like something along the lines of jsr94, a java standard
+for rule engine interfaces.  Perhaps we could use foil/jfli?
+
+** ocml interface
+
+we need something like the following
+
+ (ocml:query-with-vars (goal thing)
+    (blah balh goal thing foo))
+
+where goal and thing are names of things in the local package, and the
+other things (blah, balh, foo) all get moved into the ocml package for
+the query.  this would elimnate the need for "ocml::" in correctly
+formulated queries, and allow us to move to a sane ask/tell interface
+for ocml.
+
 ** Forward chaining performance
 
 The Rete system should be indexed.
@@ -42,6 +60,34 @@ Solution:
  |http://example.open.ac.uk/ontologies/dave#parallel-universe-dave|))
 
 Shouldn't the *variables* be mentioned?
+
+** union types
+
+An outstanding OCML 7.3 -> 7.4/7.5 issue...
+
+This is tagged with #+:ocml-irs-hacks conditionals in OCML.   We're
+going to put union types back into OCML.  We believe they were only
+removed to make the translation to RDF easier.
+
+From John's email:
+
+     union types were removed from OCML a little while ago but I
+     didn't get my act together to remove them from some of our
+     ontologies.
+
+     I would say disable to check for now (if possible) and then we
+     will clean up our ontologies.
+
+     btw the solution is to create and use foo-bar-baz which inherits
+     from foo-bar and foo-baz
+
+On the other hand, Enrico says:
+
+   The best way to handle this in OCML is to give the following
+   definition to fooness
+
+   (def-class fooness () ?x
+    :iff-def  (or (foo-bar ?x) (foo-baz ?x)))
 
 * Clean up
 
