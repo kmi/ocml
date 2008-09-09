@@ -707,9 +707,12 @@ local."
   (with-slots (name)instance
     (format stream "#<~S ~S>" (name (parent-class instance)) name)))
 
+;;; Public interface to class creation.
+(defun define-class (name &key documentation superclasses slots)
+  (define-domain-class name superclasses  slots documentation nil nil)
+  (finalise-ontology))
 
-
-;;;DEFINE-DOMAIN-CLASS --- This is the entry point for class definition
+;;; This is the entry point for class definition
 (defun define-domain-class (name superclasses instance-var  documentation
                                        class-slots relation-spec)
   (multiple-value-bind (instance-var1  documentation1 class-slots1 relation-spec1)
@@ -718,8 +721,6 @@ local."
      name relation-spec1 +all-class-definition-legal-options+ 'class)
     (do-class-definition name superclasses instance-var1  documentation1
                          class-slots1 relation-spec1)))
-
-
 
 ;;;CREATE-INITIAL-CLASS-DEFINITION ---This is called to create an initial definition of the class.
 ;;;The reason why I need to do this is that I need to have the class in place before I can

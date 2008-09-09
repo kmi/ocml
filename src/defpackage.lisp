@@ -7,6 +7,7 @@
            #:call-with-ocml-thread-safety
            #:call-with-ontology
            #:define-ontology
+           #:define-class
            #+:ocml-with-drakma #:download-ontology-by-url
            #:find-ontology-directory
            #:initialize-ocml
