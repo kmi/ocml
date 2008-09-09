@@ -286,6 +286,13 @@ signal an error if NAME does not designate an ontology."
                  "load."
                  *lisp-suffix*))
 
+(defun define-ontology (name &key (documentation "")
+                        includes namespace-iri)
+  ""
+  (def-ontology-internal2 name documentation
+                          :includes includes
+                          :namespace-uri namespace-iri))
+
 (defun def-ontology-internal2 (name documentation &key
 			       includes 
 			       (type :domain)
