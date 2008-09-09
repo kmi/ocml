@@ -106,6 +106,13 @@ signal an error if NAME does not designate an ontology."
   ;;;;(roles (make-hash-table))
   (classes (make-hash-table)))
 
+(defun accessor-function (type)
+  "Supply the function name for accessing the TYPE field of an
+ontology-directory."
+  (if (eq type 'class)
+      'ontology-classes
+      (intern (format nil "ONTOLOGY-~AS" type "S") :ocml)))
+
 ;;;; OCML-ONTOLOGY
 
 ;;; WebOnto wants other slots in the ocml-ontology class, so allow it
@@ -747,18 +754,10 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
            (setf (gethash key to-table)
                    value)))))
 
-
-
 (defun propagate-new-def-to-sub-ontologies (name instance type)
   (when *ocml-initialized*
     (loop with ontology = (home-ontology instance)
-          with accessor-fun = (if (eq type 'class)
-                                'ontology-classes
-                                (read-from-string 
-                                 (concatenate 'string
-                                              "ONTOLOGY-"
-                                              (string type)
-                                              "S")))
+          with accessor-fun = (accessor-function type)
           for dep-onto in (dependent-ontologies ontology)
           for hash-table = (funcall accessor-fun
                                     (ontology-directory dep-onto))
@@ -787,13 +786,7 @@ a definition for ~A ~S  already exists....keeping old definition, inherited from
 
 (defun remove-def-from-dependent-ontologies (name instance type)
   (loop with ontology = (home-ontology instance)
-        with accessor-fun = (if (eq type 'class)
-                                'ontology-classes
-                                (read-from-string 
-                                 (concatenate 'string
-                                              "ONTOLOGY-"
-                                              (string type)
-                                              "S")))
+        with accessor-fun = (accessor-function type)
           for dep-onto in (sorted-dependent-ontologies ontology)
           for hash-table = (funcall accessor-fun
                                     (ontology-directory dep-onto))
