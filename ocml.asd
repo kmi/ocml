@@ -1,20 +1,26 @@
-(defpackage ocml-system
+;;; Copyright © 2007,2008 The Open University
+
+(defpackage #:ocml-system
   (:use :common-lisp :asdf))
 
-(in-package :ocml-system)
+(in-package #:ocml-system)
 
-;; Enable source location recording in Lispworks 5.
-#+:lispworks5  (pushnew :lispworks-dspec *features*)
+;;; Enable source location recording in Lispworks 5.
+#+:lispworks5 (pushnew :lispworks-dspec *features*)
 
 ;;; Check for availablility of the Drakma HTTP client.
 (when (asdf:find-system :drakma nil)
   (push :ocml-with-drakma *features*))
 
+;;; Check for availablility of the Closure XML library.
+(when (asdf:find-system :cxml nil)
+  (push :ocml-with-cxml *features*))
+
 (defsystem :ocml
     :description "Operational Concept Modelling Language."
     :version "7.5"
     :author "Enrico Motta <e.motta@open.ac.uk> et al at the Open University."
-    :depends-on (#+:ocml-with-drakma :drakma)
+    :depends-on (#+:ocml-with-cxml :cxml #+:ocml-with-drakma :drakma)
     :components
     ((:module :src
               :components
@@ -53,17 +59,13 @@
                (:file "slot-renaming" :depends-on ("defpackage"))
                (:file "theories" :depends-on ("defpackage" "base" "globals"))
                (:file "top" :depends-on ("defpackage"))
-               (:file "utilities" :depends-on ("defpackage"))))))
-
-;;; XXX The XML/XSD translators depends on the XML parser in the IRS.
-;;; For the moment, we'll pretend that the IRS ASDF package is
-;;; identical with that having been loaded.
-(defsystem :ocml-xml
-    :depends-on (:ocml :irs)
-    :components ((:module :src :components
-			  ((:file "xml-to-ocml")
-			   ;; (:file "xsd-to-ocml")
-			   ))))
+               (:file "utilities" :depends-on ("defpackage"))
+               #+:ocml-with-cxml
+               (:file "xml-to-ocml" :depends-on ("defpackage"))
+               ;; Isn't working at the moment...
+               ;; #+:ocml-with-cxml
+               ;; (:file "xsd-to-ocml" :depends-on ("defpackage"))
+               ))))
 
 (defsystem ocml-tests
   :depends-on (:ocml :fiveam)
@@ -75,15 +77,9 @@
 	     (:file "sundry" :depends-on ("defpackage"))
 	     (:file "apples-suite" :depends-on ("defpackage" "sundry"))
 	     (:file "namespaces" :depends-on ("defpackage" "sundry"))
-	     (:file "translation" :depends-on ("defpackage" "sundry"))))))
-
-(defsystem :ocml-xml-tests
-    :depends-on (:ocml-xml :ocml-tests)
-    :components
-    ((:module :tests :components
-	      ((:file "xml-to-ocml")
-	       ;; (:file "xsd-to-ocml")
-	       ))))
+	     (:file "translation" :depends-on ("defpackage" "sundry"))
+             #+:ocml-with-cxml
+             (:file "xml-to-ocml" :depends-on ("defpackage"))))))
 
 (eval-when (:execute :load-toplevel)
   (handler-case (logical-pathname-translations "ocml")

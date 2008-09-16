@@ -15,6 +15,8 @@
 		     ;; constraints-suite
 		     namespaces-suite
 		     apples-suite
-		     translation-suite))
+		     translation-suite
+                     #+:ocml-with-cxml xml-to-ocml-suite
+                     ))
       (format t "Running ~A: " (symbol-name suite))
       (run! suite))))

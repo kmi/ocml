@@ -2,6 +2,8 @@
 
 (def-suite xml-to-ocml-suite)
 
+(in-suite xml-to-ocml-suite)
+
 (defun ocml-equal? (ocml xml)
   (equal (ocml:repackage ocml :ocml)
 	 (let ((*package* (find-package :ocml)))
