@@ -13,7 +13,9 @@ Dave Lambert <d.j.lambert@open.ac.uk>
     - ASDFification.
     - Automated testing.
     - OCML manual qua manual (much text originally from Enrico Motta).
-    - Namespaces.  Ports to Allegro and SBCL.
+    - Namespaces.
+    - Ports to Allegro and SBCL.
+    - Porting XML/XSD translators to Closure XML.
 
 Enrico Motta <e.motta@open.ac.uk>
 

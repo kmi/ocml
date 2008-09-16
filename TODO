@@ -1,6 +1,6 @@
 * Translation
 
-** OWL
+** To OWL
 
 *** OWL species needs to be specifiable.
 
@@ -8,9 +8,16 @@
 
 Claudio wants them.
 
+** From OWL
+
+Can use Wilbur, SWCLOS, or a homebrew on top of CXML.
+
 ** XML
 
-*** Use Closure XML.
+*** Globals
+
+Yuck!  Try not to use them.  As a first step, use lets in
+generate-instances-from-xml and process-node instead of setf.
 
 * Bugs
 
