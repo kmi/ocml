@@ -1,3 +1,5 @@
+;;; Copyright © 2007,2008 The Open University
+
 (in-package #:ocml)
 
 (defmacro with-ocml-thread-safety (&body body)
@@ -199,13 +201,18 @@ ontology-directory."
          #'(lambda (x y)
              (member x (sub-ontologies y)))))
 
-;;;HOME-ONTOLOGY-OF
-;;(defun home-ontology-of (name type)
-;;  (case type
-;;    (class (home-ontology (get-ocml-class name)))
-;;    (instance (home-ontology (find-instance name)))
-;;    (relation (home-ontology (get-relation name)))
-;;    (function (home-ontology (get-function name)))))
+(defun home-ontology-of (name type)
+  (home-ontology (structure-of name type)))
+
+(defun structure-of (name type)
+  "Get the Lisp-level OCML object that is identified by the OCML name
+NAME, and TYPE."
+  (ecase type
+    (class (get-ocml-class name))
+    (function (get-function name))
+    (instance (find-instance name))
+    (ontology (get-ontology name))
+    (relation (get-relation name))))
 
 (defmethod print-object ((ontology ocml-ontology) stream)
   (format stream "#<~S ~S>"
