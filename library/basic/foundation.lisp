@@ -29,18 +29,19 @@
    :iff-def (or (= ?x nil)
                 (== ?x (?a . ?b))))
 
-;;;HOME-ONTOLOGY-OF
-;;;(def-function home-ontology-of (?thing ?type)
-;;;  :lisp-fun #'(lambda (x y)
-;;;                (name (home-ontology-of x y))))
+(def-function home-ontology-of-structure (?thing)
+  :lisp-fun #'(lambda (x)
+                (name (home-ontology x))))
 
+(def-function structure (?name ?type)
+  "Get the Lisp-level structure of type ?TYPE, named ?NAME."
+  :lisp-fun #'(lambda (name type)
+                (structure-of name type)))
 
-(def-function home-ontology-of-structure (?thing )
-  :lisp-fun #'(lambda (x )
-             (name (home-ontology x ))))
+(def-function home-ontology (?structure)
+  "Find the home ontology of ?STRUCTURE."
+  :lisp-fun #'home-ontology)
 
-
-
-
-
- 
+(def-function namespace-iri (?ontology-structure)
+  "Get the namespace IRI of ?ONTOLOGY-STRUCTURE."
+  :lisp-fun #'namespace-uri-of)
