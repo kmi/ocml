@@ -1,11 +1,18 @@
 # Backups
 *~
 
-# Compiled Lisp code
+# Lispworks object files
 *.fsl
 *.ofasl
 *.ufasl
 *.xfasl
+
+# CLISP object files
+*.fas
+*.lib
+
+# SBCL object files
+*.fasl
 
 # Texinfo dregs from the manual
 doc/*.aux
