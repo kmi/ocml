@@ -241,6 +241,7 @@ is the external, rather than internal, name of the class."
 ;; definition is accepted.
 (defmethod
     #+:allegro mop:validate-superclass
+    #+:clisp clos:validate-superclass
     #+:lispworks clos::validate-superclass
     #+:sbcl sb-mop:validate-superclass
     ((class instances-meta) (superclass standard-class))
@@ -743,7 +744,8 @@ local."
 (defun redefinition-warning? (condition)
   "Check if CONDITION is a warning about redefinition."
   #+lispworks5 (string= "~S defined more than once in ~A."
-                        (simple-condition-format-control condition)))
+                        (simple-condition-format-control condition))
+  #-:lispworks5 (declare (ignore condition)))
 
 (defun do-class-definition (name superclasses instance-var documentation
                             class-slots relation-spec)
@@ -1060,11 +1062,11 @@ A different internal name will be generated..."
 ;                                   (direct-domain-superclasses  class))))))
 
 (defun update-subclasses (class slots-to-recompute lost-slots);;;; new-supers lost-supers)
-  (loop 
-        with subclasses = (remove-duplicates         ;;;Get all subclasses (including the indirect ones)
+  (loop with subclasses =
+       (remove-duplicates         ;;;Get all subclasses (including the indirect ones)
                            (subclasses class))
-	while subclasses
         for subclass = (pick-next-subclass subclasses)
+	while subclasses
         do
 	(redefine-subclass-after-class-update subclass slots-to-recompute lost-slots) 
 	(setf subclasses (remove subclass subclasses))))

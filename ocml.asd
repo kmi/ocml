@@ -5,6 +5,10 @@
 
 (in-package #:ocml-system)
 
+;;; We need CLISP to be as ANSI compatible as it can be.  In
+;;; particular, not doing this breaks a lot of logical pathname stuff.
+#+:clisp (setf custom:*ansi* t)
+
 ;;; Enable source location recording in Lispworks 5.
 #+:lispworks5 (pushnew :lispworks-dspec *features*)
 
@@ -34,7 +38,7 @@
                (:file "basic" :depends-on ("defpackage" "globals" "theories"))
                (:file "constraints" :depends-on ("defpackage"))
                (:file "control" :depends-on
-                      ("defpackage" "basic" "domain" "io" "parser"
+                      ("defpackage" "basic" "domain" "io" "parser" "relations"
                                     "slot-renaming" "top"))
                (:file "delete-things" :depends-on ("defpackage" "relations"))
                (:file "describe" :depends-on ("defpackage"))
@@ -85,9 +89,11 @@
   (handler-case (logical-pathname-translations "ocml")
     ;; ANSI says simple-type-error, but some folks can't seem to read
     ;; :-|
-    ( #-(or :allegro :lispworks) simple-type-error
+    ( #-(or :allegro :clisp :lispworks) simple-type-error
       #+:allegro type-error
-      #+:lispworks simple-error (e)
+      #+:clisp simple-error
+      #+:lispworks simple-error
+      (e)
       (declare (ignore e))
       (setf (logical-pathname-translations "ocml")
 	    `(("ocml:library;**;*.*.*"

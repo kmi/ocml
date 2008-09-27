@@ -1,6 +1,6 @@
-;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Package: ocml;   -*-
+;;; Copyright © The Open University
 
-(in-package ocml)
+(in-package #:ocml)
 
 (defun and-expression? (exp)
   (and (listp exp)

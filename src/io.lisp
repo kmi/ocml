@@ -203,7 +203,9 @@ if it can be found, or NIL."
 (defun find-truename-ci (path ext)
   "Return the local name of EXT in directory in PATH where the local
   matches EXT, ignoring case."
-  (let* ((paths (directory (merge-pathnames path "*")))
+  (let* ((paths (directory
+                 #-:clisp (merge-pathnames path "*")
+                 #+:clisp (logical-pathname (format nil "~A**;" path))))
          (finds (remove-if #'(lambda (path)
                                (not (string-equal ext (file-basename path))))
                            paths))

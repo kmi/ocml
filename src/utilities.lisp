@@ -329,12 +329,18 @@
 
 (defun direct-subclasses (class)
    #+:allegro (clos:class-direct-subclasses class)
+   #+:clisp (clos:class-direct-subclasses class)
    #+:lispworks (clos::class-direct-subclasses class)
    #+:mcl (ccl::class-direct-subclasses class)
    #+:sbcl (sb-pcl:class-direct-subclasses class))
 
 (defun (setf direct-subclasses) (value class)
   #+:allegro (setf (slot-value class 'excl::direct-subclasses) value)
+  #+:clisp (let ((current (clos:class-direct-subclasses class)))
+             (dolist (r (set-difference current value))
+               (clos:remove-direct-subclass class r))
+             (dolist (a (set-difference value current))
+               (clos:add-direct-subclass class a)))
   #+:lispworks (setf (clos::class-direct-subclasses class) value)
   #+:mcl (setf (slot-value class 'CCL::DIRECT-SUBCLASSES) value)
   #+:sbcl (setf (slot-value class 'sb-pcl::direct-subclasses) value))
@@ -343,6 +349,7 @@
 (defun subclasses (class)
   (let ((subclasses 
          #+:allegro (clos:class-direct-subclasses class)
+         #+:clisp (clos:class-direct-subclasses class)
          #+:lispworks (clos::class-direct-subclasses class)
          #+:mcl (ccl::class-direct-subclasses class)
 	 #+:sbcl (sb-pcl:class-direct-subclasses class)))
@@ -355,12 +362,14 @@
 
 (defun direct-superclasses (class &optional (structure (find-class class)))
   #+:allegro (clos:class-direct-superclasses structure)
+  #+:clisp (clos:class-direct-superclasses structure)
   #+:lispworks (clos::class-direct-superclasses structure)
   #+:mcl (ccl::class-direct-superclasses structure)
   #+:sbcl (sb-pcl:class-direct-superclasses structure))
 
 (defun create-directory (directory)
   #+:allegro (excl:make-directory directory)
+  #+:clisp (error "Function undefined.")
   #+:lispworks (ensure-directories-exist directory)
   #+:mcl (if (CCL::DIRECTORY-EXISTS-P directory)
 	     directory
@@ -378,6 +387,7 @@
 
 (defun class-precedence-list (class)
   #+allegro (clos:class-precedence-list class)
+  #+:clisp (clos:class-precedence-list class)
   #+:lispworks (clos:class-precedence-list class)
   #+:mcl (ccl:class-precedence-list class)
   #+:sbcl (sb-pcl:class-precedence-list class))

@@ -47,9 +47,9 @@
 (defun read-wsml-identifier (stream char1 char2)
   (declare (ignore char1 char2))
   (let ((iri (char= #\" (peek-char nil stream))))
-    (ocml-encode-symbol (if iri
-			    (read stream)
-			    (read-ocml-symbolic-thing stream)))))
+    (values (ocml-encode-symbol (if iri
+                                    (read stream)
+                                    (read-ocml-symbolic-thing stream))))))
 
 (defun read-ocml-symbolic-thing (stream)
   (flet ((peek ()
