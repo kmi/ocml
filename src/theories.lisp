@@ -17,7 +17,8 @@ threads."
 	(*bc-rules* *bc-rules*)
 	(*domain-classes* *domain-classes*)
 	(*namespace-prefixes* (copy-alist *namespace-prefixes*))
-	(*muffle-warnings* *muffle-warnings*))
+        (*muffle-warnings* *muffle-warnings*)
+        (*interactive-finalisation* *interactive-finalisation*))
     (funcall closure)))
 
 (defmacro with-ontology ((ontology) &body body)
@@ -320,8 +321,9 @@ NAME, and TYPE."
 			       ;; rdf-namespace-label 
 			       rdf-namespace-url
 			       namespace-uri)
-  (let ((ontology (get-ontology name))
-        namespace-prefixes)
+  (let* ((*interactive-finalisation* nil)
+         (ontology (get-ontology name))
+         namespace-prefixes)
     (when (and (eq includes nil)
 	       (eq do-not-include-base-ontology? nil))
       (setf includes (List *base-ontology-name*)))

@@ -118,14 +118,6 @@ I prefer deleting get-ocml-class.  It's in the OCML package, we're
 dealing with OCML, so it's pretty redundant.  ‘domain’ makes more
 sense.
 
-*** Use a flag to decide if finlise-ontology gets called
-
-I.e. set the flag during ontology loading, but otherwise call
-finlise-ontology after every def-class, def-foo, whatever.
-
-Enrico requested this because interactive work is one of OCML's
-strengths.
-
 *** ensure-vanilla-class/2 can be merged
 
 *** webonto goodies

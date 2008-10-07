@@ -710,8 +710,7 @@ local."
 
 ;;; Public interface to class creation.
 (defun define-class (name &key documentation superclasses slots)
-  (define-domain-class name superclasses  slots documentation nil nil)
-  (finalise-ontology))
+  (define-domain-class name superclasses  slots documentation nil nil))
 
 ;;; This is the entry point for class definition
 (defun define-domain-class (name superclasses instance-var  documentation
@@ -914,7 +913,8 @@ A different internal name will be generated..."
         #+lispworks
         (ensure-all-superclasses-know-me new-class supers)
         (propagate-new-def-to-sub-ontologies name new-class 'class)
-        new-class))))
+        new-class)))
+  (maybe-finalise-ontology))
 
 (defun standardise-superclasses (supers)
   (loop with result = nil
@@ -1360,6 +1360,10 @@ relevant slot values"
 ;; only after the ontology's contents have been seen.
 (defun finalise-ontology ()
   (compute-slot-type-specifiers *current-ontology*))
+
+(defun maybe-finalise-ontology ()
+  (when *interactive-finalisation*
+    (finalise-ontology)))
 
 (defun compute-slot-type-specifiers (ontology)
   "Once the ontology is loaded, compute slot types from the slot type specifiers."

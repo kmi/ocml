@@ -70,6 +70,11 @@
 
 ;;; }}}
 
+(defvar *interactive-finalisation* t
+  "Should we call finalise-ontology after every define-* ?  This is
+  disabled during the loading of ontologies, since we can call
+  finalise-ontology once after all the files have been loaded.")
+
 (defvar *default-inheritance* :supersede)
 
 (defvar *current-environment*)
