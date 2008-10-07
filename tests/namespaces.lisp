@@ -10,12 +10,16 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defparameter *test-namespace-uri1* "http://www.example.com/ontology/One#")
   (defparameter *test-namespace-uri2* "http://www.acme.com/ontology/Two#")
-  ;; DEF-ONTOLOGY doesn't evaluate its :namespace-uri argument, so we
-  ;; have to paste in the actual string.  XXX This needs fixing!
-  (ocml::def-ontology ocml::ontology-one
-      :namespace-uri "http://www.example.com/ontology/One#" :files ())
-  (ocml::def-ontology ocml::ontology-two
-      :namespace-uri "http://www.acme.com/ontology/Two#" :files ()))
+  ;; We have to muffle the warnings about no namespace prefix being
+  ;; defined, or SBCL will refuse to compile the file from the command
+  ;; line, breaking the test suite.
+  (ocml::with-muffled-warnings (t)
+    ;; DEF-ONTOLOGY doesn't evaluate its :namespace-uri argument, so we
+    ;; have to paste in the actual string.  XXX This needs fixing!
+    (ocml::def-ontology ocml::ontology-one
+        :namespace-uri "http://www.example.com/ontology/One#" :files ())
+    (ocml::def-ontology ocml::ontology-two
+        :namespace-uri "http://www.acme.com/ontology/Two#" :files ())))
 
 (test namespace-registration-test
   (finishes (ocml:register-namespace "uno" 'ocml::ontology-one))
