@@ -24,6 +24,7 @@
 * Installation::                
 * Domain Modelling in OCML::    
 * Rule-based reasoning::        
+* Working with OCML::           
 * Modelling issues::            
 * Functional View of OCML::     
 * Reference::                   
@@ -1025,7 +1026,7 @@ associated with has-project and the relevant backward rules13 - and
 will then try these in sequence, to generate one or more solutions to
 the query.
 
-@node Rule-based reasoning, Modelling issues, Domain Modelling in OCML, Top
+@node Rule-based reasoning, Working with OCML, Domain Modelling in OCML, Top
 @chapter Rule-based reasoning
 @cindex rule
 @findex def-rule
@@ -1182,7 +1183,43 @@ Enable and disable the automatic triggering of forward chaining rules.
 Turn on and off the tracing of forward chaining rules.
 @end deffn
 
-@node Modelling issues, Functional View of OCML, Rule-based reasoning, Top
+@node Working with OCML, Modelling issues, Rule-based reasoning, Top
+@chapter Working with OCML
+
+This chapter covers the non-modelling aspects of OCML, such as loading
+ontologies.
+
+@menu
+* Loading ontologies::          
+@end menu
+
+@node Loading ontologies,  , Working with OCML, Working with OCML
+@section Loading ontologies
+
+@deffn Function load-ontology-by-name ontology-name
+
+Searches the @code{*ontology-path*} for a directory named
+@var{ontology-name}, and proceeds to load the ontology.
+@end deffn
+
+@deffn Function download-ontology-by-url url
+
+Downloads the OCML ontology available at @var{url}.  @var{url} must be
+a directory (with a trailing ‘/’) containing an OCML ontology.  In
+particular, there must be a @file{load.lisp} file in @var{url} which
+holds a @code{def-ontology} form naming the files comprising the
+ontology.  A directory named after the ontology is created in
+directory identified in @code{*web-library-pathname*}, and the
+ontology stored there.  The ontology can then be loaded normally with
+@code{load-ontology-by-name}.
+
+This function is available only if the
+Drakma@footnote{@url{http://weitz.de/drakma/}} HTTP library is
+available.
+@end deffn
+
+
+@node Modelling issues, Functional View of OCML, Working with OCML, Top
 @chapter Modelling issues
 
 @menu
