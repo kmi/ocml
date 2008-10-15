@@ -49,12 +49,13 @@
 
 
 (defun task-class-or-instance? (name)
-  (if (and (get-ocml-class name)
-           (or (eq name 'task)
-               (holds? 'subclass-of name 'task)))
-    :class
-    (when (holds? 'instance-of name 'task)
-      :instance)))
+  (cond ((and (get-ocml-class name)
+              (or (eq name 'task)
+                  (holds? 'subclass-of name 'task)))
+         :class)
+        ((holds? +instance-of-slot+ name 'task)
+         :instance)
+        (t nil)))
 
 
 

@@ -27,6 +27,10 @@
 
 (defvar *ocml-top-class* 'ocml-thing)
 
+(define-constant +subclass-of-slot+ 'subclass-of)
+
+(define-constant +instance-of-slot+ 'instance-of)
+
 (define-constant +legal-ocml-slot-options+
   '(:default-value :value :type  :inheritance :min-cardinality
     :max-cardinality :cardinality :documentation))

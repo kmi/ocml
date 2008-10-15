@@ -141,27 +141,31 @@
 (defmacro tell (exp &optional documentation)
   `(tell1 ',exp ,documentation))
 
-(defun tell1 (exp &optional documentation env &aux new-form fexp)
-  (multiple-value-bind (pred-structure args original-form)
-                       (parse-assertion exp env)
-    (setf new-form (cons (name pred-structure) args))
-    (when (tracing-this-assertion? new-form)
-      (print-with-spaces (1+ *task-level*) "Asserting ~S in ontology ~s" new-form
-                         *current-ontology*))
-    (cond ((setf fexp (downward-add-exp pred-structure))
-           (trigger-downward-mapping-exp fexp args))
-          ((slotp pred-structure)
-           (maybe-add-slot-assertion pred-structure args original-form))
-          ((get-domain-class (name pred-structure))
-           ;;;; (= 1 (length args)))
-           (define-domain-instance  (car args) (car original-form)
-             (or documentation "")
-             (pairify (cdr args))))
-          (t
-           (maybe-add-relation-instance pred-structure args original-form documentation)))
-    new-form))
-
-
+(defun tell1 (exp &optional documentation env)
+  (let (new-form fexp)
+    (multiple-value-bind (pred-structure args original-form)
+        (parse-assertion exp env)
+      (setf new-form (cons (name pred-structure) args))
+      (when (tracing-this-assertion? new-form)
+        (print-with-spaces
+         (1+ *task-level*) "Asserting ~S in ontology ~s"
+         new-form *current-ontology*))
+      (when (setf fexp (downward-add-exp pred-structure))
+        (trigger-downward-mapping-exp fexp args))
+      (cond
+        ((eq +instance-of-slot+ (name pred-structure))
+         (define-domain-instance (car args) (second args)
+           (or documentation "")))
+        ((slotp pred-structure)
+         (maybe-add-slot-assertion pred-structure args original-form))
+        ((get-domain-class (name pred-structure))
+         (define-domain-instance  (car args) (car original-form)
+           (or documentation "")
+           (pairify (cdr args))))
+        (t
+         (maybe-add-relation-instance
+          pred-structure args original-form documentation)))
+      new-form)))
 
 (defun add-assertion (predicate args)
   (tell1 (cons predicate args)))
@@ -178,24 +182,29 @@
 (defmacro unassert (exp)
   `(unassert1 ',exp))
 
-
-;;;UNASSERT1
-(defun unassert1 (exp &optional env ;;;;;no-checks 
-                      &aux class fexp)
-  (multiple-value-bind (pred-structure args )
-                       (parse-assertion-to-delete exp env)
-    (when pred-structure
-      (cond ((setf fexp (downward-remove-exp pred-structure))
-             (trigger-downward-mapping-exp fexp args))
-	    ((slotp pred-structure)
-             (maybe-delete-slot-assertion pred-structure args exp)) ;;;no-checks))
-            ((setf class (get-domain-class (car exp)))
-             (if (= 1 (length args))
+(defun unassert1 (exp &optional env)
+  (let (class)
+    (multiple-value-bind (pred-structure args )
+        (parse-assertion-to-delete exp env)
+      (when pred-structure
+        (let ((fexp (downward-remove-exp pred-structure)))
+          (when fexp
+            (trigger-downward-mapping-exp fexp args)))
+        (cond
+          ((eq +instance-of-slot+ (name pred-structure))
+           (if (setf class (get-domain-class (second args)))
+               (remove-domain-instance-gen (car args) (second args) class)
+               (error "~S is not a domain class" (second args))))
+          ((slotp pred-structure)
+           (maybe-delete-slot-assertion pred-structure args exp))
+          ((setf class (get-domain-class (car exp)))
+           (if (= 1 (length args))
                (remove-domain-instance-gen  (car args) (car exp) class)
-               (remove-instances-matching-spec class (car args)(cdr args) (name pred-structure))))
-	    (t
-             (remove-relation-instance-gen pred-structure args
-                                           (some #'variable? args)))))))
+               (remove-instances-matching-spec class (car args) (cdr args)
+                                               (name pred-structure))))
+          (t
+           (remove-relation-instance-gen pred-structure args
+                                         (some #'variable? args))))))))
 
 
 (defun compile-rule-packets (&optional (packets :all))
