@@ -709,8 +709,10 @@ local."
     (format stream "#<~S ~S>" (name (parent-class instance)) name)))
 
 ;;; Public interface to class creation.
-(defun define-class (name &key documentation superclasses slots)
-  (define-domain-class name superclasses  slots documentation nil nil))
+(defun define-class (name &key documentation superclasses class-slots)
+  (if documentation
+      (define-domain-class name superclasses documentation class-slots nil nil)
+      (define-domain-class name superclasses class-slots nil nil nil)))
 
 ;;; This is the entry point for class definition
 (defun define-domain-class (name superclasses instance-var  documentation
