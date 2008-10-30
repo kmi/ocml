@@ -306,7 +306,8 @@ NAME, and TYPE."
   ""
   (def-ontology-internal2 name documentation
                           :includes includes
-                          :namespace-uri namespace-iri))
+                          :namespace-uri namespace-iri
+                          :files '()))
 
 (defun def-ontology-internal2 (name documentation &key
 			       includes 
