@@ -302,12 +302,13 @@ NAME, and TYPE."
                  *lisp-suffix*))
 
 (defun define-ontology (name &key (documentation "")
-                        includes namespace-iri)
-  ""
+                        includes namespace-iri continuation)
+  "CONTINUATION is a thunk which is called to introduce definitions."
   (def-ontology-internal2 name documentation
                           :includes includes
                           :namespace-uri namespace-iri
-                          :files '()))
+                          :files '()
+                          :content-continuation continuation))
 
 (defun def-ontology-internal2 (name documentation &key
 			       includes 
@@ -321,7 +322,8 @@ NAME, and TYPE."
 			       (select-this-ontology? t)
 			       ;; rdf-namespace-label 
 			       rdf-namespace-url
-			       namespace-uri)
+			       namespace-uri
+                               content-continuation)
   (let* ((*interactive-finalisation* nil)
          (ontology (get-ontology name))
          namespace-prefixes)
@@ -345,6 +347,8 @@ NAME, and TYPE."
                                namespaces)))
         (ocml-warn "No namespace prefix given for ontology ~A.  This may cause problems later." name)))
     (setf includes (remove-subsumed-ontologies (mapcar #'get-ontology includes)))
+    (unless content-continuation
+      (setf content-continuation (load-files-thunk pathname files)))
     (with-muffled-warnings ()
       (if ontology
           (redefine-ontology name ontology documentation includes  type 
@@ -355,13 +359,15 @@ NAME, and TYPE."
                              rdf-namespace-url
                              :namespace-uri namespace-uri
                              :namespaces namespaces
-                             :namespace-prefixes namespace-prefixes)
+                             :namespace-prefixes namespace-prefixes
+                             :content-continuation content-continuation)
           (new-ontology name documentation includes type version pathname
                         author allowed-editors files select-this-ontology?
                         ;; rdf-namespace-label 
                         rdf-namespace-url :namespace-uri namespace-uri
                         :namespaces namespaces
-                        :namespace-prefixes namespace-prefixes)))))
+                        :namespace-prefixes namespace-prefixes
+                        :content-continuation content-continuation)))))
 
 (defun new-ontology (name  documentation includes  type version
                            pathname author allowed-editors
@@ -369,7 +375,8 @@ NAME, and TYPE."
                           ;;; rdf-namespace-label 
                            rdf-namespace-url
 		     &key namespace-uri
-                     namespaces namespace-prefixes)
+                     namespaces namespace-prefixes
+                     content-continuation)
   (let* ((ontology (make-instance 'ocml-ontology
                      :name name
                      :documentation documentation
@@ -385,7 +392,8 @@ NAME, and TYPE."
                      :pathname pathname
                      :type type
 		     :namespace-uri namespace-uri)))
-    (finalize-ontology name ontology includes files pathname select-this-ontology? t)))
+    (finalize-ontology name ontology includes content-continuation
+                       select-this-ontology? t)))
 
 (defun redefine-ontology (name ontology  new-documentation new-includes
 			  new-type new-version
@@ -395,7 +403,8 @@ NAME, and TYPE."
 			  new-rdf-namespace-url
 			  &key
 			  namespace-uri
-                          namespaces namespace-prefixes)
+                          namespaces namespace-prefixes
+                          content-continuation)
   (with-slots (includes documentation version
                         ontology-type author allowed-editors pathname 
                         ontology-files
@@ -422,10 +431,9 @@ NAME, and TYPE."
           rdf-namespace-url new-rdf-namespace-url)
     (setf (namespaces-of ontology) namespaces)
     (setf (namespace-prefixes-of ontology) namespace-prefixes)
-    (finalize-ontology name ontology  new-includes new-files new-pathname 
+    (finalize-ontology name ontology new-includes content-continuation
                        select-this-ontology? nil)
-    (reload-dependent-ontologies  
-     (sorted-dependent-ontologies ontology)))) ;make sure the order is correct.
+    (reload-dependent-ontologies (sorted-dependent-ontologies ontology))))
 
 
 (defun reload-dependent-ontologies (dep-ontologies)
@@ -441,15 +449,13 @@ NAME, and TYPE."
                 includes)
             (setf includes new-dep-onto-includes
                   directory (make-ontology-directory))
-            (finalize-ontology (name dep-onto) dep-onto includes 
-                               (ontology-files dep-onto)
-                               (ontology-pathname dep-onto)
+            (finalize-ontology (name dep-onto) dep-onto includes
+                               (load-files-thunk (ontology-pathname dep-onto)
+                                                 (ontology-files dep-onto))
                                nil nil))))
 
-
-(defun finalize-ontology (name ontology includes files pathname
-                               select-this-ontology?
-                               new?)
+(defun finalize-ontology (name ontology includes content-thunk
+                          select-this-ontology? new?)
   (setf (ontology-default-fc-rule-packet (ontology-directory ontology))
         (make-default-rule-packet ontology))
   (loop for sub in includes
@@ -467,7 +473,7 @@ NAME, and TYPE."
     ;; new one, we must call SWITCH-TO-ONTOLOGY to force the special
     ;; variables to be rebound to the new values.
     (switch-to-ontology ontology)
-    (load-ontology-files files pathname)
+    (funcall content-thunk)
     (finalise-ontology))
   (when select-this-ontology?
     ;; And again, because the ontology may already have been selected,
@@ -475,6 +481,12 @@ NAME, and TYPE."
     ;; be updated.
     (switch-to-ontology ontology))
   ontology)
+
+(defun load-files-thunk (pathname files)
+  "Return a function which loads OCML ontology FILES from PATHNAME."
+  (lambda ()
+    (let ((*package* (find-package :ocml)))
+      (load-ontology-files files pathname))))
 
 ;(defun maybe-set-rdf-related-information (name ontology)
 ;  (let ((rdf-namespace-label (ontology-rdf-namespace-label ontology)))
