@@ -14,10 +14,6 @@
   (when load-base-ontology?
     (load-base-ontology)))
 
-(defun welcome ()
-  (ocml-output "~2%Welcome to OCML version ~A.~%" +ocml-version+)
-  (values))
-
 (defmacro def-class (name &optional (superclasses)  instance-var  documentation
                           class-slots &body relation-spec)
   `(define-domain-class ',name ',superclasses ',instance-var  ',documentation
@@ -740,7 +736,3 @@ soon as they are created."
                          increment
                          stream
                          (- level 1)))))
-          
-
-
-
