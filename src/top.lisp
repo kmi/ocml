@@ -2,9 +2,13 @@
 
 (in-package "OCML")
 
-(defun initialize-ocml (&optional (load-base-ontology? t))
+(defun initialize-ocml (&optional (load-base-ontology? t)
+                        &key force-init)
+  (when (and *ocml-initialized* (not force-init))
+    (error "Refusing to reinitialise OCML."))
   (ocml-output "~%Initializing OCML " +ocml-version+)
-  (setf *all-ontologies* nil)
+  (setf *current-ontology* nil
+        *all-ontologies* nil)
   (setup-ontology-path)
   (setf *ocml-initialized* t)
   (when load-base-ontology?
