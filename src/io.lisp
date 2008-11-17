@@ -131,6 +131,7 @@
 ;;; {{{ Ontology file search and loading
 
 (defun setup-ontology-path ()
+  (setf *ontology-path* nil)
   (dolist (type +ontology-types+)
     (push (logical-pathname
            (format nil "~A~A;" ocml::*library-pathname* type))
