@@ -32,7 +32,13 @@
                     x
                     (eq (parent-class y) class)))))
 
-
+(defun find-current-instance-of-class (class name)
+  "Return an instance (not necessarily a direct one) of a class."
+  (or (find-current-direct-instance class name)
+      (loop for subclass in (subclasses  class)
+            for result = (find-current-instance-of-class subclass name)
+            until result
+            finally (return result))))
 
 ;;;FIND-ALL-CURRENT-INSTANCES-OF-CLASS-STRUCTURE-NAMED-X ---Returns an instance (not necessarily a direct instance!!!) of a class.
 (defun find-all-current-instances-of-class-structure-named-x (class name)
@@ -199,7 +205,6 @@ is the external, rather than internal, name of the class."
   (filter classes
           #'(lambda (class)
               (eq class (get-domain-class (name class))))))
-
 
 ;;;FILTER-CURRENT-INSTANCES - filter the instances in a list which are 
 ;;;in one of teh current ontologies and are not overridden
