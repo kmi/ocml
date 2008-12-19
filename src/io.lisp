@@ -136,6 +136,7 @@
     (push (logical-pathname
            (format nil "~A~A;" ocml::*library-pathname* type))
           *ontology-path*))
+  #+:ocml-with-drakma
   (push *web-library-pathname* *ontology-path*))
 
 (defun load-ontology-by-name (ontology-name)
