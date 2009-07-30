@@ -295,8 +295,6 @@ displayed."
       (describe-relation-internal name rel)
       (ocml-warn "~s is not a relation" name))))
 
-
-#|
 (defun describe-relation-internal (name rel)
   (let ((flag t))
     (format t "~%Relation ~S ~s~%" name (schema rel))
@@ -304,59 +302,6 @@ displayed."
     (if (ocml-documentation rel)
       (format t "~% Documentation: ~s~%" (ocml-documentation rel))
       (setf flag nil))
-    
-    (when (local-slot-of rel)
-      (unless flag
-        (format t "~%"))
-      (format t "~% Local slot of: ~S~{, ~S~}"
-              (name (car (local-slot-of rel)))
-              (mapcar #'name  (cdr (local-slot-of rel)))))
-    (when (slot-of rel)
-      (Let ((non-local-slots (set-difference (slot-of rel)(local-slot-of rel))))
-        (when non-local-slots
-          (format t "~2% Also slot of: ~S~{, ~S~}"
-                  (name (car non-local-slots))
-                  (mapcar #'name (cdr non-local-slots))))))
-    (unless flag
-      (format t "~%"))
-    (when (constraint rel)
-      (format t "~% Constraints: ~s~%" (constraint rel)))
-    
-    (when (iff-def rel)
-      (format t "~% Iff-def: ~s~%" 
-              (car (bc-clause-antecedents  (iff-def rel)))))
-    
-    (when (sufficient rel)
-      (format t "~% Sufficient: ~s~%"    
-              (car (bc-clause-antecedents (sufficient rel)))))
-    (when (defined-by-rule rel)
-      (format t "~% Associated rules: ~S~{, ~S~}~%"
-                  (name (car (defined-by-rule rel)))
-                  (mapcar #'name
-                          (cdr (defined-by-rule rel)))))
-                           
-    (when (prove-by rel)
-      (format t "~% Prove by: ~s~%"  (car (bc-clause-antecedents
-                                           (prove-by rel)))))
-    
-    (when (lisp-fun rel)
-      (format t "~% Prove by: ~s~%" (lisp-fun rel)))
-    
-    (when (relation-instances rel)
-      (format t "~% Relation Instances: ~S~{, ~S~}"
-             (args (car (relation-instances rel)))
-              (mapcar #'args (cdr (relation-instances rel)))))))
-|#
-
-;;
-(defun describe-relation-internal (name rel)
-  (let ((flag t))
-    (format t "~%Relation ~S ~s~%" name (schema rel))
-    (format t "~% Ontology: ~s~%" (name (home-ontology rel)))
-    (if (ocml-documentation rel)
-      (format t "~% Documentation: ~s~%" (ocml-documentation rel))
-      (setf flag nil))
-   
     (when (local-slot-of rel)
       (unless flag
         (format t "~%"))
