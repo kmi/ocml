@@ -923,3 +923,15 @@ non-nil."
 
 (defun get-direct-relation-instances (structure)
   (relation-instances structure))
+
+;;; XXX This is currently only useful for helping
+;;; #'copy-hash-table-entry merge the rules from multiple relations.
+(defun copy-relation (original)
+  "Produce a new relation mirroring but not sharing state with ORIGINAL."
+  (let ((copy (make-instance 'ocml-relation)))
+    (setf (arity copy) (arity original)
+	  (schema copy) (schema original)
+	  (avoid-infinite-loop copy) (avoid-infinite-loop original)
+	  (home-ontology copy) *current-ontology*
+	  (name copy) (name original))
+    copy))

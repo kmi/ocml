@@ -553,38 +553,38 @@ keeping old definition, inherited from ontology ~S"
                (copy-hash-table-entry  to-table key value  from-ontology to-ontology))
            from-table))
 
-(defun copy-hash-table-entry (to-table key value  from-ontology to-ontology)
-  (multiple-value-bind (old flag)
+(defun copy-hash-table-entry (to-table key value from-ontology to-ontology)
+  (multiple-value-bind (current-value already-present?)
       (gethash key to-table)
-    (cond (flag
-           (unless (eq (home-ontology value)
-                       (home-ontology old))
-             (let ((winner (select-most-specific-definition old value (home-ontology old)
-                                                            (home-ontology value))))
-               (cond (winner
-                      (ocml-warn
-                         "Found conflict when importing definitions from ontology ~S to ontology ~S.....
-a definition for ~A ~S  already exists....keeping most specific definition, inherited from ontology ~S"
-                         (name from-ontology)
-                         (name to-ontology)
-                         (type-of old)
-                         key
-                         (name (home-ontology winner)))
-                        (setf (gethash key to-table)
-	                      winner))
-                     (t
-                      (ocml-warn
-                       "Found conflict when importing definitions from ontology ~S to ontology ~S.....
-a definition for ~A ~S  already exists....keeping old definition, inherited from ontology ~S"
-                       (name from-ontology)
-                       (name to-ontology)
-                       (type-of old)
-                       key
-                       (name (home-ontology old))))))))
-          (t
-	   (setf (gethash key to-table)
-	         value)))))
-           
+    (if already-present?
+	(unless (eq (home-ontology value) (home-ontology current-value))
+	  (let ((winner (select-most-specific-definition
+			 current-value value (home-ontology current-value) (home-ontology value))))
+	    (cond (winner
+		   (ocml-warn
+		    "Conflict importing definitions from ontology ~A to ontology ~A: definition for ~A ~S already exists.  Keeping most specific definition, from ontology ~A."
+		    (name from-ontology) (name to-ontology) (type-of current-value)
+		    key (name (home-ontology winner)))
+		   (setf (gethash key to-table) winner))
+		  ((and (not winner)
+			(eq (type-of current-value) 'ocml-relation)
+			(defined-by-rule current-value)
+			(defined-by-rule value))
+		   (ocml-warn "Conflict importing definitions from ontology ~A to ontology ~A: definition for ~A ~A already exists.  Merging rules."
+			      (name from-ontology) (name to-ontology) (type-of current-value) key)
+		   (let ((rel (copy-relation current-value)))
+		     (dolist (r (defined-by-rule current-value))
+		       (pushnew r (defined-by-rule rel)))
+		     (dolist (r (defined-by-rule value))
+		       (pushnew r (defined-by-rule rel)))
+		     (setf (gethash key to-table) rel)))
+		  (t
+		   (ocml-warn
+		    "Conflict importing definitions from ontology ~A to ontology ~A: definition for ~A ~A already exists.  Keeping current definition, inherited from ontology ~A."
+		    (name from-ontology) (name to-ontology) (type-of current-value)
+		    key (name (home-ontology current-value)))))))
+	(setf (gethash key to-table) value))))
+
 (defun select-ontology (name)
   (Let ((ontology (get-ontology name)))
     (unless ontology
