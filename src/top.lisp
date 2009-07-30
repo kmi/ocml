@@ -15,7 +15,7 @@
     (load-base-ontology)))
 
 (defmacro def-class (name &optional (superclasses)  instance-var  documentation
-                          class-slots &body relation-spec)
+		     class-slots &body relation-spec)
   `(define-domain-class ',name ',superclasses ',instance-var  ',documentation
      ',class-slots ',relation-spec))
 
@@ -23,15 +23,14 @@
 (editor::setup-indent 'def-class 0 2)
 
 (defmacro def-domain-class (name superclasses &optional instance-var  documentation
-                                 class-slots &rest relation-spec)
+			    class-slots &body relation-spec)
   `(define-domain-class ',name ',superclasses ',instance-var  ',documentation
      ',class-slots ',relation-spec))
 
 #+:lispworks 
 (editor::setup-indent 'def-domain-class 0 2)
 
-(defmacro def-domain-instance (name parent &optional documentation
-                                    slots)
+(defmacro def-domain-instance (name parent &optional documentation slots)
   `(define-domain-instance ', name ',parent ',documentation ',slots))
 
 #+:lispworks 
@@ -44,44 +43,44 @@
 #+:lispworks 
 (editor::setup-indent 'def-instance 0 2)
 
-(defmacro def-relation (name schema &optional  documentation &rest options)
+(defmacro def-relation (name schema &optional  documentation &body options)
   `(define-relation-internal ',name  ',schema ',documentation ',options))
 
 #+:lispworks 
 (editor::setup-indent 'def-relation 0 2)
 
-(defmacro def-relation-instances (&optional documentation &rest instances)
+(defmacro def-relation-instances (&optional documentation &body instances)
   `(def-relation-instances-internal ',documentation ',instances))
 
 #+:lispworks 
 (editor::setup-indent 'def-relation-instances 0 2)
 
-(defmacro def-function (name  schema &optional arrow var  documentation &rest options)
+(defmacro def-function (name  schema &optional arrow var  documentation &body options)
   `(define-function-internal ,name  ,schema ,arrow ,var ,documentation ,@options))
 
 #+:lispworks 
 (editor::setup-indent 'def-function 0 2)
 
-(defmacro def-operator (name  &optional schema documentation &rest options)
+(defmacro def-operator (name  &optional schema documentation &body options)
   `(define-relation-internal ',name  ',schema ',documentation ',options))
 
 #+:lispworks 
 (editor::setup-indent 'def-operator 0 2)
 
-(defmacro def-procedure (name  &optional schema documentation &rest options)
+(defmacro def-procedure (name  &optional schema documentation &body options)
   `(define-procedure-internal ,name  ,schema ,documentation ,@options))
 
 #+:lispworks 
 (editor::setup-indent 'def-procedure 0 2)
 
-(defmacro def-rule (name &optional documentation &rest args)
+(defmacro def-rule (name &optional documentation &body args)
   `(def-rule-internal ',name ',documentation ',args))
 
 #+:lispworks 
 (editor::setup-indent 'def-rule 0 2)
 
 (defmacro def-task (name superclasses &optional instance-var  documentation
-                         class-slots &rest relation-spec)
+                         class-slots &body relation-spec)
   `(def-task-internal ',name ',superclasses ',instance-var  ',documentation
      ',class-slots ',relation-spec))
 
@@ -104,7 +103,7 @@
 (defmacro ensure-ontology (name &optional type pathname)
   `(ensure-ontology-internal ',name ',type ',pathname))
 
-(defmacro def-relation-mapping (relation direction documentation &rest clauses)
+(defmacro def-relation-mapping (relation direction documentation &body clauses)
   `(def-rel-mapping-internal ',relation ',direction ',documentation ',clauses))
 
 
