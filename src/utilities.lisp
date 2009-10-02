@@ -420,3 +420,10 @@
   #+:mcl (ccl::loading-file-source-file))
 ;;  (if (boundp '*load-pathname*)
 ;;    *load-pathname*))
+
+(defun tree-member (el tree &key (test #'equal))
+  (cond ((funcall test el tree)
+	 t)
+	((consp tree)
+	 (or (tree-member el (car tree))
+	     (tree-member el (cdr tree))))))

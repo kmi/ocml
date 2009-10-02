@@ -3,6 +3,7 @@
   (:export #:*load-filename*
            #:*ontology-path*
            #:*pretty-print-namespaces*
+           #:*binding-print-format*
            #:as-ocml
            #:call-with-ocml-thread-safety
            #:call-with-ontology

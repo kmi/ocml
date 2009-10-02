@@ -263,27 +263,34 @@
 ;;;  env (if all is nil and proof succeeds)
 ;;;  :QUIT (if query is t and the user says no more please)
 ;;;  nil (if query is t and the user does not quit)
-(defun *prove (goals &key all query env &aux (root (create-root)))
-  ;;;;(setf goals (filter-holds-kappa-goals goals))
-  (make-child-state root goals env)
-  (multiple-value-bind (proved-state binding)
-                       (prove-root root)
-    (if proved-state
-      (cond (query 
-             (format t "~2%Solution: ~s  " (instantiate goals binding))
-             (if (or all (y-or-n-p "~2%More solutions? "))
-               (*prove-aux goals root proved-state nil query all)
-               :quit))
-          (all
-           (*prove-aux goals root proved-state (list binding) query all))
-          (t
-           (values binding 
-                   #'(lambda () 
-                       (*prove-aux goals root proved-state )))))
-      (if (and query (not *inside-or-query*))
-        (format t "~2%No more solutions")
-        :fail))))
+(defun *prove (goals &key all query env)
+  (let  ((root (create-root)))
+    (make-child-state root goals env)
+    (multiple-value-bind (proved-state binding)
+	(prove-root root)
+      (if proved-state
+	  (cond (query (print-solution goals binding)
+		       (if (or all (y-or-n-p "~2%More solutions? "))
+			   (*prove-aux goals root proved-state nil query all)
+			   :quit))
+		(all
+		 (*prove-aux goals root proved-state (list binding) query all))
+		(t
+		 (values binding 
+			 #'(lambda () 
+			     (*prove-aux goals root proved-state )))))
+	  (if (and query (not *inside-or-query*))
+	      (format t "~2%No more solutions")
+	      :fail)))))
 
+(defun print-solution (goals binding)
+  (ecase *binding-print-format*
+    ((:ocml)
+     (format t "~%Solution: ~S~%" (instantiate goals binding)))
+    ((:prolog)
+     (dolist (b binding)
+       (when (tree-member (car b) goals)
+	 (format t "~S = ~S~%" (car b) (cdr b)))))))
 
 (defun filter-holds-kappa-goals (goals )
   (mapcar #'(lambda (goal)
@@ -313,7 +320,7 @@
     (setf flag (and proved-state (or all query)))
     (when proved-state
         (cond (query 
-               (format t "~2%Solution: ~s  " (instantiate goals binding))
+               (print-solution goals binding)
                (unless (or all (y-or-n-p "~2%More solutions? "))
                  (return :quit)))
               (all
@@ -322,8 +329,7 @@
     finally
       (cond (query                               ;;If we are in query mode, we just print something
              (unless *inside-or-query*
-               (format t "~2%No more solutions")))   ;;appropriate, otherwise we return 
-            
+               (format t "~%No more solutions")))   ;;appropriate, otherwise we return 
             (all
              (return (or bindings :fail)))
             ((not proved-state)

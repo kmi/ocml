@@ -249,6 +249,9 @@
 
 (defvar *bc-rules* (make-hash-table))
 
+(defvar *binding-print-format* :ocml
+  "Make take :OCML or :PROLOG as values.")
+
 (defvar *namespace-prefixes* '()
   "Active namespace prefixes for reading OCML namespace sensitive symbols.")
 
