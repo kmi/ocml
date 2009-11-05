@@ -218,11 +218,9 @@
              (multiple-variable-bind2 (cdr vars)(cdr values) env))
       env))
 
-
-;;;UNIFY - goal1 goal2 &optional env)
-;;;Top level unification function.  Returns :fail if no unification, the
-;;;new environment otherwise
-(defun unify (goal1 goal2 &optional env)
+;;; Top level unification function.  Returns :fail if no unification,
+;;; the new environment otherwise
+(defun unify (goal1 goal2 env)
   (multiple-value-bind (flag new-env)
       (unify-r goal1 goal2 env)
     (if flag

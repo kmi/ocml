@@ -621,13 +621,11 @@
       (check-parent-state goal (parent-node parent-state)))))
 
 (defun same-state? (goal state)
-  ;;(setf a goal b state)
- ;; (break)
   (unless (root? state)
     (let ((goal2 (instantiate (node-body(current-goal state)) (env state))))
       (and (eq (car goal2)
                (car goal))
-           (not (eq (unify (cdr goal)(cdr goal2))
+           (not (eq (unify (cdr goal) (cdr goal2) nil)
                     :fail))))))
 
 
