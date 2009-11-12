@@ -331,7 +331,9 @@
              (unless *inside-or-query*
                (format t "~%No more solutions")))   ;;appropriate, otherwise we return 
             (all
-             (return (or bindings :fail)))
+             (return (if bindings
+			 (nreverse bindings)
+			 :fail)))
             ((not proved-state)
              (return :fail))
             (t
