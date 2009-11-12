@@ -290,7 +290,7 @@
     ((:prolog)
      (dolist (b binding)
        (when (tree-member (car b) goals)
-	 (format t "~S = ~S~%" (car b) (cdr b)))))))
+	 (format t "~S = ~S~%" (car b) (instantiate (cdr b) binding)))))))
 
 (defun filter-holds-kappa-goals (goals )
   (mapcar #'(lambda (goal)
