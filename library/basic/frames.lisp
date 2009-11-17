@@ -315,24 +315,21 @@
                     (class ?class))
    :Lisp-fun #'(lambda (class slot)
                  (get-slot-type (get-domain-class class) slot)))
-                 
 
-(def-relation CLASS-SLOT-TYPE (?c ?slot ?type)
-   "This relation is satisfied if ?type is a type constraint specified
-    on the fillers of slot ?slot in ?c"
-   :constraint (and (slot ?slot)
-                    (class ?class))
-   :sufficient (member ?type (all-class-slot-types ?c ?slot)))
-
- 
-(def-function THE-CLASS-MIN-SLOT-CARDINALITY  (?c ?slot) -> ?n
+(def-relation class-slot-type (?class ?slot ?type)
+    "This relation is satisfied if ?type is a type constraint specified
+    on the fillers of slot ?slot in ?class"
   :constraint (and (slot ?slot)
-                    (class ?class)
-                    (integer ?n))
-  :lisp-fun #'(lambda (class slot)
-                (or (get-min-cardinality (get-domain-class class) slot)
-                    0)))
+		   (class ?class))
+  :sufficient (member ?type (all-class-slot-types ?class ?slot)))
 
+(def-function the-class-min-slot-cardinality (?class ?slot) -> ?n
+    :constraint (and (slot ?slot)
+		     (class ?class)
+		     (integer ?n))
+    :lisp-fun #'(lambda (class slot)
+		  (or (get-min-cardinality (get-domain-class class) slot)
+		      0)))
 
 (def-relation CLASS-MIN-SLOT-CARDINALITY (?c ?slot ?N)
    "This relation is satisfied if ?n is the min-cardinality of 
@@ -340,13 +337,13 @@
    :iff-def (= ?n (the-class-min-slot-cardinality  ?c ?slot)))
 
 
-(def-function THE-CLASS-MAX-SLOT-CARDINALITY  (?c ?slot) -> ?n
-  :constraint (and (slot ?slot)
-                    (class ?class)
-                    (integer ?n))
-  :lisp-fun #'(lambda (class slot)
-                (or (get-max-cardinality (get-domain-class class) slot)
-                    :nothing)))
+(def-function the-class-max-slot-cardinality (?class ?slot) -> ?n
+    :constraint (and (slot ?slot)
+		     (class ?class)
+		     (integer ?n))
+    :lisp-fun #'(lambda (class slot)
+		  (or (get-max-cardinality (get-domain-class class) slot)
+		      :nothing)))
 
 (def-relation CLASS-MAX-SLOT-CARDINALITY (?c ?slot ?N)
    "This relation is satisfied if ?n is the max-cardinality of 
