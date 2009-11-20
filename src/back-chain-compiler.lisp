@@ -69,7 +69,7 @@
                          (clauses rule))))
 	 (args (make-parameters arity "?" "$"))
 	 (cut-tag (when (cut-is-in clauses)
-			(gentemp (symbol-name fun-name))))
+			(gensym (symbol-name fun-name))))
 		  ;; this tag is used for catch and throw when a cut is in the rule
 	 (fun 
 	  `(defun ,fun-name (,@args env cont)

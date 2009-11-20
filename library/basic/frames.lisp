@@ -93,10 +93,9 @@
 
 ;;;NEW-INSTANCE
 (def-function new-instance (?type ?role-value-pairs)
-    :lisp-fun #'(Lambda (type pairs) 
-                 (name 
-                  (define-domain-instance (GENTEMP "INSTANCE") type ""
-                             pairs))))
+    :lisp-fun
+    (lambda (type pairs)
+      (name (define-domain-instance (gensym "INSTANCE") type "" pairs))))
 
 
 

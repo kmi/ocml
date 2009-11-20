@@ -16,13 +16,12 @@
 (def-function NEW-SYMBOL (?prefix)
   "Creates a new symbol"
    :constraint (string ?prefix)
-   :lisp-fun #'(lambda (x)(gentemp (string x))))
+   :lisp-fun #'(lambda (x) (gensym (string x))))
 
 (def-function NEW-VAR (?var)
   "gensyms a new var"
    :constraint (variable ?var)
-   :lisp-fun #'(lambda (x)(gentemp (string x))))
-
+   :lisp-fun #'(lambda (x) (gensym (string x))))
 
 (def-function the-name-of (?structure)
   :lisp-fun #'(lambda (x)

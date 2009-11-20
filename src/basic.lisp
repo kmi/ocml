@@ -479,14 +479,14 @@ others."
   (setf rel-instance (get-relation name))
   (cond ((not rel-instance)
          (make-ocml-relation-internal name (append
-                                            (list :schema (list (or instance-var (gentemp "?VAR")))
+                                            (list :schema (list (or instance-var (gensym "?VAR")))
                                                     :defined-from-class? t)
                                             relation-spec)))
         ((or relation-spec
              (defined-from-class? rel-instance))
          ;;we redefine the relation
          (make-ocml-relation-internal name (append
-                                              (list :schema (list (or instance-var (gentemp "?VAR")))
+                                              (list :schema (list (or instance-var (gensym "?VAR")))
                                                     :defined-from-class? t)
                                               relation-spec)
                                       nil nil (defined-by-rule rel-instance)))
@@ -627,7 +627,7 @@ local."
                          *domain-classes*)))
 
 (defun generate-internal-ocml-class-name (name)
-  (gentemp (string name)))
+  (gensym (string name)))
 
 ;;;GET-OCML-CLASS
 (defun get-ocml-class (Class)
