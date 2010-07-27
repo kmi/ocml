@@ -68,11 +68,12 @@ SBCL.
 @section Obtaining OCML
 
 @noindent
-You can obtain the development version of OCML using
-Git@footnote{@url{http://git.or.cz/}}.
+The OCML source lives at GitHub @url{http://github.com/kmi/ocml}.  You
+can use Git@footnote{@url{http://git-scm.com/}} to track its
+development:
 
 @smallexample
-git clone http://kmi-forge.open.ac.uk/git/ocml.git
+git clone git://github.com/kmi/ocml.git
 @end smallexample
 
 This should leave you with a directory called @file{ocml}.
