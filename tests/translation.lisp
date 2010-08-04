@@ -11,15 +11,15 @@
   (format nil "~Aontolingua/load.onto" (ocml:find-ontology-directory ontology-name)))
 
 (test translate-to-ontolingua-test
-  (ocml::rm-file (ontolingua-load-file 'ocml::apples2))
-  (finishes (ocml:translate :ocml :ontolingua 'ocml::apples2
+  (ocml::rm-file (ontolingua-load-file 'ocml::apples-reduced))
+  (finishes (ocml:translate :ocml :ontolingua 'ocml::apples-reduced
                             :top-class 'ocml::apple))
   ;; Check the files have been written
-  (finishes (open (ontolingua-load-file 'ocml::apples2))))
+  (finishes (open (ontolingua-load-file 'ocml::apples-reduced))))
 
 (test translate-to-owl-test
-  (finishes (ocml:translate :ocml :owl 'ocml::apples2
+  (finishes (ocml:translate :ocml :owl 'ocml::apples-reduced
                             :where "./onto.owl"
-                            :top-class 'ocml::apple
-                            :namespace-prefix 'ocml::apples2
+                            :top-class 'ocml::fruit
+                            :namespace-prefix 'ocml::apples-reduced
                             :namespace "http://www.world-of-apples.com/onto.owl")))
