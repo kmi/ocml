@@ -330,12 +330,14 @@
 (defun direct-subclasses (class)
    #+:allegro (clos:class-direct-subclasses class)
    #+:clisp (clos:class-direct-subclasses class)
+   #+:ccl (ccl:class-direct-subclasses class)
    #+:lispworks (clos::class-direct-subclasses class)
    #+:mcl (ccl::class-direct-subclasses class)
    #+:sbcl (sb-pcl:class-direct-subclasses class))
 
 (defun (setf direct-subclasses) (value class)
   #+:allegro (setf (slot-value class 'excl::direct-subclasses) value)
+  #+:ccl (setf (slot-value class 'ccl::direct-subclasses) value)
   #+:clisp (let ((current (clos:class-direct-subclasses class)))
              (dolist (r (set-difference current value))
                (clos:remove-direct-subclass class r))
@@ -349,6 +351,7 @@
 (defun subclasses (class)
   (let ((subclasses 
          #+:allegro (clos:class-direct-subclasses class)
+         #+:ccl (ccl:class-direct-subclasses class)
          #+:clisp (clos:class-direct-subclasses class)
          #+:lispworks (clos::class-direct-subclasses class)
          #+:mcl (ccl::class-direct-subclasses class)
@@ -362,6 +365,7 @@
 
 (defun direct-superclasses (class &optional (structure (find-class class)))
   #+:allegro (clos:class-direct-superclasses structure)
+  #+:ccl (ccl:class-direct-superclasses structure)
   #+:clisp (clos:class-direct-superclasses structure)
   #+:lispworks (clos::class-direct-superclasses structure)
   #+:mcl (ccl::class-direct-superclasses structure)
@@ -369,6 +373,7 @@
 
 (defun create-directory (directory)
   #+:allegro (excl:make-directory directory)
+  #+:ccl (ccl:create-directory directory)
   #+:clisp (error "Function undefined.")
   #+:lispworks (ensure-directories-exist directory)
   #+:mcl (if (CCL::DIRECTORY-EXISTS-P directory)
@@ -387,6 +392,7 @@
 
 (defun class-precedence-list (class)
   #+allegro (clos:class-precedence-list class)
+  #+:ccl (ccl:class-precedence-list class)
   #+:clisp (clos:class-precedence-list class)
   #+:lispworks (clos:class-precedence-list class)
   #+:mcl (ccl:class-precedence-list class)
@@ -417,6 +423,7 @@
   #+:mcl (ccl::get-source-files name type))
 
 (defun current-file ()
+  #+:ccl (ccl::loading-file-source-file)
   #+:mcl (ccl::loading-file-source-file))
 ;;  (if (boundp '*load-pathname*)
 ;;    *load-pathname*))

@@ -1,5 +1,7 @@
 ;;; 2007 Open University
 
+#+:ccl (require :asdf)
+
 (push "." asdf:*central-registry*)
 
 #+:lispworks5 (setf system:*stack-overflow-behaviour* :warn)
@@ -15,5 +17,6 @@
 
 (ocml.tests:run-all-tests)
 
-#+:lispworks (quit)
 #+:allegro (exit)
+#+:ccl (quit)
+#+:lispworks (quit)

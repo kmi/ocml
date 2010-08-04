@@ -288,10 +288,11 @@ NAME, and TYPE."
       (let ((pathname (format nil "~A" *load-truename*)))
         (subseq pathname 0 (- (length pathname)
                               (length *load-filename*))))
-      (string-append *library-pathname*
-                     (if (eq type :basic)
-                         (format nil "~A;" type)
-                         (format nil "~AS;~A;" type name)))))
+      (string-downcase
+       (string-append *library-pathname*
+		      (if (eq type :basic)
+			  (format nil "~A;" type)
+			  (format nil "~AS;~A;" type name))))))
 
 (defun default-ontology-files (name)
   (list (format nil "~(~A~)" name) "new"))

@@ -18,7 +18,7 @@
 (defvar *skip-form-flag*  :$$skip$$)
 
 (defvar *default-ontolingua-sub-directory* 
-   "ONTOLINGUA;")
+   "ontolingua;")
 
 (defvar *ontolingua-suffix* "onto")
 
@@ -49,9 +49,9 @@
             ;;2/6/03
             (translate-logical-pathname
              (concatenate 'string
-                          (default-ontology-pathname 
-                           ontology-name
-                           (ontology-type ontology))
+                          (default-ontology-pathname
+			      ontology-name
+			      (ontology-type ontology))
                           *default-ontolingua-sub-directory*))
             (default-ontology-load-file  
               ontology-name

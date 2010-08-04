@@ -134,7 +134,7 @@
   (setf *ontology-path* nil)
   (dolist (type +ontology-types+)
     (push (logical-pathname
-           (format nil "~A~A;" ocml::*library-pathname* type))
+           (format nil "~A~(~A~);" ocml::*library-pathname* type))
           *ontology-path*))
   #+:ocml-with-drakma
   (push *web-library-pathname* *ontology-path*))
@@ -205,9 +205,10 @@ if it can be found, or NIL."
 (defun find-truename-ci (path ext)
   "Return the local name of EXT in directory in PATH where the local
   matches EXT, ignoring case."
-  (let* ((paths (directory
-                 #-:clisp (merge-pathnames path "*")
-                 #+:clisp (logical-pathname (format nil "~A**;" path))))
+  (let* ((wildpath #-(or :ccl :clisp) (merge-pathnames path "*")
+		   #+:clisp (logical-pathname (format nil "~A**;" path))
+		   #+:ccl (logical-pathname (format nil "~A*;" path)))
+	 (paths (directory wildpath #+:ccl :directories #+:ccl t))
          (finds (remove-if #'(lambda (path)
                                (not (string-equal ext (file-basename path))))
                            paths))

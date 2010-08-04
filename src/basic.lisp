@@ -246,6 +246,7 @@ is the external, rather than internal, name of the class."
 ;; definition is accepted.
 (defmethod
     #+:allegro mop:validate-superclass
+    #+:ccl ccl:validate-superclass
     #+:clisp clos:validate-superclass
     #+:lispworks clos::validate-superclass
     #+:sbcl sb-mop:validate-superclass
