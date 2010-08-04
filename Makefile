@@ -9,6 +9,9 @@ tests: acl-tests lispworks-tests sbcl-tests
 
 ### Tests
 
+ccl-tests:
+	cat tests/run-tests.lisp | ccl
+
 clisp-tests:
 	cat tests/run-tests.lisp | clisp
 
