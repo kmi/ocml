@@ -6,16 +6,12 @@
                   basic-ocml-object)
   ((expression :accessor axiom-expression :initarg :expression)))
 
-
-
-
 (defun def-axiom-internal (name documentation axiom)
   (unless (stringp documentation)
     (setf axiom documentation
           documentation nil))
-  #+(or allegro lispworks)(ocml-record-source-file name 'def-axiom)
-  (new-axiom name documentation axiom)
-  )
+  (ocml-record-source-file name 'ocml-axiom)
+  (new-axiom name documentation axiom))
 
 (defun new-axiom (name documentation  axiom)
   (let ((instance (make-instance 'axiom

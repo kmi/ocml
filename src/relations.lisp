@@ -116,7 +116,6 @@ non-nil."
     (prog1
         (apply #'make-ocml-relation name :schema schema :documentation
                documentation :defined-from-def-relation t options)
-      #+(or :allegro :lispworks)
       (ocml-record-source-file name 'ocml-relation))))
 
 (defun check-no-duplicates-in-rel-options
@@ -395,7 +394,7 @@ non-nil."
                           :schema (loop for i from 1 to arity
                                         collect (make-new-var))
                           relation-spec)
-        (record-source-file predicate 'ocml-relation))))
+        (ocml-record-source-file predicate 'ocml-relation))))
 
 ;;;INITIALIZE-INSTANCE :AFTER OCML-RELATION
 (defmethod initialize-instance :after ((relation ocml-relation) &rest initargs)

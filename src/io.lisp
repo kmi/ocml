@@ -10,34 +10,31 @@
   #+:lispworks-dspec
   (cadar (dspec:find-dspec-locations dspec)))
 
+(defparameter *definition-map*
+  '((ocml-axiom . def-axiom)
+    (ocml-class . def-class)
+    (ocml-class-instance . def-instance)
+    (ocml-function . def-function)
+    (ocml-ontology . def-ontology)
+    (ocml-procedure . def-procedure)
+    (ocml-relation . def-relation)
+    (ocml-relation-instances . def-relation-instances)
+    (ocml-rule . def-rule)))
+
 (defun ocml-record-source-file (name type &optional ontology)
   #+:sbcl (declare (ignore name type))
-  (when (and (null ontology)
-             *ocml-initialized*)
+  (when (and (null ontology) *ocml-initialized*)
     (setf ontology (name *current-ontology*)))
-  #+:mcl (CCL:RECORD-SOURCE-FILE name type)
+  #+:allegro (cl-user::record-source-file name :type type)
+  #+:ccl (ccl:record-source-file name type)
   #+(and :lispworks (not :lispworks-dspec))
   (eval `(lw::top-level-form (,type ,name ,ontology) nil))
   #+:lispworks-dspec
-  (lispworks:record-definition (list type name ontology)
-			       (lispworks::current-pathname)
-			       :check-redefinition-p nil)
-  #+:allegro(cl-user::record-source-file name :type type))
-
-(defun ocml-record-instance-source-file (name parent type &optional ontology)
-  #+:sbcl (declare (ignore name parent type))
-  (when (and (null ontology)
-             *ocml-initialized*)
-    (setf ontology (name *current-ontology*)))
-  #+:mcl (CCL:RECORD-SOURCE-FILE name type)
-  #+(and :lispworks (not :lispworks-dspec))
-  (eval `(lw::top-level-form (,type ,name ,parent ,ontology) nil))
-  #+:lispworks-dspec
-  (lispworks:record-definition (list type name parent ontology)
-			       (lispworks::current-pathname)
-			       :check-redefinition-p nil)
-  #+:allegro(cl-user::record-source-file name :type type))
-
+  (let ((form-name (cdr (assoc type *definition-map*))))
+    (lispworks:record-definition (list form-name name ontology)
+				 (lispworks::current-pathname)
+				 :check-redefinition-p nil))
+  #+:mcl (CCL:RECORD-SOURCE-FILE name type))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  #+:lispworks(eval-when (eval load)

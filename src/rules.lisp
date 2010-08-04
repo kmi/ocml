@@ -342,11 +342,7 @@
 ;  (add-canonical-rule name documentation priority args))
 
 (defun add-canonical-rule (name documentation priority packet args)
-  ;;#-:lispworks(record-source-file name 'ocml-rule)
-  ;;#+(or allegro lispworks)(record-source-file name 'def-rule)
-
-  #-:lispworks(ocml-record-source-file name 'ocml-rule)
-  #+(or allegro lispworks)(ocml-record-source-file name 'def-rule)
+  (ocml-record-source-file name 'ocml-rule)
   (let ((then-pos (position 'then args)))
     (if then-pos
 	(add-forward-rule name documentation priority packet args then-pos)

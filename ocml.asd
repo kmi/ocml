@@ -10,7 +10,7 @@
 #+:clisp (setf custom:*ansi* t)
 
 ;;; Enable source location recording in Lispworks 5.
-#+:lispworks5 (pushnew :lispworks-dspec *features*)
+#+(or :lispworks5 :lispworks6) (pushnew :lispworks-dspec *features*)
 
 ;;; Check for availablility of the Drakma HTTP client.
 (when (asdf:find-system :drakma nil)

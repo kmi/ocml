@@ -403,21 +403,8 @@
     (when pos
       (elt  init-alist (1+ pos)))))
 
-;;;RECORD-SOURCE-FILE
-(defun record-source-file (name type)
-  #+:sbcl (declare (ignore name type))
-  #-:sbcl
-  (let ((*error-output* nil))
-    (record-source-file-int name type)))
-
-(defun record-source-file-int (name type)
-  #+:sbcl (declare (ignore name type))  
-  #+:mcl (CCL:RECORD-SOURCE-FILE name type)
-  #+:lispworks (eval `(lw::top-level-form (,type ,name) nil))
-  #+:allegro(cl-user::record-source-file name :type type))
-
 (defun source-files (name type)
-  (declare (ignore name type))
+  #+:ccl (mapcar #'cdr (ccl::get-source-files-with-types name type))
   #+:sbcl (declare (ignore name type))
   #+:allegro (declare (ignore name type)) ;XXX
   #+:mcl (ccl::get-source-files name type))

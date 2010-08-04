@@ -465,8 +465,7 @@ NAME, and TYPE."
   (loop for from-onto in includes
         do
         (copy-ontology from-onto ontology))
-  #-:lispworks(record-source-file name 'ocml-ontology)
-  #+(or :allegro :lispworks) (ocml-record-source-file name 'def-ontology name)
+  (ocml-record-source-file name 'ocml-ontology name)
   (when new?
     (add-ontology name ontology))
   (with-ontology (ontology)

@@ -51,10 +51,8 @@
             (remove-direct-instance old-instance name)
             (pushnew instance (instance-overridden-by old-instance)))))
 
-      #-:lispworks(record-source-file name 'ocml-class-instance)
-      ;;#+(or allegro lispworks)(record-source-file name 'def-instance)
-      #+(or allegro lispworks)(ocml-record-instance-source-file name parent
-                                                                'def-instance)
+      (ocml-record-source-file name 'ocml-class-instance)
+
       (cache-inherited-slots instance class)
       (tell-fc-new-instance instance parent)
       (when *check-constraints*

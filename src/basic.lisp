@@ -1037,9 +1037,7 @@ A different internal name will be generated..."
                slots-spec)
            ,(list :documentation documentation)
            ,(list :metaclass 'ocml-metaclass))))
- #-:lispworks(record-source-file name 'ocml-class)
-    ;;#+(or allegro lispworks)(record-source-file name 'def-class)
-    #+(or allegro lispworks)(ocml-record-source-file name 'def-class)
+    (ocml-record-source-file name 'ocml-class)
     (add-domain-class name class)
     (setf own-slots (init-arg-value :own-slots relation-spec))
     (set-metaclass-information class domain-slots ocml-slot-info

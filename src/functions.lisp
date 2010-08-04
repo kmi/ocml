@@ -75,12 +75,10 @@
                     "Redefining function ~S, previously defined in ontology ~s" 
                     name (name 
                           old-ontology)))))))
-    #-:lispworks (record-source-file name (type-of fun))
-    #+(or allegro lispworks)(ocml-record-source-file
-                             name
-                             (if (eq (type-of fun) 'ocml-function)
-                                 'ocml-function
-                                 'ocml-procedure))
+    (ocml-record-source-file
+     name (if (eq (type-of fun) 'ocml-function)
+	      'ocml-function
+	      'ocml-procedure))
     (enforce-arity-schema-consistency fun name schema arity)
     (when lisp-fun
       (setf user-defined? t))
@@ -598,7 +596,7 @@
 
 (defun make-ocml-procedure (&rest options)
   (let ((instance (apply  #'make-instance (cons 'ocml-procedure options))))
-    ;;;;(record-source-file (name instance)'ocml-procedure)
+    (ocml-record-source-file (name instance)'ocml-procedure)
     (set-free-vars-in-body instance)
     (propagate-new-def-to-sub-ontologies (name instance) instance 'function)
     instance))
