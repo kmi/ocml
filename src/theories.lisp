@@ -138,7 +138,7 @@ ontology-directory."
    ;; The namespace URI is used with the #_ reader macro to place
    ;; symbols in a particular namespace.  It need not point at
    ;; anything real, or even look like a URI :-) It should be unique.
-   (namespace-uri :accessor namespace-uri-of :type string
+   (namespace-uri :accessor namespace-uri-of :type (or string null)
 		  :initarg :namespace-uri :initform nil)
    ;; This is the list of namespace mappings as specified in the
    ;; DEF-ONTOLOGY form.
