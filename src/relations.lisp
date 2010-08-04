@@ -83,6 +83,13 @@ non-nil."
     :initarg :lisp-class-name)) ;;;OCML class.  Only used to avoid parsing the relation spec
   (:documentation "The class of relations in OCML"))
 
+;;; def-relation-instances-internal calls ocml-record-source-file and
+;;; CCL refuses to accept it unless the type is defined.  So we define
+;;; it here just to have something to talk about.
+(defclass ocml-relation-instances
+    (name-mixin lisp-attachment-mixin basic-ocml-object)
+  ())
+
 (defun schema? (thing)
   (and (listp thing)
        (every #'variable? thing)
@@ -110,7 +117,7 @@ non-nil."
         (apply #'make-ocml-relation name :schema schema :documentation
                documentation :defined-from-def-relation t options)
       #+(or :allegro :lispworks)
-      (ocml-record-source-file name 'def-relation))))
+      (ocml-record-source-file name 'ocml-relation))))
 
 (defun check-no-duplicates-in-rel-options
     (name spec &optional (option-list +relation-spec-keywords+) (type 'relation))
@@ -244,7 +251,7 @@ non-nil."
         
         ;;ok, no incompatibilities with slots or classes
         (let ((old-ontology (home-ontology structure))
-                (source-file (car (source-files rel 'def-relation))))
+                (source-file (car (source-files rel 'ocml-relation))))
             (cond ((eq old-ontology *current-ontology*)
                    (unless (equal (and source-file
                                        (translate-logical-pathname source-file))
@@ -380,9 +387,6 @@ non-nil."
 ;          do
 ;          (tell1 `(,(car exp) ,name ,(second exp))))
 ;    (setf own-slots new)))
-    
-  
-
 
 (defun find-or-create-relation (predicate arity &optional relation-spec)
   (or (get-relation predicate)
@@ -391,11 +395,8 @@ non-nil."
                           :schema (loop for i from 1 to arity
                                         collect (make-new-var))
                           relation-spec)
-        #-:lispworks(record-source-file predicate 'ocml-relation)
-        ;;#+:lispworks(record-source-file predicate 'def-relation)
-        #+:lispworks(ocml-record-source-file predicate 'def-relation))))
-      
-      
+        (record-source-file predicate 'ocml-relation))))
+
 ;;;INITIALIZE-INSTANCE :AFTER OCML-RELATION
 (defmethod initialize-instance :after ((relation ocml-relation) &rest initargs)
   (declare (ignore initargs))
@@ -906,7 +907,7 @@ non-nil."
     (setf exps (cons documentation exps)
           documentation ""))
   (dolist (exp exps)
-    (ocml-record-source-file exp 'def-relation-instances)
+    (ocml-record-source-file exp 'ocml-relation-instances)
     (tell1 exp documentation)))
 
 ;;relation-instance 'name' is in fact the expression

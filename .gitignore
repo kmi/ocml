@@ -7,6 +7,9 @@
 *.ufasl
 *.xfasl
 
+# Clozure Common Lisp object files
+*.lx64fsl
+
 # CLISP object files
 *.fas
 *.lib

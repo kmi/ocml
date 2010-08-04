@@ -60,7 +60,7 @@
     (let ((old-fun (get-function name)))
       (when old-fun 
         (let ((old-ontology (home-ontology old-fun))
-              (source-file (car (source-files name 'def-function))))
+              (source-file (car (source-files name 'ocml-function))))
             (cond ((eq old-ontology *current-ontology*)
                    (unless (equal (and source-file
                                        (translate-logical-pathname source-file))
@@ -75,18 +75,12 @@
                     "Redefining function ~S, previously defined in ontology ~s" 
                     name (name 
                           old-ontology)))))))
-      
-      ;;;(warn "Redefining function ~S"name))
     #-:lispworks (record-source-file name (type-of fun))
-   ; #+(or allegro lispworks)(record-source-file name
-;                                     (if (eq (type-of fun) 'ocml-function)
-;                                       'def-function
-;                                       'def-procedure))
     #+(or allegro lispworks)(ocml-record-source-file
                              name
                              (if (eq (type-of fun) 'ocml-function)
-                                 'def-function
-                                 'def-procedure))
+                                 'ocml-function
+                                 'ocml-procedure))
     (enforce-arity-schema-consistency fun name schema arity)
     (when lisp-fun
       (setf user-defined? t))
