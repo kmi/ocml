@@ -231,7 +231,7 @@ maclisp and lispworks - now pass the directory
     (multiple-value-bind (instance-var1  documentation1 class-slots1 relation-spec1)
                          (parse-class-form instance-var  documentation class-slots relation-spec)
       (unless instance-var1 
-        (setf instance-var1 (gensym "?INST")))
+        (setf instance-var1 (gentemp "?INST")))
       (let (;;;;(supers (translate-superclasses superclasses ))
             (template-slots (translate-class-slots name class-slots1)))
         (concatenate 'string
@@ -473,7 +473,7 @@ maclisp and lispworks - now pass the directory
                ")"))
 
 (defun translate-slot-renaming (slot-renaming schema class)
-  (Let ((var (gensym "?VALUE")))
+  (Let ((var (gentemp "?VALUE")))
     (apply #'string-append
            (mapcar #'(lambda (pair)
                        (format nil "~(~S~)~%"
@@ -594,7 +594,7 @@ maclisp and lispworks - now pass the directory
     form
     (if (and (Listp form)
              (eq (car form) 'or))
-      (let ((var (gensym "?VALUE")))
+      (let ((var (gentemp "?VALUE")))
         `'(kappa (,var)
            (or ,@(mapcar #'(lambda (class)
                              `(,class ,var))

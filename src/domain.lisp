@@ -12,7 +12,8 @@
 ;;; NEW-INSTANCE- returns a new instance of a class with the given
 ;;; attributes returns an instance structure
 (defun new-instance (type &optional pairs)
-  (define-domain-instance (gensym "INSTANCE") type "" pairs))
+    (define-domain-instance (GENTEMP "INSTANCE") type ""
+                             pairs))
 
 
 (defun define-domain-instance (name parent &optional documentation slots)

@@ -10,7 +10,7 @@
    (pretty-name :initarg :pretty-name :accessor pretty-name :initform nil)))
 
 (defmethod generate-name ((named-obj  name-mixin))
-  (gensym (string (type-of named-obj))))
+  (gentemp (string (type-of named-obj))))
 
 ;;;INITIALIZE-INSTANCE :AROUND NAME-MIXIN  ---If no name is provided, we generate one
 ;;;ourselves
@@ -51,10 +51,10 @@
   (if (compiled-function-p fun)
       fun
     #-franz-inc
-    (compile (gensym (string prefix))
+    (compile (gensym (string prefix)) ;;;(if prefix (gentemp prefix)(gensym))
 	     fun)
     #+franz-inc
-    (compile (gensym (string prefix))
+    (compile (gensym (string prefix)) ;;;(if prefix (gentemp prefix)(gensym))
 	     (if (excl::function-object-p fun)
 		 (excl::func_code fun)
 	       fun))))

@@ -62,7 +62,7 @@
 
 (defun generate-rdf-namespace-label (onto)
   (string-downcase (symbol-name
-		    (gensym (subseq (symbol-name (name onto)) 0
+		    (gentemp (subseq (symbol-name (name onto)) 0
 				     (min 3 (length (symbol-name (name onto)))))))))
 
 (defun generate-rdfs-header (ontology-name ns-label-alist stream )
@@ -332,7 +332,7 @@
     (format ofile "~%</rdf:Description>")))
 
 (defun translate-multi-domain-relation  (relation domain  doc ofile ontology ns-label-alist  fancy-name-conversion? )
-  (let ((new-rel-name (gensym (format nil "~a"(name relation)))))
+  (let ((new-rel-name (gentemp (format nil "~a"(name relation)))))
   (multiple-value-bind (id label)
                        (convert-relation-name-to-rdf-name-style 
                         new-rel-name ontology ns-label-alist  fancy-name-conversion? )

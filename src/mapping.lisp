@@ -60,7 +60,29 @@ john domingue may 21 '98
     (string domain-name))))
 |#
 
+
+
+
 ;;;;;;OLD STUFF BELOW THIS LINE;;;;;;;;    
+
+;(defun set-downward-mapping-rule (relation clause  documentation)
+;  (Let* ((name (gentemp (string-append  "MAPPING-RULE-OF-" (string relation))))
+;	 (then-pos (position 'then clause))
+;	 (rule (add-forward-rule name 
+;				 documentation
+;				 *default-fc-rule-priority*
+;				 (get-or-create-packet name) ;;;;packet-name
+;				 clause
+;				 then-pos)))
+;    (compile-fc-rule rule
+;                     (subseq clause 0 then-pos)
+;                     (subseq clause (1+ then-pos)))
+;    (setf (downward-mapping-rule (get-relation relation))
+;	  ;;;;;(find-or-create-relation relation 1))
+;	  rule)
+;    (trigger-downward-mapping-rule rule)))
+                  
+
 
 ;(defun maybe-trigger-downward-mapping-rule (relation)
 ;  (let ((rule (downward-mapping-rule  (get-relation relation))))
