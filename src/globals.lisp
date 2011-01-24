@@ -204,7 +204,7 @@
 (defvar *base-ontology-directory*
   (logical-pathname (string-append *library-pathname* "basic;")))
 
-(defvar *base-ontology-load-file* "load")
+(defvar *base-ontology-load-file* "load.lisp")
 
 (defvar *load-filename* "load.lisp")
 ;;; }}}
